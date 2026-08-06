@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/06 16:53:43 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/06 17:06:00 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 
 #include <iostream>
 #include <map>
+#include <string>
+#include <fstream>
+#include <stdexcept>
 
 class BitcoinExchange
 {
@@ -34,6 +37,9 @@ class BitcoinExchange
 		BitcoinExchange(const BitcoinExchange& other);
 		BitcoinExchange& operator=(const BitcoinExchange& other);
 		~BitcoinExchange();
+		
+		void	processFile(const std::string&	filename);
+		
 };
 
 #endif

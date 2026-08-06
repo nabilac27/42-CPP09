@@ -6,7 +6,7 @@
 #    By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/06 16:46:21 by nchairun          #+#    #+#              #
-#    Updated: 2026/08/06 16:47:20 by nchairun         ###   ########.fr        #
+#    Updated: 2026/08/06 16:59:59 by nchairun         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ NAME	= btc
 #                               FILE STRUCTURE                                 #
 # **************************************************************************** #
 OBJ_DIR	= obj/
-SRCS	= main.cpp Span.cpp
+SRCS	= main.cpp BitcoinExchange.cpp
 OBJS	= $(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 
 
