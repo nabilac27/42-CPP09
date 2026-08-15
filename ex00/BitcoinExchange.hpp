@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/06 17:06:00 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/15 23:19:57 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,19 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <sstream>
+#include <cstdlib> // str::stod
 
 class BitcoinExchange
 {
 	private:
 		std::map<std::string, double> database;
-        
+
+        std::string	trim(const std::string& str) const;
+		bool		isValidDate(const std::string& date) const;
+		bool		parseValue(const std::string& str, double& value) const;
+		double		findExchangeRate(const std::string& date) const;
+
 	public:
 		BitcoinExchange();
 		BitcoinExchange(const BitcoinExchange& other);
@@ -41,5 +48,6 @@ class BitcoinExchange
 		void	processFile(const std::string&	filename);
 		
 };
+
 
 #endif
