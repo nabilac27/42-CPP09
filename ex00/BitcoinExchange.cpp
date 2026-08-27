@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 17:56:58 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 19:30:54 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 /* ************************************************************************** */
 /*  ORTHODOX CANONICAL FORM                                                   */
 /* ************************************************************************** */
-
 BitcoinExchange::BitcoinExchange()
 {
 }
@@ -41,12 +40,12 @@ BitcoinExchange::~BitcoinExchange()
 /* ************************************************************************** */
 void BitcoinExchange::loadDataCsv(const std::string& filename)
 {
-	std::ifstream databaseFile(filename.c_str());
+	std::ifstream	databaseFile(filename.c_str());
 
 	if (!databaseFile.is_open())
 		throw (std::runtime_error("Error: could not open database."));
 
-	std::string line;
+	std::string		line;
 	std::getline(databaseFile, line);
 	
 	while (std::getline(databaseFile, line))
@@ -56,24 +55,22 @@ void BitcoinExchange::loadDataCsv(const std::string& filename)
 		if (comma == std::string::npos)
 			continue;
 
-		std::string dateString 			= trim(line.substr(0, comma));
-		std::string exchange_rateString	= trim(line.substr(comma + 1));
+		std::string date 		= trim(line.substr(0, comma));
+		std::string rateString	= trim(line.substr(comma + 1));
 
 		double 				rateDouble;
-		std::stringstream	ss(exchange_rateString);
+		std::stringstream	ss(rateString);
 
 		if (!(ss >> rateDouble))
 			continue;
 		
-		database[dateString] = rateDouble;
-	// std::cout << dateString << " = " << database[dateString] << std::endl;
+		database[date] = rateDouble;
 	}
 }
 
 /* ************************************************************************** */
 /*  processInputTxt()                                                		  */
 /* ************************************************************************** */
-
 void BitcoinExchange::processInputTxt(const std::string& filename)
 {
 	std::ifstream inputFile(filename.c_str());
@@ -88,65 +85,30 @@ void BitcoinExchange::processInputTxt(const std::string& filename)
 		processInputLine(line);
 }
 
+
 /* ************************************************************************** */
 /*  processInputLine()                                                		  */
 /* ************************************************************************** */
 bool BitcoinExchange::processInputLine(const std::string& line) const
 {
-	std::string::size_type separator = line.find('|');
-
-	if (separator == std::string::npos || line.find('|', separator + 1) != std::string::npos)
-	{
-		std::cerr << "Error: bad input => " << line << std::endl;
-		return (false);
-	}
-
-	/***************************************/
 	std::string date;
 	std::string valueString;
-
-	date 		= trim(line.substr(0, separator));
-	valueString = trim(line.substr(separator + 1));
-
-	if (!(isValidDate(date)))
-	{
-		std::cerr << "Error: bad input => " << line << std::endl;
-		return (false);
-	}
-
-	/***************************************/
-	double valueDouble;
-
-	if (!(parseValue(valueString, valueDouble)))
-	{
-		std::cerr << "Error: bad input => " << line << std::endl;
-		return (false);
-	}
-	if (valueDouble < 0)
-	{
-		std::cerr << "Error: not a positive number."
-				  << std::endl;
-		return (false);
-	}
-	if (valueDouble > 1000)
-	{
-		std::cerr << "Error: too large a number."
-				  << std::endl;
-		return (false);
-	}
+	double 		valueDouble;
 	
-	/***************************************/
+	if (!parseDateValue(line, date, valueString))
+		return (false);
+	if (!isValidDate(date))
+	{
+		std::cerr << "Error: bad input => "
+				  << line << std::endl;
+		return (false);
+	}
+	if (!isValidValue(valueString, valueDouble, line))
+		return (false);
+	
 	try
 	{
-		double exchangeRate  = findExchangeRate(date);
-		double calculateRate = valueDouble * exchangeRate;
-
-		std::cout << date
-				  << " => "
-				  << valueDouble
-				  << " = "
-				  << calculateRate
-				  << std::endl;
+		findExchangeRate(date, valueDouble);
 	}
 	catch (const std::exception& e)
 	{
@@ -158,32 +120,29 @@ bool BitcoinExchange::processInputLine(const std::string& line) const
 }
 
 /* ************************************************************************** */
-/*  UTILS                                                 			  		  */
+/*  parseDateValue()                                                		  */
 /* ************************************************************************** */
-std::string BitcoinExchange::trim(const std::string& str) const
+bool BitcoinExchange::parseDateValue(const std::string& line, std::string& date,std::string& valueString) const
 {
-	std::size_t start	= 0;
-	std::size_t end 	= str.length();
+	std::string::size_type separator = line.find('|');
 
-	while (start < str.length())
+	if (separator == std::string::npos
+		|| line.find('|', separator + 1) != std::string::npos)
 	{
-		unsigned char currentChar = static_cast<unsigned char>(str[start]);
-		if (!std::isspace(currentChar))
-			break;
-		start++;
+		std::cerr << "Error: bad input => "
+				  << line << std::endl;
+		return (false);
 	}
-	while (end > start)
-	{
-		unsigned char currentChar = static_cast<unsigned char>(str[end - 1]);
-		if (!std::isspace(currentChar))
-			break;
-		end--;
-	}
-	std::string result = str.substr(start, end - start);
-	
-	return (result);
+
+	date 		= trim(line.substr(0, separator));
+	valueString = trim(line.substr(separator + 1));
+
+	return (true);
 }
 
+/* ************************************************************************** */
+/*  isValidDate()                                                		 	  */
+/* ************************************************************************** */
 bool BitcoinExchange::isValidDate(const std::string& date) const
 {
 	if (date.length() != 10)
@@ -226,37 +185,100 @@ bool BitcoinExchange::isValidDate(const std::string& date) const
 	return (true);
 }
 
-bool BitcoinExchange::parseValue(const std::string& str, double& value) const
+/* ************************************************************************** */
+/*  isValidValue()                                                		 	  */
+/* ************************************************************************** */
+bool BitcoinExchange::isValidValue(const std::string& valueString, double& valueDouble, const std::string& line) const
 {
-	if (str.empty())
+	if (valueString.empty())
+	{
+		std::cerr << "Error: bad input => " << line << std::endl;
 		return (false);
+	}
 
 	char* end;
 
-	value = std::strtod(str.c_str(), &end);
+	valueDouble = std::strtod(valueString.c_str(), &end);
 
-	if (end == str.c_str())
+	if (end == valueString.c_str() || *end != '\0')
+	{
+		std::cerr << "Error: bad input => " << line << std::endl;
 		return (false);
-	if (*end != '\0')
+	}
+
+	if (valueDouble < 0)
+	{
+		std::cerr << "Error: not a positive number." << std::endl;
 		return (false);
+	}
+
+	if (valueDouble > 1000)
+	{
+		std::cerr << "Error: too large a number." << std::endl;
+		return (false);
+	}
+
 	return (true);
 }
 
-double BitcoinExchange::findExchangeRate(const std::string& date) const
+/* ************************************************************************** */
+/*  findExchangeRate()                                                		  */
+/* ************************************************************************** */
+void BitcoinExchange::findExchangeRate(const std::string& date, double valueDouble) const
 {
 	std::map<std::string, double>::const_iterator it;
 
 	it = database.lower_bound(date);
 
 	if (it != database.end() && it->first == date)
-		return (it->second);
-	if (it == database.begin())
-		throw (std::runtime_error("Error: no earlier date available."));
-	if (it == database.end())
 	{
-		--it;
-		return (it->second);
+		// exact date found , return (it->second);
 	}
-	--it;
-	return (it->second);
+	else if (it == database.begin())
+	{
+		throw (std::runtime_error("Error: no earlier date available."));
+	}
+	else
+	{
+		if (it == database.end() || it->first != date)
+			--it;
+	}
+
+	double exchangeRate = it->second;
+	double result 		= valueDouble * exchangeRate;
+
+	std::cout << date
+			  << " => "
+			  << valueDouble
+			  << " = "
+			  << result
+			  << std::endl;
+}
+
+
+/* ************************************************************************** */
+/*  trim()                                                 			  		  */
+/* ************************************************************************** */
+std::string BitcoinExchange::trim(const std::string& str) const
+{
+	std::size_t start	= 0;
+	std::size_t end 	= str.length();
+
+	while (start < str.length())
+	{
+		unsigned char currentChar = static_cast<unsigned char>(str[start]);
+		if (!std::isspace(currentChar))
+			break;
+		start++;
+	}
+	while (end > start)
+	{
+		unsigned char currentChar = static_cast<unsigned char>(str[end - 1]);
+		if (!std::isspace(currentChar))
+			break;
+		end--;
+	}
+	std::string result = str.substr(start, end - start);
+	
+	return (result);
 }

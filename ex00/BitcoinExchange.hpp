@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 17:44:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 19:35:14 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,14 @@ class BitcoinExchange
 	private:
 		std::map<std::string, double> database;
 
+		bool processInputLine(const std::string& line) const;
+		bool parseDateValue(const std::string& line, std::string& date,std::string& valueString) const;
+		bool isValidDate(const std::string& date) const;
+		bool isValidValue(const std::string& valueString, double& valueDouble, const std::string& line) const;
+		void findExchangeRate(const std::string& date, double valueDouble) const;
         std::string	trim(const std::string& str) const;
-		bool		isValidDate(const std::string& date) const;
-		bool		parseValue(const std::string& str, double& value) const;
-		double		findExchangeRate(const std::string& date) const; 
-		bool 		processInputLine(const std::string& line) const;
-	
+
+
 	public:
 		BitcoinExchange();
 		BitcoinExchange(const BitcoinExchange& other);
