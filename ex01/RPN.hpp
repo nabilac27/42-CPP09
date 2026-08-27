@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 21:26:46 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 21:44:30 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ class RPN
   private:
 	  std::stack<long long> numbers;
 
-    bool	parseExpression(const std::string& expression);
-
 	public:
 		RPN();
 		RPN(const RPN& other);
@@ -33,6 +31,9 @@ class RPN
 		~RPN();
 
     void	process(const std::string& expression);
+    bool	parseExpression(const std::string& expression);
+    bool  isOperator(char token);
+    int   calculate(int left, int right, char operation);
 };
 
 #endif

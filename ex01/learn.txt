@@ -1,78 +1,112 @@
-                    Read token
-                        │
-            ┌───────────┴───────────┐
-            │                       │
-            ▼                       ▼
-         Number                  Operator
-            │                       │
-            ▼                       ▼
-     Convert to int          Check stack size
-            │                       │
-            ▼                  size < 2?
-         push()                 ↙       ↘
-            │                YES         NO
-            │                 │           │
-            │               Error         ▼
-            │                         top() → right
-            │                         pop()
-            │                             │
-            │                             ▼
-            │                         top() → left
-            │                         pop()
-            │                             │
-            │                             ▼
-            │                    calculate:
-            │
-            │                    left + right
-            │                    left - right
-            │                    left * right
-            │                    left / right
-            │                             │
-            │                             ▼
-            │                         result
-            │                             │
-            │                             ▼
-            │                     push(result)
-            │                             │
-            └──────────────┬──────────────┘
+                    process(expression)
                            │
                            ▼
-                     Read next token
+                    parseExpression()
                            │
                            ▼
-                     End of expression
+                 Read next token with
+                    stringstream
                            │
-                           ▼
-                    stack.size() == 1?
-                       ↙          ↘
-                     YES           NO
-                      │             │
-                      ▼             ▼
-                Print result       Error
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+           Number       Operator      Invalid
+              │            │            │
+              ▼            ▼            ▼
+       Convert char     isOperator()   return false
+          to int            │
+              │             ▼
+              ▼       stack.size() < 2?
+           push()        ┌────┴────┐
+              │          ▼         ▼
+              │         YES        NO
+              │          │          │
+              │          ▼          ▼
+              │        Error    right = top()
+              │                     pop()
+              │                       │
+              │                       ▼
+              │                  left = top()
+              │                     pop()
+              │                       │
+              │                       ▼
+              │                  calculate()
+              │                       │
+              │             ┌─────────┼─────────┐
+              │             ▼         ▼         ▼
+              │             + -       *         /
+              │                             right == 0?
+              │                               │
+              │                          ┌────┴────┐
+              │                          ▼         ▼
+              │                         YES        NO
+              │                          │          │
+              │                        Error    calculate
+              │                                     │
+              │                                     ▼
+              │                                   result
+              │                                     │
+              │                                     ▼
+              │                              push(result)
+              │                                     │
+              └──────────────────┬──────────────────┘
+                                 │
+                                 ▼
+                           Next token
+                                 │
+                                 ▼
+                       End of expression
+                                 │
+                                 ▼
+                       numbers.size() == 1?
+                           ┌─────┴─────┐
+                           ▼           ▼
+                          YES          NO
+                           │            │
+                           ▼            ▼
+                       print top()    Error
+
+expression
+    │
+    ▼
+stringstream → read token
+    │
+    ├── digit
+    │     ↓
+    │   convert to int
+    │     ↓
+    │   push()
+    │
+    ├── operator
+    │     ↓
+    │   need 2 operands
+    │     ↓
+    │   pop right
+    │   pop left
+    │     ↓
+    │   calculate(left, right, op)
+    │     ↓
+    │   push(result)
+    │
+    └── invalid
+          ↓
+        Error
+    │
+    ▼
+end of expression
+    │
+    ▼
+stack size == 1?
+   ┌────┴────┐
+   ▼         ▼
+  YES        NO
+   │          │
+print top()  Error
 
 
-    expression
-    ↓
-read character
-    │
-    ├── whitespace → ignore
-    │
-    ├── digit      → push to stack
-    │
-    ├── operator   → take 2 values
-    │                 calculate
-    │                 push result
-    │
-    └── anything else → Error
-                          │
-                          ▼
-                    end of expression
-                          │
-                          ▼
-                    stack size == 1
-                          │
-                     ┌────┴────┐
-                     ▼         ▼
-                   yes         no
-                    │           │
-                  print       Error
+NUMBER   → PUSH
+
+OPERATOR → POP 2
+           CALCULATE
+           PUSH 1
+
+END      → exactly 1 value must remain

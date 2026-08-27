@@ -634,21 +634,43 @@ Basic Idea:
     ```cpp
                     Read token
                         │
-            ┌──────────┴──────────┐
-            │                     │
-        Number                Operator
-            │                     │
-            ▼                     ▼
-        push()             Need 2 operands
-                                    │
-                                    ▼
-                                pop()
-                                    │
-                                    ▼
-                            Perform operation
-                                    │
-                                    ▼
-                                push()
+          ┌─────────────┼─────────────┐
+          │             │             │
+          ▼             ▼             ▼
+       Number        Operator       Invalid
+          │             │             │
+          ▼             ▼             ▼
+   Convert to int   Need 2 values    Error
+          │             │
+          ▼             ▼
+       push()       pop() → right
+                        │
+                        ▼
+                   pop() → left
+                        │
+                        ▼
+                    calculate()
+                        │
+                        ▼
+                  push(result)
+                        │
+          ┌─────────────┘
+          │
+          ▼
+     Read next token
+          │
+          ▼
+   End of expression
+          │
+          ▼
+   stack.size() == 1?
+       ┌──┴──┐
+       ▼     ▼
+      YES    NO
+       │      │
+       ▼      ▼
+     Print   Error
+     result
     ````
 
     ```cpp
@@ -677,6 +699,34 @@ Basic Idea:
         Result: 42
     ```
 
+    ```shell
+        Expression: 7 7 * 7 7 + -
+
+        Token           Stack               Operation
+        ────────────────────────────────────────────────────────
+        7               [7]                 push(7)
+
+        7               [7, 7]              push(7)
+
+        *               [49]                pop 7, pop 7
+                                            7 * 7 = 49
+                                            push(49)
+
+        7               [49, 7]             push(7)
+
+        7               [49, 7, 7]          push(7)
+
+        +               [49, 14]            pop 7, pop 7
+                                            7 + 7 = 14
+                                            push(14)
+
+        -               [35]                pop 14 → right
+                                            pop 49 → left
+                                            49 - 14 = 35
+                                            push(35)
+
+        Result: 35
+    ```
 </details>
 
 ---
