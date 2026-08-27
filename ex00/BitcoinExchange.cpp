@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 16:52:53 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 17:52:43 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@ BitcoinExchange::~BitcoinExchange()
 {
 }
 
+/* ************************************************************************** */
+/*  loadDataCsv()                                           	     		  */
+/* ************************************************************************** */
 void BitcoinExchange::loadDataCsv(const std::string& filename)
 {
 	std::ifstream databaseFile(filename.c_str());
@@ -44,36 +47,34 @@ void BitcoinExchange::loadDataCsv(const std::string& filename)
 		throw (std::runtime_error("Error: could not open database."));
 
 	std::string line;
-
-	std::getline(databaseFile, line); // to skip header date, exchange_rate
+	std::getline(databaseFile, line);
 	
 	while (std::getline(databaseFile, line))
 	{
-	// 	std::string::size_type comma = line.find(',');
+		std::string::size_type comma = line.find(',');
 
-	// 	if (comma == std::string::npos)
-	// 		continue;
+		if (comma == std::string::npos)
+			continue;
 
-	// 	std::string date 		= line.substr(0, comma);
-	// 	std::string rateString  = line.substr(comma + 1);
+		std::string dateString 			= line.substr(0, comma);
+		std::string exchange_rateString	= line.substr(comma + 1);
 
-	// 	double rate;
-	// 	std::stringstream ss(rateString);
+		double 				rateDouble;
+		std::stringstream	ss(exchange_rateString);
 
-	// 	if (!(ss >> rate))
-	// 		continue;
-
-	// 	database[date] = rate;
-	std::cout << line << std::endl;
-	
+		if (!(ss >> rateDouble))
+			continue;
+		
+		database[dateString] = rateDouble;
+	// std::cout << dateString << " = " << database[dateString] << std::endl;
 	}
 }
 
 /* ************************************************************************** */
-/*  processFile()                                                  			  */
+/*  processInputTxt()                                                		  */
 /* ************************************************************************** */
 
-void BitcoinExchange::processFile(const std::string& filename)
+void BitcoinExchange::processInputTxt(const std::string& filename)
 {
 	std::ifstream inputFile(filename.c_str());
 
@@ -81,75 +82,70 @@ void BitcoinExchange::processFile(const std::string& filename)
 		throw (std::runtime_error("Error: could not open file."));
 
 	std::string line;
-
-	if (!std::getline(inputFile, line))
-		throw (std::runtime_error("Error: empty file."));
+	std::getline(inputFile, line);
 
 	while (std::getline(inputFile, line))
-	{
-		// processLine(line);
-	}
+		processInputLine(line);
 }
 
-
-/* ******* */
-bool BitcoinExchange::processLine(const std::string& line) const
+/* ************************************************************************** */
+/*  processInputLine()                                                		  */
+/* ************************************************************************** */
+bool BitcoinExchange::processInputLine(const std::string& line) const
 {
 	std::string::size_type separator = line.find('|');
 
-	if (separator == std::string::npos
-		|| line.find('|', separator + 1) != std::string::npos)
+	if (separator == std::string::npos || line.find('|', separator + 1) != std::string::npos)
 	{
-		std::cerr << "Error: bad input => "
-				  << line << std::endl;
+		std::cerr << "Error: bad input => " << line << std::endl;
 		return (false);
 	}
 
+	/***************************************/
 	std::string date;
 	std::string valueString;
 
-	date = trim(line.substr(0, separator));
+	date 		= trim(line.substr(0, separator));
 	valueString = trim(line.substr(separator + 1));
 
-	if (!isValidDate(date))
+	if (!(isValidDate(date)))
 	{
-		std::cerr << "Error: bad input => "
-				  << line << std::endl;
+		std::cerr << "Error: bad input => " << line << std::endl;
 		return (false);
 	}
 
-	double value;
+	/***************************************/
+	double valueDouble;
 
-	if (!parseValue(valueString, value))
+	if (!(parseValue(valueString, valueDouble)))
 	{
-		std::cerr << "Error: bad input => "
-				  << line << std::endl;
+		std::cerr << "Error: bad input => " << line << std::endl;
 		return (false);
 	}
-
-	if (value < 0)
+	if (valueDouble < 0)
 	{
 		std::cerr << "Error: not a positive number."
 				  << std::endl;
 		return (false);
 	}
-
-	if (value > 1000)
+	if (valueDouble > 1000)
 	{
 		std::cerr << "Error: too large a number."
 				  << std::endl;
 		return (false);
 	}
-
+	
+	/***************************************/
 	try
 	{
-		double rate = findExchangeRate(date);
+		double exchangeRate  = findExchangeRate(date);
+		double calculateRate = valueDouble * exchangeRate;
 
 		std::cout << date
 				  << " => "
-				  << value
+				  << valueDouble
 				  << " = "
-				  << value * rate
+				  << calculateRate
 				  << std::endl;
 	}
 	catch (const std::exception& e)
@@ -166,25 +162,32 @@ bool BitcoinExchange::processLine(const std::string& line) const
 /* ************************************************************************** */
 std::string BitcoinExchange::trim(const std::string& str) const
 {
-	std::size_t start = 0;
-	std::size_t end = str.length();
+	std::size_t start	= 0;
+	std::size_t end 	= str.length();
 
-	while (start < str.length()
-		&& std::isspace(static_cast<unsigned char>(str[start])))
+	while (start < str.length())
+	{
+		unsigned char currentChar = static_cast<unsigned char>(str[start]);
+		if (!std::isspace(currentChar))
+			break;
 		start++;
-
-	while (end > start
-		&& std::isspace(static_cast<unsigned char>(str[end - 1])))
+	}
+	while (end > start)
+	{
+		unsigned char currentChar = static_cast<unsigned char>(str[end - 1]);
+		if (!std::isspace(currentChar))
+			break;
 		end--;
-
-	return (str.substr(start, end - start));
+	}
+	std::string result = str.substr(start, end - start);
+	
+	return (result);
 }
 
 bool BitcoinExchange::isValidDate(const std::string& date) const
 {
 	if (date.length() != 10)
 		return (false);
-
 	if (date[4] != '-' || date[7] != '-')
 		return (false);
 
@@ -192,16 +195,12 @@ bool BitcoinExchange::isValidDate(const std::string& date) const
 	{
 		if (i == 4 || i == 7)
 			continue;
-
 		if (!std::isdigit(static_cast<unsigned char>(date[i])))
 			return (false);
 	}
 
-	int year;
-	int month;
-	int day;
-	char dash1;
-	char dash2;
+	int 	year, month, day;
+	char	dash1, dash2;
 
 	std::stringstream ss(date);
 
@@ -209,7 +208,6 @@ bool BitcoinExchange::isValidDate(const std::string& date) const
 
 	if (ss.fail())
 		return (false);
-
 	if (month < 1 || month > 12)
 		return (false);
 
@@ -219,23 +217,16 @@ bool BitcoinExchange::isValidDate(const std::string& date) const
 		31, 31, 30, 31, 30, 31
 	};
 
-	bool leapYear =
-		(year % 4 == 0 && year % 100 != 0)
-		|| year % 400 == 0;
+	bool leapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 
 	if (leapYear)
 		days[1] = 29;
-
 	if (day < 1 || day > days[month - 1])
 		return (false);
-
 	return (true);
 }
 
-bool BitcoinExchange::parseValue(
-	const std::string& str,
-	double& value
-) const
+bool BitcoinExchange::parseValue(const std::string& str, double& value) const
 {
 	if (str.empty())
 		return (false);
@@ -246,10 +237,8 @@ bool BitcoinExchange::parseValue(
 
 	if (end == str.c_str())
 		return (false);
-
 	if (*end != '\0')
 		return (false);
-
 	return (true);
 }
 
@@ -261,17 +250,13 @@ double BitcoinExchange::findExchangeRate(const std::string& date) const
 
 	if (it != database.end() && it->first == date)
 		return (it->second);
-
-	if (it == database.begin())
-		throw (std::runtime_error("Error: no earlier date available."));
-
+	// if (it == database.begin())
+	// 	throw (std::runtime_error("Error: no earlier date available."));
 	if (it == database.end())
 	{
 		--it;
 		return (it->second);
 	}
-
 	--it;
-
 	return (it->second);
 }
