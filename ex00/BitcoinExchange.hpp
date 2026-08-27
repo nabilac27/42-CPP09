@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/15 23:19:57 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 16:47:17 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,21 @@ class BitcoinExchange
 	private:
 		std::map<std::string, double> database;
 
+		
         std::string	trim(const std::string& str) const;
 		bool		isValidDate(const std::string& date) const;
 		bool		parseValue(const std::string& str, double& value) const;
 		double		findExchangeRate(const std::string& date) const;
-
+		bool 		processLine(const std::string& line) const; //
+	
 	public:
 		BitcoinExchange();
 		BitcoinExchange(const BitcoinExchange& other);
 		BitcoinExchange& operator=(const BitcoinExchange& other);
 		~BitcoinExchange();
 		
-		void	processFile(const std::string&	filename);
-		
+		void	loadDataCsv(const std::string& filename);
+		void	processFile(const std::string&	filename);		
 };
 
 

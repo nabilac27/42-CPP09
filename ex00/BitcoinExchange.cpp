@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/15 23:18:52 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 16:51:29 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,43 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
 {
 	if (this != &other)
 		database = other.database;
-
 	return (*this);
 }
 
 BitcoinExchange::~BitcoinExchange()
 {
+}
+
+void BitcoinExchange::loadDataCsv(const std::string& filename)
+{
+	std::ifstream databaseFile(filename.c_str());
+
+	if (!databaseFile.is_open())
+		throw (std::runtime_error("Error: could not open database."));
+
+	std::string line;
+
+	std::getline(databaseFile, line); // to skip header date, exchange_rate
+	
+	while (std::getline(databaseFile, line))
+	{
+	// 	std::string::size_type comma = line.find(',');
+
+	// 	if (comma == std::string::npos)
+	// 		continue;
+
+	// 	std::string date 		= line.substr(0, comma);
+	// 	std::string rateString  = line.substr(comma + 1);
+
+	// 	double rate;
+	// 	std::stringstream ss(rateString);
+
+	// 	if (!(ss >> rate))
+	// 		continue;
+
+	// 	database[date] = rate;
+	std::cout << line << std::endl;
+	}
 }
 
 /* ************************************************************************** */
@@ -50,97 +81,83 @@ void BitcoinExchange::processFile(const std::string& filename)
 
 	std::string line;
 
-	// Skip header
 	if (!std::getline(inputFile, line))
 		throw (std::runtime_error("Error: empty file."));
 
 	while (std::getline(inputFile, line))
 	{
-		/* -------------------------------------------------------------- */
-		/*  CHECK FORMAT: date | value                                    */
-		/* -------------------------------------------------------------- */
-
-		std::string::size_type separator = line.find('|');
-
-		if (separator == std::string::npos
-			|| line.find('|', separator + 1) != std::string::npos)
-		{
-			std::cerr << "Error: bad input => "
-					  << line
-					  << std::endl;
-			continue;
-		}
-
-		/* -------------------------------------------------------------- */
-		/*  SPLIT DATE AND VALUE                                          */
-		/* -------------------------------------------------------------- */
-
-		std::string date;
-		std::string valueString;
-
-		date = trim(line.substr(0, separator));
-		valueString = trim(line.substr(separator + 1));
-
-		/* -------------------------------------------------------------- */
-		/*  VALIDATE DATE                                                  */
-		/* -------------------------------------------------------------- */
-
-		if (!isValidDate(date))
-		{
-			std::cerr << "Error: bad input => "
-					  << line
-					  << std::endl;
-			continue;
-		}
-
-		/* -------------------------------------------------------------- */
-		/*  VALIDATE VALUE                                                 */
-		/* -------------------------------------------------------------- */
-
-		double value;
-
-		if (!parseValue(valueString, value))
-		{
-			std::cerr << "Error: bad input => "
-					  << line
-					  << std::endl;
-			continue;
-		}
-
-		if (value < 0)
-		{
-			std::cerr << "Error: not a positive number."
-					  << std::endl;
-			continue;
-		}
-
-		if (value > 1000)
-		{
-			std::cerr << "Error: too large a number."
-					  << std::endl;
-			continue;
-		}
-
-		/* -------------------------------------------------------------- */
-		/*  FIND EXCHANGE RATE AND PRINT                                  */
-		/* -------------------------------------------------------------- */
-
-		try
-		{
-			double rate = findExchangeRate(date);
-
-			std::cout << date
-					  << " => "
-					  << value
-					  << " = "
-					  << value * rate
-					  << std::endl;
-		}
-		catch (const std::exception& e)
-		{
-			std::cerr << e.what() << std::endl;
-		}
+		// processLine(line);
 	}
+}
+
+
+/* ******* */
+bool BitcoinExchange::processLine(const std::string& line) const
+{
+	std::string::size_type separator = line.find('|');
+
+	if (separator == std::string::npos
+		|| line.find('|', separator + 1) != std::string::npos)
+	{
+		std::cerr << "Error: bad input => "
+				  << line << std::endl;
+		return (false);
+	}
+
+	std::string date;
+	std::string valueString;
+
+	date = trim(line.substr(0, separator));
+	valueString = trim(line.substr(separator + 1));
+
+	if (!isValidDate(date))
+	{
+		std::cerr << "Error: bad input => "
+				  << line << std::endl;
+		return (false);
+	}
+
+	double value;
+
+	if (!parseValue(valueString, value))
+	{
+		std::cerr << "Error: bad input => "
+				  << line << std::endl;
+		return (false);
+	}
+
+	if (value < 0)
+	{
+		std::cerr << "Error: not a positive number."
+				  << std::endl;
+		return (false);
+	}
+
+	if (value > 1000)
+	{
+		std::cerr << "Error: too large a number."
+				  << std::endl;
+		return (false);
+	}
+
+	try
+	{
+		double rate = findExchangeRate(date);
+
+		std::cout << date
+				  << " => "
+				  << value
+				  << " = "
+				  << value * rate
+				  << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return (false);
+	}
+
+	return (true);
 }
 
 /* ************************************************************************** */
@@ -257,35 +274,3 @@ double BitcoinExchange::findExchangeRate(const std::string& date) const
 
 	return (it->second);
 }
-
-/*
-	Program flow
-	
-		main
-		│
-		├── check argc
-		│
-		├── BitcoinExchange btc
-		│
-		└── btc.processFile(argv[1])
-				│
-				├── open file
-				├── if fail → throw exception
-				└── (later)
-					read every line
-	-----
-		
-		void BitcoinExchange::processFile(const std::string& filename)
-		{
-			open file
-			skip header
-			while (getline(...))
-			{
-				validate line
-				validate date
-				validate value
-				find exchange rate
-				print result
-			}
-		}
-*/

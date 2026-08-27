@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:45:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/06 17:04:26 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 16:46:38 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	try
 	{
 		BitcoinExchange btc;
-
+		btc.loadDataCsv("data.csv");
 		btc.processFile(argv[1]);
 	}
 	catch (const std::exception& e)
@@ -31,6 +31,5 @@ int main(int argc, char **argv)
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}
-
 	return (0);
 }
