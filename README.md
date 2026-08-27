@@ -453,20 +453,207 @@ For example:
 ---
 
 <details>
-<summary><b>`std::vector`</b></summary>
+<summary><b><code>std::vector</code></b></summary>
+
+---
+
+- Dynamic array that stores elements in **contiguous memory**.
+- Fast random access with `operator[]`.
+- Efficient `push_back()`.
+- Inserting/removing in the middle can be expensive because elements may need to move.
+
+    ```cpp
+        #include <vector>
+
+        std::vector<int> numbers;
+    ```
+
+    ```text
+        [3][5][9][7][4]
+        ↑  ↑  ↑  ↑  ↑
+        contiguous memory
+    ```
+
+- **Common Operations**
+
+    ```cpp
+        numbers.push_back(5);    // add at end
+        numbers.pop_back();      // remove last
+        numbers[0];              // access by index
+        numbers.size();          // number of elements
+        numbers.begin();         // first element
+        numbers.end();           // after last element
+    ```
+- **Summary**
+
+    ```text
+        vector
+        → dynamic array
+        → contiguous memory
+        → fast random access
+        → efficient push_back()
+    ```
+
+- Used in `PmergeMe` as one of the two containers for Ford-Johnson sorting.
+
 </details>
 
 ---
+
 
 <details>
-<summary><b>`std::deque`</b></summary>
+<summary><b><code>std::deque</code></b></summary>
+
+---
+
+- `deque` means **double-ended queue**.
+- Supports efficient insertion/removal at **both front and back**.
+- Unlike `vector`, its elements are not guaranteed to be stored in one contiguous memory block.
+- Still supports random access with `operator[]`.
+
+    ```cpp
+        #include <deque>
+
+        std::deque<int> numbers;
+    ```
+
+- **Common Operations**
+
+    ```cpp
+        numbers.push_back(5);     // add at back
+        numbers.push_front(5);    // add at front
+
+        numbers.pop_back();       // remove back
+        numbers.pop_front();      // remove front
+
+        numbers[0];               // random access
+        numbers.size();
+        numbers.begin();
+        numbers.end();
+    ```
+
+- `Vector` vs `Deque`
+
+    ```text
+                        vector              deque
+        ────────────────────────────────────────────
+        Memory          contiguous          segmented
+        push_back       fast                fast
+        push_front      expensive           fast
+        random access   yes                 yes
+    ```
+
+- **Summary**
+
+    ```text
+        deque
+        → double-ended queue
+        → fast front + back operations
+        → random access
+        → non-contiguous storage
+    ```
+
+- Used in `PmergeMe` as the second container for Ford-Johnson sorting.
+
 </details>
 
 ---
+
 
 <details>
 <summary><b>Reverse Polish Notation</b></summary>
+
+---
+
+- RPN places the **operator after its operands**.
+
+    ```text
+        Normal:
+        7 + 3
+
+        RPN:
+        7 3 +
+    ```
+
+- It is naturally evaluated using a `std::stack`.
+
+- **Main Idea**
+
+    ```text
+        NUMBER
+        ↓
+        push()
+
+        OPERATOR
+        ↓
+        pop right
+        pop left
+        ↓
+        calculate left OP right
+        ↓
+        push(result)
+
+        END
+        ↓
+        exactly 1 value must remain
+    ```
+
+    Example:
+
+    ```text
+        Expression: 7 7 * 7 7 + -
+
+        Token     Stack           Operation
+        ────────────────────────────────────────
+        7         [7]             push(7)
+
+        7         [7, 7]          push(7)
+
+        *         [49]            7 * 7 = 49
+                                push(49)
+
+        7         [49, 7]         push(7)
+
+        7         [49, 7, 7]      push(7)
+
+        +         [49, 14]        7 + 7 = 14
+                                push(14)
+
+        -         [35]            49 - 14 = 35
+                                push(35)
+
+        Result: 35
+    ```
+
+- **Important**
+
+  - For `-` and `/`, operand order matters:
+
+      ```cpp
+          int right = numbers.top();
+          numbers.pop();
+
+          int left = numbers.top();
+          numbers.pop();
+      ```
+
+  - Then:
+
+      ```text
+      left - right
+      left / right
+      ```
+
+- **Summary**
+
+    ```text
+        RPN number    → push
+        RPN operator  → pop 2 → calculate → push
+        final stack   → must contain exactly 1 result
+    ```
+
 </details>
+
 
 ---
 
@@ -475,24 +662,25 @@ For example:
 
 ---
 
-The **Ford–Johnson algorithm**, also called the **merge-insertion sort**, is a sorting algorithm designed to sort elements using a small number of comparisons.
+- The **Ford–Johnson algorithm**, also called the **merge-insertion sort**, is a sorting algorithm designed to sort elements using a small number of comparisons.
 
-Basic Idea:
-```cpp
-    Numbers
-    ↓
-    Make pairs
-    ↓
-    Compare each pair
-    ↓
-    Separate small and big elements
-    ↓
-    Sort the big elements
-    ↓
-    Insert the small elements
-    ↓
-    Sorted result
-```
+- Basic Idea:
+  
+    ```cpp
+        Numbers
+        ↓
+        Make pairs
+        ↓
+        Compare each pair
+        ↓
+        Separate small and big elements
+        ↓
+        Sort the big elements
+        ↓
+        Insert the small elements
+        ↓
+        Sorted result
+    ```
 
 - In one sentence: Ford–Johnson first creates ordered pairs, recursively sorts the larger elements, and then inserts the smaller elements in a carefully chosen order.
 </details>
