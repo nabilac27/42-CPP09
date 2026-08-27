@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/21 00:08:21 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 21:26:46 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,10 @@
 
 class RPN
 {
-	private:
-		std::stack<int> numbers;
+  private:
+	  std::stack<long long> numbers;
+
+    bool	parseExpression(const std::string& expression);
 
 	public:
 		RPN();
@@ -30,37 +32,8 @@ class RPN
 		RPN& operator=(const RPN& other);
 		~RPN();
 
+    void	process(const std::string& expression);
 };
 
 #endif
 
-
-/*
-    Why do we use std::stack?
-    Because RPN naturally works with the last numbers we encountered first.
-
-    A stack follows:
-        LIFO — Last In, First Out
-    
-                      RPN expression
-                    │
-                    ▼
-              Read each token
-                    │
-             ┌──────┴──────┐
-             │             │
-          Number        Operator
-             │             │
-             ▼             ▼
-           push       pop 2 numbers
-                           │
-                           ▼
-                      calculate
-                           │
-                           ▼
-                         push
-                           │
-                           ▼
-                       next token
-
-*/

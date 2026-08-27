@@ -1,0 +1,78 @@
+                    Read token
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+         Number                  Operator
+            │                       │
+            ▼                       ▼
+     Convert to int          Check stack size
+            │                       │
+            ▼                  size < 2?
+         push()                 ↙       ↘
+            │                YES         NO
+            │                 │           │
+            │               Error         ▼
+            │                         top() → right
+            │                         pop()
+            │                             │
+            │                             ▼
+            │                         top() → left
+            │                         pop()
+            │                             │
+            │                             ▼
+            │                    calculate:
+            │
+            │                    left + right
+            │                    left - right
+            │                    left * right
+            │                    left / right
+            │                             │
+            │                             ▼
+            │                         result
+            │                             │
+            │                             ▼
+            │                     push(result)
+            │                             │
+            └──────────────┬──────────────┘
+                           │
+                           ▼
+                     Read next token
+                           │
+                           ▼
+                     End of expression
+                           │
+                           ▼
+                    stack.size() == 1?
+                       ↙          ↘
+                     YES           NO
+                      │             │
+                      ▼             ▼
+                Print result       Error
+
+
+    expression
+    ↓
+read character
+    │
+    ├── whitespace → ignore
+    │
+    ├── digit      → push to stack
+    │
+    ├── operator   → take 2 values
+    │                 calculate
+    │                 push result
+    │
+    └── anything else → Error
+                          │
+                          ▼
+                    end of expression
+                          │
+                          ▼
+                    stack size == 1
+                          │
+                     ┌────┴────┐
+                     ▼         ▼
+                   yes         no
+                    │           │
+                  print       Error

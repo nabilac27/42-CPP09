@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:09:14 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/21 00:09:59 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 21:16:45 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ int main(int argc, char **argv)
 
 	try
 	{
-		/*
-            TO-DO
-        */
+		RPN rpn;
+
+		rpn.process(argv[1]);
 	}
 	catch (const std::exception& e)
 	{

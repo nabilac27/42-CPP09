@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 19:35:14 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 20:36:47 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,12 @@
 #include <sstream>
 #include <cstdlib>
 
+typedef std::string 	String;
+
 class BitcoinExchange
 {
 	private:
-		std::map<std::string, double> database;
-
-		bool processInputLine(const std::string& line) const;
-		bool parseDateValue(const std::string& line, std::string& date,std::string& valueString) const;
-		bool isValidDate(const std::string& date) const;
-		bool isValidValue(const std::string& valueString, double& valueDouble, const std::string& line) const;
-		void findExchangeRate(const std::string& date, double valueDouble) const;
-        std::string	trim(const std::string& str) const;
-
+		std::map<String, double> database;
 
 	public:
 		BitcoinExchange();
@@ -40,8 +34,16 @@ class BitcoinExchange
 		BitcoinExchange& operator=(const BitcoinExchange& other);
 		~BitcoinExchange();
 		
-		void	loadDataCsv(const std::string& filename);
-		void	processInputTxt(const std::string&	filename);		
+		void	loadDataCsv(const String& filename);
+		void	processInputTxt(const String&	filename);
+
+		bool	processInputLine(const String& line);
+		bool	parseDateValue(const String& line, String& date, String& valueString);
+		bool	isValidDate(const String& date, const String& line);
+		bool	isValidValue(const String& valueString, double& valueDouble, const String& line);
+		bool	findExchangeRate(const String& date, double valueDouble);
+		String	trim(const String& str);
+		bool	printError(const String& message);
 };
 
 

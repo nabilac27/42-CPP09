@@ -7,41 +7,16 @@
 ## Overview
 CPP Module 09 focuses on the **Standard Template Library (STL)** and introduces more advanced usage of **containers, algorithms, parsing, and sorting**.
 
-The module contains three exercises:
-| Exercise | Description | Main Concepts |
+| Exercise | Description | Container |
 |----------|-------------|---------------|
-| **ex00 — Bitcoin Exchange** | Calculate the value of Bitcoin on a given date using historical exchange-rate data. | `std::map`, file parsing, dates, iterators, validation |
-| **ex01 — Reverse Polish Notation** | Evaluate mathematical expressions written in Reverse Polish Notation. | `std::stack`, parsing, arithmetic operations |
-| **ex02 — PmergeMe** | Sort a sequence of positive integers using the Ford-Johnson merge-insertion algorithm. | `std::vector`, `std::deque`, Ford-Johnson algorithm, timing, iterators |
+| **ex00 — Bitcoin Exchange** | Calculate the value of Bitcoin on a given date using historical exchange-rate data. | `std::map` |
+| **ex01 — Reverse Polish Notation** | Evaluate mathematical expressions written in Reverse Polish Notation. | `std::stack` |
+| **ex02 — PmergeMe** | Sort a sequence of positive integers using the Ford-Johnson merge-insertion algorithm. | `std::vector`, `std::deque` |
 
 
 
 **Each exercise** requires the use of at least **one STL container**, with the final exercise requiring two different containers.
 
-```cpp
-                         CPP09
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-        ex00             ex01             ex02
-      Bitcoin            RPN            PmergeMe
-      Exchange
-          │                │                │
-          ▼                ▼                ▼
-      std::map          std::stack       std::vector
-                                           +
-                                         std::deque
-          │                │                │
-          ▼                ▼                ▼
-       Parsing          Parsing          Sorting
-          │                │                │
-          ▼                ▼                ▼
-      Date lookup       Operators      Ford-Johnson
-          │                │                │
-          ▼                ▼                ▼
-     Exchange rate       Result          Benchmark
-````
 
 ---
 
@@ -85,32 +60,6 @@ A **container** is a class that stores a collection of objects.
     ```
 
 
-- Common member functions:
-  
-    ```shell
-        | Member function | `vector`  | `deque`  | `list`  | Purpose                   |
-        | --------------- | --------- | -------- | ------- | ------------------------- |
-        | `push_back()`   |     ✅    |    ✅    |    ✅   | Add at the back            |
-        | `pop_back()`    |     ✅    |    ✅    |    ✅   | Remove from the back       |
-        | `size()`        |     ✅    |    ✅    |    ✅   | Number of elements         |
-        | `empty()`       |     ✅    |    ✅    |    ✅   | Check if empty             |
-        | `begin()`       |     ✅    |    ✅    |    ✅   | Iterator to first element  |
-        | `end()`         |     ✅    |    ✅    |    ✅   | Iterator past last element |
-        | `front()`       |     ✅    |    ✅    |    ✅   | First element              |
-        | `back()`        |     ✅    |    ✅    |    ✅   | Last element               |
-        | `clear()`       |     ✅    |    ✅    |    ✅   | Remove all elements        |
-    ```
-- There are also container-specific functions.
-    for example, vector has:
-    ```shell
-        capacity()
-        reserve()
-    ```
-    list has:
-    ```shell
-        push_front()
-        pop_front()
-    ````
 
 ---
 
@@ -121,10 +70,8 @@ These algorithms are mainly defined in the `<algorithm>` header files.
 
 Common types of algorithms:
 1. `std::find()` : Searches for an element and returns its iterator if present.
-2. `std::min_element()` : Return an iterator to the smallest element.
-3. `std::max_element()` : Return an iterator to the largest element.
-4. `std::distance()` : Calculates the number of increments needed to go from one iterator to another.
-5. `sort()`:  Arranges elements in a given range into ascending order by default.
+2. `std::distance()` : Calculates the number of increments needed to go from one iterator to another.
+3. `sort()`:  Arranges elements in a given range into ascending order by default.
 
 ---
 
@@ -200,14 +147,308 @@ For example:
 ---
 
 <details>
-<summary><b>`std::map`</b></summary>
+<summary><b><code>std::map</code></b></summary>
+
+----
+
+- `std::map` stores **key-value pairs**.
+- Each **key is unique**.
+- Elements are automatically **sorted by key**.
+- Supports ordered operations such as `lower_bound()` and `upper_bound()`.
+
+    ```cpp
+            #include <map>
+
+            std::map<key_type, value_type> map;
+    ```
+
+- In Bitcoin Exchange:
+
+    ```cpp
+            std::map<std::string, double> database;
+    ```
+
+    ```text
+            std::map <    KEY      ,  VALUE  >
+                        ↓           ↓
+                    std::string     double
+                        ↓           ↓
+                        date          rate
+    ```
+
+- Example:
+
+    ```text
+            2011-01-01 → 0.3
+            2011-01-02 → 0.4
+            2011-01-03 → 10
+    ```
+
+    ### Iterator
+
+    ```cpp
+        std::map<std::string, double>::const_iterator it;
+    ```
+
+    Each map element is a key-value pair:
+
+    ```text
+            map element
+                │
+            ┌────┴────┐
+            ↓         ↓
+        first     second
+            ↓         ↓
+        KEY       VALUE
+            ↓         ↓
+        date        rate
+    ```
+
+    ```cpp
+        it->first;   // date
+        it->second;  // exchange rate
+    ```
+
+### `lower_bound()` vs `upper_bound()`
+
+- **`lower_bound()`**
+
+    Returns an iterator to the **first key greater than or equal to (`>=`)** the requested key.
+
+    ```cpp
+        it = database.lower_bound(date);
+    ```
+
+    Example:
+
+    ```text
+        Requested: 2011-01-06
+
+        2011-01-01
+        2011-01-04  ← closest earlier date
+        2011-01-10  ← lower_bound()
+    ```
+
+    ```text
+        lower_bound(x) → first key >= x
+    ```
+
+    If the exact date exists, `lower_bound()` points directly to it:
+
+    ```text
+        Requested: 2011-01-04
+
+        2011-01-01
+        2011-01-04  ← lower_bound()
+        2011-01-10
+    ```
+
+---
+
+- **`upper_bound()`**
+
+    Returns an iterator to the **first key greater than (`>`)** the requested key.
+
+    ```cpp
+        it = database.upper_bound(date);
+    ```
+
+    Example:
+
+    ```text
+        Requested: 2011-01-06
+
+        2011-01-01
+        2011-01-04  ← closest earlier date
+        2011-01-10  ← upper_bound()
+    ```
+
+    Then move one position backward:
+
+    ```cpp
+        --it;
+    ```
+
+    ```text
+        2011-01-04  ← result
+    ```
+
+    It also works when the exact date exists:
+
+    ```text
+        Requested: 2011-01-04
+
+        2011-01-01
+        2011-01-04  ← result after --it
+        2011-01-10  ← upper_bound()
+    ```
+
+    Therefore Bitcoin Exchange can simply use:
+
+    ```cpp
+        it = database.upper_bound(date);
+
+        if (it == database.begin())
+            return (false);
+
+        --it;
+    ```
+
+    This gives the **exact date if it exists**, otherwise the **closest earlier date**.
+
+- **Summary**
+
+    ```text
+        map              → key → value
+
+        it->first        → key / date
+        it->second       → value / rate
+
+        begin()          → first element
+        end()            → after last element
+
+        lower_bound(x)   → first key >= x
+        upper_bound(x)   → first key >  x
+
+        --it             → previous element
+    ```
+
+    https://www.geeksforgeeks.org/cpp/map-associative-containers-the-c-standard-template-library-stl/
+
 </details>
 
 ---
 
 <details>
-<summary><b>`std::stack`</b></summary>
+<summary><b><code>std::stack</code></b></summary>
+
+---
+
+- `std::stack` is a container adapter that follows **LIFO**:
+
+    ```text
+        Last In, First Out
+    ```
+
+- The last value pushed into the stack is the first one removed.
+
+    ```cpp
+        #include <stack>
+
+        std::stack<value_type> stack;
+    ```
+
+- In RPN:
+
+    ```cpp
+        std::stack<int> numbers;
+    ```
+
+    ```text
+    std::stack < VALUE >
+                   ↓
+                  int
+                   ↓
+                operand
+    ```
+
+- Example:
+
+    ```text
+        push(7)
+        push(3)
+
+        stack:
+
+            TOP
+            ↓
+            [3]
+            [7]
+    ```
+
+### Main Operations
+
+- **`push()`**
+
+    Adds a value to the top of the stack.
+
+    ```cpp
+        numbers.push(7);
+        numbers.push(3);
+    ```
+
+    ```text
+        TOP
+         ↓
+        [3]
+        [7]
+    ```
+
+- **`top()`**
+
+    Returns the value currently at the top.
+
+    ```cpp
+    int value = numbers.top();
+    ```
+
+    ```text
+        TOP
+         ↓
+        [3]  → top() = 3
+        [7]
+    ```
+
+    `top()` does **not** remove the value.
+
+- **`pop()`**
+
+    Removes the top value.
+
+    ```cpp
+        numbers.pop();
+    ```
+
+    Before:
+
+    ```text
+        [3] ← TOP
+        [7]
+    ```
+
+    After:
+
+    ```text
+        [7] ← TOP
+    ```
+
+    `pop()` does **not return** the removed value.
+
+    So normally:
+
+    ```cpp
+        int value = numbers.top();
+        numbers.pop();
+    ```
+
+- **`size()`**
+
+    Returns the number of elements.
+
+    ```cpp
+        numbers.size();
+    ```
+
+- **`empty()`**
+
+    Checks whether the stack contains no elements.
+
+    ```cpp
+        numbers.empty();
+    ```
+
 </details>
+
 
 ---
 
@@ -265,49 +506,107 @@ Basic Idea:
 
 ---
 
-- Goal
+## ex00 | Bitcoin Exchange
+
+- A program that calculates the value of Bitcoin on a given date using historical exchange rates from `data.csv`.
+
+- The program uses two files:
+
+    ```text
+        data.csv                    input.txt
+        ────────                    ─────────
+        date,exchange_rate          date | value
+        2011-01-03,0.3              2011-01-03 | 3
+        2011-01-09,0.32             2011-01-09 | 2
+            │                           │
+            ▼                           ▼
+        historical rates           values to calculate
+    ```
+
+- `data.csv` contains the historical Bitcoin exchange rates.
+- `input.txt` contains the requested dates and Bitcoin amounts.
+- The exchange rates are stored in a `std::map`.
+- If an exact date does not exist, the **closest earlier date** is used.
+- Each value must be between `0` and `1000`.
+
+- **Program Flow**
+
+    ```text
+                    ./btc input.txt
+                            │
+                            ▼
+                    BitcoinExchange btc
+                            │
+                ┌───────────┴───────────┐
+                ▼                       ▼
+        loadDataCsv()            processInputTxt()
+                │                       │
+                ▼                       ▼
+            data.csv                 input.txt
+                │                       │
+                ▼                       ▼
+        load date → rate          read each line
+                │                       │
+                ▼                       ▼
+            std::map              processInputLine()
+                                        │
+                                        ▼
+                                    parseDateValue()
+                                         │
+                            ┌────────────┴────────────┐
+                            ▼                         ▼
+                        isValidDate()             isValidValue()
+                            │                         │
+                            └────────────┬────────────┘
+                                        ▼
+                                findExchangeRate()
+                                        │
+                                        ▼
+                                `map::upper_bound()`
+                                        │
+                                        ▼
+                            exact / closest lower date
+                                        │
+                                        ▼
+                                value × exchange rate
+                                        │
+                                        ▼
+                                        output
+    ```
+
+- **Example**
+
+    ```bash
+        ./btc input.txt
+    ```
+
+  -  input.txt
     
-    The goal of this exercise is to create a program called btc that calculates the value of a given amount of Bitcoin on a specific date.
+      ```text
+          date        | value
+          2011-01-03  | 3
+      ```
+
+  - data.csv
     
-- The program uses:
-    - A provided CSV database containing historical Bitcoin exchange rates.
-    - An input file containing dates and Bitcoin amounts.
+      ```text
+          date        ,exchange_rate
+          2011-01-03  ,0.3
+      ```
 
-- For every input line, the program finds the exchange rate corresponding to the requested date.
-- If the exact date does not exist in the database, the program must use the closest earlier date.
+  - Calculation:
+
+      ```text
+          3 × 0.3 = 0.9
+      ```
+
+  - Output:
+
+      ```text
+          2011-01-03 => 3 = 0.9
+    ```
 
 
-Program Flow:
-```cpp
-                 ./btc input.txt
-                        │
-                        ▼
-                Open input file
-                        │
-                        ▼
-                  Read each line
-                        │
-                        ▼
-                 Parse date/value
-                        │
-              ┌─────────┴─────────┐
-              ▼                   ▼
-        Validate date        Validate value
-              │                   │
-              └─────────┬─────────┘
-                        ▼
-                 Search std::map
-                        │
-                        ▼
-              Find closest date
-                        │
-                        ▼
-             rate × input value
-                        │
-                        ▼
-                     Output
-
-```
 </details>
 
 ---
@@ -315,26 +614,68 @@ Program Flow:
 <details>
 <summary><b>Ex01</b></summary>
 
-### Program Flow
-```cpp
-                 Read token
-                     │
-          ┌──────────┴──────────┐
-          │                     │
-       Number                Operator
-          │                     │
-          ▼                     ▼
-       push()             Need 2 operands
-                                │
-                                ▼
-                             pop()
-                                │
-                                ▼
-                          Perform operation
-                                │
-                                ▼
-                             push()
-````
+## ex01 | RPN
+
+- The goal of **RPN (Reverse Polish Notation)** is to calculate a mathematical expression where the operator comes after the numbers.
+
+- Normal notation:
+  
+    ```cpp
+        7 * 7 - 7
+    ```
+- RPN:
+
+    ```cpp
+        7 7 * 7 -
+    ```
+
+- **Program Flow**
+  
+    ```cpp
+                    Read token
+                        │
+            ┌──────────┴──────────┐
+            │                     │
+        Number                Operator
+            │                     │
+            ▼                     ▼
+        push()             Need 2 operands
+                                    │
+                                    ▼
+                                pop()
+                                    │
+                                    ▼
+                            Perform operation
+                                    │
+                                    ▼
+                                push()
+    ````
+
+    ```cpp
+        NUMBER   → push
+        OPERATOR → pop, pop, calculate, push
+        END      → stack must contain exactly 1 value
+    ```
+
+- **Example**
+
+    ```shell
+        Expression: 7 7 * 7 -
+
+        Token           Stack
+        ──────────────────────
+        7               [7]
+
+        7               [7, 7]
+
+        *               [49]
+
+        7               [49, 7]
+
+        -               [42]
+
+        Result: 42
+    ```
 
 </details>
 
