@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:45:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 17:05:41 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 18:00:13 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ int main(int argc, char **argv)
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}
+
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 17:52:43 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 17:56:58 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ void BitcoinExchange::loadDataCsv(const std::string& filename)
 		if (comma == std::string::npos)
 			continue;
 
-		std::string dateString 			= line.substr(0, comma);
-		std::string exchange_rateString	= line.substr(comma + 1);
+		std::string dateString 			= trim(line.substr(0, comma));
+		std::string exchange_rateString	= trim(line.substr(comma + 1));
 
 		double 				rateDouble;
 		std::stringstream	ss(exchange_rateString);
@@ -250,8 +250,8 @@ double BitcoinExchange::findExchangeRate(const std::string& date) const
 
 	if (it != database.end() && it->first == date)
 		return (it->second);
-	// if (it == database.begin())
-	// 	throw (std::runtime_error("Error: no earlier date available."));
+	if (it == database.begin())
+		throw (std::runtime_error("Error: no earlier date available."));
 	if (it == database.end())
 	{
 		--it;
