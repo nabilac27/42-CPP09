@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 16:51:29 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/08/27 16:52:53 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void BitcoinExchange::loadDataCsv(const std::string& filename)
 
 	// 	database[date] = rate;
 	std::cout << line << std::endl;
+	
 	}
 }
 
