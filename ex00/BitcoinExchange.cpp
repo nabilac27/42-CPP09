@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 20:36:08 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/10 18:54:15 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ BitcoinExchange::~BitcoinExchange()
 }
 
 /* ************************************************************************** */
-/*  loadDataCsv()                                           	     		  */
+/*  loadDataCsvFile()                                           	     		  */
 /* ************************************************************************** */
-void BitcoinExchange::loadDataCsv(const String& filename)
+void BitcoinExchange::loadDataCsvFile(const String& filename)
 {
 	std::ifstream	databaseFile(filename.c_str());
 
@@ -69,48 +69,29 @@ void BitcoinExchange::loadDataCsv(const String& filename)
 }
 
 /* ************************************************************************** */
-/*  processInputTxt()                                                		  */
+/*  processInputTxtFile()                                                		  */
 /* ************************************************************************** */
-void BitcoinExchange::processInputTxt(const String& filename)
+void BitcoinExchange::processInputTxtFile(const String& filename)
 {
 	std::ifstream	inputFile(filename.c_str());
-	String 	line, left, right;
+	String 			line, key, value;
 
 	if (!inputFile.is_open())
 		throw (std::runtime_error("Error: could not open file."));
 	if (!std::getline(inputFile, line)
-		|| !parseDateValue(line, left, right)
-		|| left != "date"
-		|| right != "value")
+		|| !parseKeyDate(line, key, value)
+		|| key != "date"
+		|| value != "value")
 		throw (std::runtime_error("Error: bad input header."));
 	
 	while (std::getline(inputFile, line))
 		processInputLine(line);
 }
 
-
 /* ************************************************************************** */
-/*  processInputLine()                                                		  */
+/*  parseKeyDate()                                                		  */
 /* ************************************************************************** */
-bool BitcoinExchange::processInputLine(const String& line)
-{
-	String date;
-	String valueString;
-	double 		valueDouble;
-	
-	if (!parseDateValue(line, date, valueString)
-		|| !isValidDate(date, line)
-		|| !isValidValue(valueString, valueDouble, line)
-		|| !findExchangeRate(date, valueDouble))
-		return (false);
-
-	return (true);
-}
-
-/* ************************************************************************** */
-/*  parseDateValue()                                                		  */
-/* ************************************************************************** */
-bool BitcoinExchange::parseDateValue(const String& line, String& date,String& valueString)
+bool BitcoinExchange::parseKeyDate(const String& line, String& date,String& valueString)
 {
 	String::size_type separator = line.find('|');
 
@@ -121,6 +102,29 @@ bool BitcoinExchange::parseDateValue(const String& line, String& date,String& va
 	date 		= trim(line.substr(0, separator));
 	valueString = trim(line.substr(separator + 1));
 
+	return (true);
+}
+
+
+/* ************************************************************************** */
+/*  processInputLine()                                                		  */
+/* ************************************************************************** */
+bool BitcoinExchange::processInputLine(const String& line)
+{
+	String date;
+	String valueString;
+	double valueDouble;
+	
+	// if (!parseKeyDate(line, date, valueString)
+	// 	|| !isValidDate(date, line)
+	// 	|| !isValidValue(valueString, valueDouble, line)
+	// 	|| !findExchangeRate(date, valueDouble))
+	// 	return (false);
+
+	if (!isValidDate(date, line)
+		|| !isValidValue(valueString, valueDouble, line)
+		|| !findExchangeRate(date, valueDouble))
+		return (false);
 	return (true);
 }
 

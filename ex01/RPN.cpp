@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 22:05:06 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/10 19:03:01 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void RPN::process(const std::string& expression)
 		throw (std::runtime_error("ERROR: parseExpression()"));
 	if (numbers.size() != 1)
 		throw (std::runtime_error("ERROR: stack size() not 1"));
-
 	std::cout << numbers.top() << std::endl;
 }
 
@@ -89,16 +88,8 @@ bool RPN::parseExpression(const std::string& expression)
 }
 
 /* ************************************************************************** */
-/*  isOperator(), calculate()                                                 */
+/*  calculate()   				                                              */
 /* ************************************************************************** */
-bool RPN::isOperator(char token)
-{
-	return (token == '+'
-		|| token == '-'
-		|| token == '*'
-		|| token == '/');
-}
-
 int RPN::calculate(int left, int right, char operation)
 {
 	switch (operation)
@@ -114,8 +105,20 @@ int RPN::calculate(int left, int right, char operation)
 
 		case '/':
 			if (right == 0)
-				throw (std::runtime_error("ERROR: calculate()"));
+				throw (std::runtime_error("ERROR: calculate(), division by zero"));
 			return (left / right);
 	}
 	throw (std::runtime_error("ERROR: calculate()"));
 }
+
+/* ************************************************************************** */
+/*  isOperator()			                                                  */
+/* ************************************************************************** */
+bool RPN::isOperator(char token)
+{
+	return (token == '+'
+		|| token == '-'
+		|| token == '*'
+		|| token == '/');
+}
+

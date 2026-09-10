@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:17 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 20:36:47 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/10 18:55:11 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,10 @@ class BitcoinExchange
 		BitcoinExchange& operator=(const BitcoinExchange& other);
 		~BitcoinExchange();
 		
-		void	loadDataCsv(const String& filename);
-		void	processInputTxt(const String&	filename);
-
+		void	loadDataCsvFile(const String& filename);
+		void	processInputTxtFile(const String&	filename);
+		bool	parseKeyDate(const String& line, String& date, String& valueString);
 		bool	processInputLine(const String& line);
-		bool	parseDateValue(const String& line, String& date, String& valueString);
 		bool	isValidDate(const String& date, const String& line);
 		bool	isValidValue(const String& valueString, double& valueDouble, const String& line);
 		bool	findExchangeRate(const String& date, double valueDouble);

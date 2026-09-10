@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/08/27 21:44:30 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/10 18:56:49 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ class RPN
 
     void	process(const std::string& expression);
     bool	parseExpression(const std::string& expression);
-    bool  isOperator(char token);
-    int   calculate(int left, int right, char operation);
+    bool  	isOperator(char token);
+    int   	calculate(int left, int right, char operation);
 };
 
 #endif
