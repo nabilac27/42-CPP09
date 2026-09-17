@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/17 16:59:20 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/17 17:16:13 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,17 @@ int main (int argc, char *argv[])
         value.parseValue(argc, argv);
 		value.printValue("Initial");
 
-		value.printMakePairs();
+		value.printPairs();
 		value.makePairs();
-		value.printMakePairs();
+		value.printPairs();
+		
 		value.printValue("After makePairs");
+
+		value.sortPairs();
+		value.printPairs();
+		// value.printValue("After sortPairs");
+
+		
 	}
 	catch(const std::exception& e)
 	{

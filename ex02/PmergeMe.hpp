@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/17 16:52:07 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/17 17:09:13 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <vector>
 #include <deque>
 #include <cstdlib>
+#include <algorithm>
 
 class PmergeMe
 {
@@ -30,14 +31,15 @@ class PmergeMe
 		PmergeMe();
 		PmergeMe(const PmergeMe&    other); 
 		PmergeMe &operator=(const PmergeMe& other); 
-		~PmergeMe(); 
-		
-		void parseValue(int argc, char *argv[]);
-		void printValue(const char* msg);
-		void printMakePairs();
-		void makePairs();
+		~PmergeMe();
 
-		
+		void parseValue(int argc, char *argv[]);
+
+		void makePairs();
+		void sortPairs();
+
+		void printValue(const char* msg);
+		void printPairs();
 };
 
 #endif
