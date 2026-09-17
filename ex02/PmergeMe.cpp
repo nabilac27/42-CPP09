@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/17 16:37:00 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/17 16:54:51 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,26 @@ void PmergeMe::parseValue(int argc, char *argv[])
     }
 }
 
-void PmergeMe::printParsedValue()
+
+void PmergeMe::makePairs()
 {
-    std::cout << "printParsedValue() \n";
+    for (size_t i = 0; i + 1 < vector.size(); i += 2)
+    {
+        if (vector[i] > vector[i + 1])
+        {
+            int temp = vector[i];
+            vector[i] = vector[i + 1];
+            vector[i + 1] = temp;
+        }
+    }
+}
+
+/* ************************************************************************** */
+/*  PRINT																	  */
+/* ************************************************************************** */
+void PmergeMe::printValue(const char* msg)
+{
+    std::cout << "printValue() - " << msg << std::endl;
 	std::cout << "------------------\n";
 	
     std::cout << "Vector: ";
@@ -71,9 +88,25 @@ void PmergeMe::printParsedValue()
     for (size_t i = 0; i < deque.size(); i++)
         std::cout << deque[i] << " ";
     std::cout << std::endl;
-	std::cout << "------------------\n";
+	std::cout << std::endl;
 }
 
+void PmergeMe::printMakePairs()
+{
+    std::cout << "printMakePairs()" << std::endl;
+	std::cout << "------------------\n";
+
+    for (size_t i = 0; i < vector.size(); i += 2)
+    {
+        if (i + 1 < vector.size())
+            std::cout << "(" << vector[i] << ", " << vector[i + 1] << ") ";
+        else
+            std::cout << vector[i];
+    }
+
+    std::cout << std::endl;
+	std::cout << std::endl;
+}
 /*
 	main()
 	↓

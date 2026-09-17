@@ -50,3 +50,27 @@ PRINT TIME
   Pending chain
   Jacobsthal
   Binary insertion
+
+---
+
+Take
+    3 5 9 7 4
+
+Make Pairs
+    (3, 5)  (9, 7)   4
+
+Compare each pair so the smaller is first, larger is second:
+    (3, 5)  (7, 9)   4
+
+The 4 is odd, so it has no partner. Keep it aside for later.
+
+----
+
+Initial:
+3 5 9 7 4
+
+        ↓ makePairs()
+
+(3,5) (7,9) 4
+  ↑     ↑    ↑
+ pair  pair  odd/straggler
