@@ -1,0 +1,11 @@
+                 PmergeMe
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+   Parse input      Sort         Measure
+       │             │             │
+positive ints    Ford-Johnson     timing
+                     │
+               ┌─────┴─────┐
+               ↓           ↓
+          Container 1  Container 2
