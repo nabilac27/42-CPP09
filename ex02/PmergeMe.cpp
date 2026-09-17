@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/17 17:53:29 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/18 00:37:18 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 /* ************************************************************************** */
 /*  ORTHODOX CANONICAL FORM                                                   */
 /* ************************************************************************** */
-
-PmergeMe::PmergeMe() 
+PmergeMe::PmergeMe() : hasOdd(false), oddValue(0)
 {
 }
 
@@ -29,8 +28,11 @@ PmergeMe &PmergeMe::operator=(const PmergeMe &other)
 {
 	if (this != &other)
 	{
-        vector	= other.vector;
-        deque	= other.deque;
+        vector = other.vector;
+        deque = other.deque;
+
+        vectorMainChain = other.vectorMainChain;
+        vectorPending = other.vectorPending;
 	}
 	return *this;
 }
@@ -40,7 +42,7 @@ PmergeMe::~PmergeMe()
 }
 
 /* ************************************************************************** */
-/*  PARSE																	  */
+/*  1. PARSE                                                                  */
 /* ************************************************************************** */
 void PmergeMe::parseValue(int argc, char *argv[])
 {
@@ -58,28 +60,36 @@ void PmergeMe::parseValue(int argc, char *argv[])
 }
 
 /* ************************************************************************** */
-/*  PAIRS																	  */
+/*  2. MAKE PAIRS                                                             */
 /* ************************************************************************** */
 void PmergeMe::makePairs()
 {
+    hasOdd = false;
+
     for (size_t i = 0; i + 1 < vector.size(); i += 2)
     {
         if (vector[i] > vector[i + 1])
-        {
-            int temp = vector[i];
-            vector[i] = vector[i + 1];
-            vector[i + 1] = temp;
-        }
+            std::swap(vector[i], vector[i + 1]);
     }
+
+    if (vector.size() % 2 != 0)
+    {
+        hasOdd = true;
+        oddValue = vector.back();
+    }
+        std::cout << "Odd value: " << oddValue << std::endl;
 }
 
+/* ************************************************************************** */
+/*  3. SORT PAIRS                                                             */
+/* ************************************************************************** */
 void PmergeMe::sortPairs()
 {
-    size_t pairCount = vector.size() / 2;
+    size_t countPairs = vector.size() / 2;
 
-    for (size_t i = 0; i < pairCount; i++)
+    for (size_t i = 0; i < countPairs; i++)
     {
-        for (size_t j = 0; j + 1 < pairCount; j++)
+        for (size_t j = 0; j + 1 < countPairs; j++)
         {
             size_t firstPair = j * 2;
             size_t secondPair = (j + 1) * 2;
@@ -93,9 +103,107 @@ void PmergeMe::sortPairs()
     }
 }
 
-void createChains()
+/* ************************************************************************** */
+/*  4. CREATE CHAINS                                                          */
+/* ************************************************************************** */
+void PmergeMe::createChains()
 {
-    /* TO-DO */    
+    vectorMainChain.clear();
+    vectorPending.clear();
+
+    size_t pairCount = vector.size() / 2;
+
+    for (size_t i = 0; i < pairCount; i++)
+    {
+        size_t index = i * 2;
+
+        vectorPending.push_back(vector[index]);
+        vectorMainChain.push_back(vector[index + 1]);
+    }
+}
+
+/* ************************************************************************** */
+/*  5. INSERT FIRST PENDING                                                    */
+/* ************************************************************************** */
+void PmergeMe::insertFirstPending()
+{
+    if (vectorPending.empty())
+        return;
+
+    vectorMainChain.insert(
+        vectorMainChain.begin(),
+        vectorPending[0]
+    );
+
+    vectorPending.erase(vectorPending.begin());
+}
+
+/* ************************************************************************** */
+/*  6. JACOBSTHAL                                                             */
+/* ************************************************************************** */
+
+std::vector<size_t> PmergeMe::generateJacobsthal(size_t size)
+{
+    std::vector<size_t> jacobsthal;
+
+    size_t previous = 1;
+    size_t current = 3;
+
+    while (current <= size)
+    {
+        jacobsthal.push_back(current);
+
+        size_t next = current + (2 * previous);
+
+        previous = current;
+        current = next;
+    }
+
+    return jacobsthal;
+}
+
+/* ************************************************************************** */
+/*  7. BINARY INSERT PENDING                                                   */
+/* ************************************************************************** */
+
+void PmergeMe::insertPending()
+{
+    for (size_t i = 0; i < vectorPending.size(); i++)
+    {
+        std::vector<int>::iterator position;
+
+        position = std::lower_bound(
+            vectorMainChain.begin(),
+            vectorMainChain.end(),
+            vectorPending[i]
+        );
+
+        vectorMainChain.insert(position, vectorPending[i]);
+    }
+
+    vectorPending.clear();
+}
+
+/* ************************************************************************** */
+/*  8. INSERT ODD LEFTOVER                                                     */
+/* ************************************************************************** */
+
+void PmergeMe::insertOdd()
+{
+    if (!hasOdd)
+        return;
+
+    std::vector<int>::iterator position;
+
+    position = std::lower_bound(
+        vectorMainChain.begin(),
+        vectorMainChain.end(),
+        oddValue
+    );
+
+    vectorMainChain.insert(position, oddValue);
+
+    hasOdd = false;
 }
 
 /* ************************************************************************** */
@@ -135,73 +243,23 @@ void PmergeMe::printPairs()
     std::cout << std::endl;
 	std::cout << std::endl;
 }
-/*
-	main()
-	↓
-	parseValue()
-	↓
-	check each argv[i]
-	↓
-	convert to int
-	↓
-	┌────────────┬────────────┐
-	↓            ↓
-	_vector      _deque
 
-	./PmergeMe 3 5 9 7 4
+void PmergeMe::printChains()
+{
+    std::cout << "printChains()" << std::endl;
+    std::cout << "------------------" << std::endl;
 
-	vector = [3, 5, 9, 7, 4]
-	deque  = [3, 5, 9, 7, 4]
+    std::cout << "Main chain: ";
 
+    for (size_t i = 0; i < vectorMainChain.size(); i++)
+        std::cout << vectorMainChain[i] << " ";
 
-    ----
+    std::cout << std::endl;
 
-    parseValue()
-      ↓
-    makePairs()
-        ↓
-    sortPairs()
-        ↓
-    createChains()
-        ↓
-    insertFirstPending()
-        ↓
-    insertPending()
-        ↓
-    SORTED
+    std::cout << "Pending:    ";
 
-    Current:
-    pending → normal order → lower_bound entire chain
+    for (size_t i = 0; i < vectorPending.size(); i++)
+        std::cout << vectorPending[i] << " ";
 
-    Final Ford-Johnson:
-    pending → Jacobsthal order → binary search limited by partner
-
-    ---
-
-    After sortPairs()
-
-    1. parseValue()      ✓
-    2. makePairs()       ✓
-    3. sortPairs()       ✓
-    4. createChains()    ← NEXT
-    5. insert first small value
-    6. Jacobsthal insertion
-    7. binary search insertion
-    8. handle odd leftover
-    9. deque version
-    10. timing
-
-    Suppose after sortPairs():
-        (3, 4) (1, 7) (8, 9)
-
-    Each pair is:
-        small  big
-        3     4
-        1     7
-        8     9
-
-    Now createChains() separates them:
-        Main chain: 4 7 9
-        Pending:    3 1 8
-
-*/
+    std::cout << std::endl << std::endl;
+}
