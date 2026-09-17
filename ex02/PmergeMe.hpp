@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/17 15:40:28 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/17 16:33:00 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class PmergeMe
 		~PmergeMe(); 
 		
 		void parseValue(int argc, char *argv[]);
+		void printParsedValue();
 };
 
 #endif

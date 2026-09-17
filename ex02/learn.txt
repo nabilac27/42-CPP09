@@ -9,3 +9,44 @@ positive ints    Ford-Johnson     timing
                ┌─────┴─────┐
                ↓           ↓
           Container 1  Container 2
+
+
+----
+
+INPUT
+  ↓
+PARSE
+  ↓
+VALIDATE
+  ↓
+STORE
+  ↓
+PRINT "Before"
+  ↓
+SORT using Ford-Johnson
+  ↓
+PRINT "After"
+  ↓
+PRINT TIME
+
+---
+
+| Step              | What happens                                   |
+| ----------------- | ---------------------------------------------- |
+| **1. Parse**      | Read `argv[]`                                  |
+| **2. Validate**   | Positive integer? Invalid character? Overflow? |
+| **3. Store**      | Put numbers into your two containers           |
+| **4. Before**     | Print original sequence                        |
+| **5. Sort**       | Ford-Johnson on container 1                    |
+| **6. Sort again** | Ford-Johnson on container 2                    |
+| **7. After**      | Print sorted sequence                          |
+| **8. Timing**     | Print time for each container                  |
+
+---
+
+→ PAIR + COMPARE
+  Sort larger elements
+  Main chain
+  Pending chain
+  Jacobsthal
+  Binary insertion
