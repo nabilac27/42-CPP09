@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/18 00:31:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/18 19:43:56 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ class PmergeMe
 
         /* 6. Jacobsthal */
         std::vector<size_t> generateJacobsthal(size_t size);
+        std::vector<size_t> generateInsertionOrder(size_t size); 
 
         /* 7. Insert pending */
         void insertPending();

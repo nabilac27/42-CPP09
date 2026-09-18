@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/18 00:37:18 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/18 19:48:48 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,8 @@ void PmergeMe::makePairs()
     {
         hasOdd = true;
         oddValue = vector.back();
-    }
         std::cout << "Odd value: " << oddValue << std::endl;
+    }
 }
 
 /* ************************************************************************** */
@@ -134,8 +134,6 @@ void PmergeMe::insertFirstPending()
         vectorMainChain.begin(),
         vectorPending[0]
     );
-
-    vectorPending.erase(vectorPending.begin());
 }
 
 /* ************************************************************************** */
@@ -162,26 +160,54 @@ std::vector<size_t> PmergeMe::generateJacobsthal(size_t size)
     return jacobsthal;
 }
 
+std::vector<size_t> PmergeMe::generateInsertionOrder(size_t size)
+{
+    std::vector<size_t> order;
+    std::vector<size_t> jacobsthal = generateJacobsthal(size);
+
+    size_t previous = 1;
+
+    for (size_t i = 0; i < jacobsthal.size(); i++)
+    {
+        size_t current = jacobsthal[i];
+
+        for (size_t j = current; j > previous; j--)
+            order.push_back(j - 1);
+
+        previous = current;
+    }
+
+    for (size_t j = size; j > previous; j--)
+        order.push_back(j - 1);
+
+    return order;
+}
+
 /* ************************************************************************** */
 /*  7. BINARY INSERT PENDING                                                   */
 /* ************************************************************************** */
 
 void PmergeMe::insertPending()
 {
-    for (size_t i = 0; i < vectorPending.size(); i++)
-    {
-        std::vector<int>::iterator position;
+    if (vectorPending.size() <= 1)
+        return;
 
-        position = std::lower_bound(
+    std::vector<size_t> order =
+        generateInsertionOrder(vectorPending.size());
+
+    for (size_t i = 0; i < order.size(); i++)
+    {
+        size_t index = order[i];
+        int value = vectorPending[index];
+
+        std::vector<int>::iterator position = std::lower_bound(
             vectorMainChain.begin(),
             vectorMainChain.end(),
-            vectorPending[i]
+            value
         );
 
-        vectorMainChain.insert(position, vectorPending[i]);
+        vectorMainChain.insert(position, value);
     }
-
-    vectorPending.clear();
 }
 
 /* ************************************************************************** */

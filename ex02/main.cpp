@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/18 00:37:50 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/18 19:46:23 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,52 @@ int main(int argc, char *argv[])
     try
     {
         PmergeMe value;
-
-        // 1. Parse
+        
         value.parseValue(argc, argv);
-        value.printValue("Initial");
 
-        // 2. Make pairs
         value.makePairs();
-        value.printPairs();
-
-        // 3. Sort pairs
         value.sortPairs();
-        value.printPairs();
 
-        // 4. Create main + pending chains
         value.createChains();
         value.printChains();
 
-        // 5. Insert first pending value
         value.insertFirstPending();
         value.printChains();
 
-        // 6 + 7. Insert remaining pending values
         value.insertPending();
         value.printChains();
 
-        // 8. Insert odd leftover
         value.insertOdd();
         value.printChains();
+        // PmergeMe value;
+
+        // // 1. Parse
+        // value.parseValue(argc, argv);
+        // value.printValue("Initial");
+
+        // // 2. Make pairs
+        // value.makePairs();
+        // value.printPairs();
+
+        // // 3. Sort pairs
+        // value.sortPairs();
+        // value.printPairs();
+
+        // // 4. Create main + pending chains
+        // value.createChains();
+        // value.printChains();
+
+        // // 5. Insert first pending value
+        // value.insertFirstPending();
+        // value.printChains();
+
+        // // 6 + 7. Insert remaining pending values
+        // value.insertPending();
+        // value.printChains();
+
+        // // 8. Insert odd leftover
+        // value.insertOdd();
+        // value.printChains();
     }
     catch (const std::exception &e)
     {
@@ -55,6 +73,44 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+/*
+    createChains()
+
+    Main:    3 5 5 7 8
+    Pending: 2 4 3 6 1
+            b1 b2 b3 b4 b5
+
+            ↓
+
+    insertFirstPending()
+
+    Main:
+    2 3 5 5 7 8
+
+            ↓
+
+    generateInsertionOrder(5)
+
+    2 1 4 3
+    │ │ │ │
+    │ │ │ └─ b4
+    │ │ └─── b5
+    │ └───── b2
+    └─────── b3
+
+            ↓
+
+    insertPending()
+
+    b3 = 3
+    b2 = 4
+    b5 = 1
+    b4 = 6
+
+            ↓
+
+    1 2 3 3 4 5 5 6 7 8
+*/
 /*
 	TO-DO
 
