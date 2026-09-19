@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/19 19:39:12 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/19 19:42:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ void PmergeMe::insertFirstPending()
 
     vectorMainChain.insert(
         vectorMainChain.begin(),
-        vectorPending[0]
+        vectorPending[0].value
     );
 }
 
