@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/18 19:48:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/19 19:39:12 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,10 @@ void PmergeMe::makePairs()
 /* ************************************************************************** */
 /*  3. SORT PAIRS                                                             */
 /* ************************************************************************** */
+
+/*
+    ! need to be implemented with Ford-Johnson Algorithm
+*/
 void PmergeMe::sortPairs()
 {
     size_t countPairs = vector.size() / 2;
@@ -117,10 +121,32 @@ void PmergeMe::createChains()
     {
         size_t index = i * 2;
 
-        vectorPending.push_back(vector[index]);
-        vectorMainChain.push_back(vector[index + 1]);
+        int small = vector[index];
+        int large = vector[index + 1];
+
+        vectorPending.push_back(
+            PendingElement(small, large)
+        );
+
+        vectorMainChain.push_back(large);
     }
 }
+
+// void PmergeMe::createChains()
+// {
+//     vectorMainChain.clear();
+//     vectorPending.clear();
+
+//     size_t pairCount = vector.size() / 2;
+
+//     for (size_t i = 0; i < pairCount; i++)
+//     {
+//         size_t index = i * 2;
+
+//         vectorPending.push_back(vector[index]);
+//         vectorMainChain.push_back(vector[index + 1]);
+//     }
+// }
 
 /* ************************************************************************** */
 /*  5. INSERT FIRST PENDING                                                    */
@@ -186,7 +212,6 @@ std::vector<size_t> PmergeMe::generateInsertionOrder(size_t size)
 /* ************************************************************************** */
 /*  7. BINARY INSERT PENDING                                                   */
 /* ************************************************************************** */
-
 void PmergeMe::insertPending()
 {
     if (vectorPending.size() <= 1)
@@ -198,17 +223,50 @@ void PmergeMe::insertPending()
     for (size_t i = 0; i < order.size(); i++)
     {
         size_t index = order[i];
-        int value = vectorPending[index];
 
-        std::vector<int>::iterator position = std::lower_bound(
-            vectorMainChain.begin(),
-            vectorMainChain.end(),
-            value
-        );
+        int value = vectorPending[index].value;
+        int partner = vectorPending[index].partner;
+
+        std::vector<int>::iterator partnerPosition =
+            std::find(
+                vectorMainChain.begin(),
+                vectorMainChain.end(),
+                partner
+            );
+
+        std::vector<int>::iterator position =
+            std::lower_bound(
+                vectorMainChain.begin(),
+                partnerPosition,
+                value
+            );
 
         vectorMainChain.insert(position, value);
     }
 }
+
+// void PmergeMe::insertPending()
+// {
+//     if (vectorPending.size() <= 1)
+//         return;
+
+//     std::vector<size_t> order =
+//         generateInsertionOrder(vectorPending.size());
+
+//     for (size_t i = 0; i < order.size(); i++)
+//     {
+//         size_t index = order[i];
+//         int value = vectorPending[index];
+
+//         std::vector<int>::iterator position = std::lower_bound(
+//             vectorMainChain.begin(),
+//             vectorMainChain.end(),
+//             value
+//         );
+
+//         vectorMainChain.insert(position, value);
+//     }
+// }
 
 /* ************************************************************************** */
 /*  8. INSERT ODD LEFTOVER                                                     */
