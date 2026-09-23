@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/19 19:40:57 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/23 06:07:57 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,23 @@
 #include <deque>
 #include <cstdlib>
 #include <algorithm>
+#include <utility>
 
 class PmergeMe
 {
     private:
-            struct PendingElement
-        {
-            int value;
-            int partner;
-
-            PendingElement(int v, int p)
-                : value(v), partner(p)
-            {
-            }
-        };
 
         // Original containers
         std::vector<int> vector;
         std::deque<int>  deque;
 
         // Vector Ford-Johnson
+        void fordJohnsonVector(std::vector<int> &values);
         std::vector<int> vectorMainChain;
-        // std::vector<int> vectorPending;
-        std::vector<PendingElement> vectorPending;
+        
+        
+        // first  = pending/small value, second = partner/big value
+        std::vector<std::pair<int, int> > vectorPending;
 
         // Odd leftover
         bool hasOdd;

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/19 19:42:44 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/23 06:21:23 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,16 @@ PmergeMe &PmergeMe::operator=(const PmergeMe &other)
 {
 	if (this != &other)
 	{
-        vector = other.vector;
-        deque = other.deque;
-
+        vector          = other.vector;
+        deque           = other.deque;
+        
         vectorMainChain = other.vectorMainChain;
-        vectorPending = other.vectorPending;
+        vectorPending   = other.vectorPending;
+        
+        hasOdd          = other.hasOdd;
+        oddValue        = other.oddValue;
 	}
-	return *this;
+	return (*this);
 }
 
 PmergeMe::~PmergeMe() 
@@ -42,7 +45,7 @@ PmergeMe::~PmergeMe()
 }
 
 /* ************************************************************************** */
-/*  1. PARSE                                                                  */
+/*  PARSE                                                                     */
 /* ************************************************************************** */
 void PmergeMe::parseValue(int argc, char *argv[])
 {
@@ -60,7 +63,7 @@ void PmergeMe::parseValue(int argc, char *argv[])
 }
 
 /* ************************************************************************** */
-/*  2. MAKE PAIRS                                                             */
+/*  FORD-JOHNSON -- 1. MAKE PAIRS                                             */
 /* ************************************************************************** */
 void PmergeMe::makePairs()
 {
@@ -81,34 +84,152 @@ void PmergeMe::makePairs()
 }
 
 /* ************************************************************************** */
-/*  3. SORT PAIRS                                                             */
+/*  FORD-JOHNSON -- 2. SORT PAIRS into (smaller, larger)                      */
 /* ************************************************************************** */
-
 /*
     ! need to be implemented with Ford-Johnson Algorithm
+
+    sortPairs()
+    (8,9) (3,4) (1,7) (5,6)
+                │
+                │ take .second
+                ▼
+            9 4 7 6
+                │
+                ▼
+    fordJohnsonVector(larger)
 */
+
 void PmergeMe::sortPairs()
 {
-    size_t countPairs = vector.size() / 2;
+    std::vector<std::pair<int, int> > pairs;
 
-    for (size_t i = 0; i < countPairs; i++)
+    size_t pairCount = vector.size() / 2;
+
+    // 1. Create pairs
+    for (size_t i = 0; i < pairCount; i++)
     {
-        for (size_t j = 0; j + 1 < countPairs; j++)
-        {
-            size_t firstPair = j * 2;
-            size_t secondPair = (j + 1) * 2;
+        size_t index = i * 2;
 
-            if (vector[firstPair + 1] > vector[secondPair + 1])
+        int small = vector[index];
+        int large = vector[index + 1];
+
+        pairs.push_back(
+            std::make_pair(small, large)
+        );
+    }
+
+    // 2. Extract larger elements
+    std::vector<int> larger;
+
+    for (size_t i = 0; i < pairs.size(); i++)
+        larger.push_back(pairs[i].second);
+
+    // 3. Sort larger elements recursively
+    fordJohnsonVector(larger);
+
+    // 4. Reorder pairs
+    std::vector<std::pair<int, int> > sortedPairs;
+    std::vector<bool> used(pairs.size(), false);
+
+    for (size_t i = 0; i < larger.size(); i++)
+    {
+        for (size_t j = 0; j < pairs.size(); j++)
+        {
+            if (!used[j] && pairs[j].second == larger[i])
             {
-                std::swap(vector[firstPair], vector[secondPair]);
-                std::swap(vector[firstPair + 1], vector[secondPair + 1]);
+                sortedPairs.push_back(pairs[j]);
+                used[j] = true;
+                break;
             }
         }
+    }
+
+    // 5. Put pairs back into vector
+    for (size_t i = 0; i < sortedPairs.size(); i++)
+    {
+        vector[i * 2] = sortedPairs[i].first;
+        vector[i * 2 + 1] = sortedPairs[i].second;
     }
 }
 
 /* ************************************************************************** */
-/*  4. CREATE CHAINS                                                          */
+/*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
+/* ************************************************************************** */
+/*
+    inside fordJohnsonVector(), turn them into pair again
+*/
+void PmergeMe::fordJohnsonVector(std::vector<int> &values)
+{
+    if (values.size() <= 1)
+        return;
+
+    std::vector<std::pair<int, int> > pairs;
+
+    bool hasOddValue = (values.size() % 2 != 0);
+    int odd = 0;
+
+    if (hasOddValue)
+        odd = values.back();
+    // 1. Make pairs
+    for (size_t i = 0; i + 1 < values.size(); i += 2)
+    {
+        int first = values[i];
+        int second = values[i + 1];
+
+        if (first > second)
+            std::swap(first, second);
+
+        pairs.push_back(
+            std::make_pair(first, second)
+        );
+    }
+
+    // 2. Extract larger values
+    std::vector<int> larger;
+
+    for (size_t i = 0; i < pairs.size(); i++)
+        larger.push_back(pairs[i].second);
+
+    // 3. Recursively sort larger values
+    fordJohnsonVector(larger);
+
+    // 4. Start main chain with sorted larger values
+    std::vector<int> mainChain = larger;
+
+    // 5. Insert smaller values
+    for (size_t i = 0; i < pairs.size(); i++)
+    {
+        int pending = pairs[i].first;
+
+        std::vector<int>::iterator position =
+            std::lower_bound(
+                mainChain.begin(),
+                mainChain.end(),
+                pending
+            );
+
+        mainChain.insert(position, pending);
+    }
+
+    if (hasOddValue)
+    {
+        std::vector<int>::iterator position =
+            std::lower_bound(
+                mainChain.begin(),
+                mainChain.end(),
+                odd
+            );
+
+        mainChain.insert(position, odd);
+    }
+    // 6. Give sorted result back to caller
+    values = mainChain;
+}
+
+
+/* ************************************************************************** */
+/*  FORD-JOHNSON -- 4. Insert the partner of the smallest big element         */
 /* ************************************************************************** */
 void PmergeMe::createChains()
 {
@@ -124,33 +245,13 @@ void PmergeMe::createChains()
         int small = vector[index];
         int large = vector[index + 1];
 
-        vectorPending.push_back(
-            PendingElement(small, large)
-        );
-
+    vectorPending.push_back(
+        std::make_pair(small, large)
+    );
         vectorMainChain.push_back(large);
     }
 }
 
-// void PmergeMe::createChains()
-// {
-//     vectorMainChain.clear();
-//     vectorPending.clear();
-
-//     size_t pairCount = vector.size() / 2;
-
-//     for (size_t i = 0; i < pairCount; i++)
-//     {
-//         size_t index = i * 2;
-
-//         vectorPending.push_back(vector[index]);
-//         vectorMainChain.push_back(vector[index + 1]);
-//     }
-// }
-
-/* ************************************************************************** */
-/*  5. INSERT FIRST PENDING                                                    */
-/* ************************************************************************** */
 void PmergeMe::insertFirstPending()
 {
     if (vectorPending.empty())
@@ -158,12 +259,12 @@ void PmergeMe::insertFirstPending()
 
     vectorMainChain.insert(
         vectorMainChain.begin(),
-        vectorPending[0].value
+        vectorPending[0].first
     );
 }
 
 /* ************************************************************************** */
-/*  6. JACOBSTHAL                                                             */
+/*  FORD-JOHNSON -- 5. Insert the remaining small elements                    */
 /* ************************************************************************** */
 
 std::vector<size_t> PmergeMe::generateJacobsthal(size_t size)
@@ -210,7 +311,7 @@ std::vector<size_t> PmergeMe::generateInsertionOrder(size_t size)
 }
 
 /* ************************************************************************** */
-/*  7. BINARY INSERT PENDING                                                   */
+/*  BINARY INSERT PENDING                                                     */
 /* ************************************************************************** */
 void PmergeMe::insertPending()
 {
@@ -224,8 +325,8 @@ void PmergeMe::insertPending()
     {
         size_t index = order[i];
 
-        int value = vectorPending[index].value;
-        int partner = vectorPending[index].partner;
+        int value = vectorPending[index].first;
+        int partner = vectorPending[index].second;
 
         std::vector<int>::iterator partnerPosition =
             std::find(
@@ -245,31 +346,8 @@ void PmergeMe::insertPending()
     }
 }
 
-// void PmergeMe::insertPending()
-// {
-//     if (vectorPending.size() <= 1)
-//         return;
-
-//     std::vector<size_t> order =
-//         generateInsertionOrder(vectorPending.size());
-
-//     for (size_t i = 0; i < order.size(); i++)
-//     {
-//         size_t index = order[i];
-//         int value = vectorPending[index];
-
-//         std::vector<int>::iterator position = std::lower_bound(
-//             vectorMainChain.begin(),
-//             vectorMainChain.end(),
-//             value
-//         );
-
-//         vectorMainChain.insert(position, value);
-//     }
-// }
-
 /* ************************************************************************** */
-/*  8. INSERT ODD LEFTOVER                                                     */
+/*  INSERT ODD LEFTOVER                                                       */
 /* ************************************************************************** */
 
 void PmergeMe::insertOdd()
@@ -343,7 +421,13 @@ void PmergeMe::printChains()
     std::cout << "Pending:    ";
 
     for (size_t i = 0; i < vectorPending.size(); i++)
-        std::cout << vectorPending[i] << " ";
+    {
+        std::cout << "("
+                  << vectorPending[i].first
+                  << " -> "
+                  << vectorPending[i].second
+                  << ") ";
+    }
 
     std::cout << std::endl << std::endl;
 }

@@ -6,9 +6,11 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/18 19:46:23 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/09/23 06:13:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "PmergeMe.hpp"
 
 #include "PmergeMe.hpp"
 
@@ -16,53 +18,35 @@ int main(int argc, char *argv[])
 {
     try
     {
-        PmergeMe value;
-        
-        value.parseValue(argc, argv);
+        PmergeMe pmerge;
 
-        value.makePairs();
-        value.sortPairs();
+        // 1. Parse input
+        pmerge.parseValue(argc, argv);
+        pmerge.printValue("Initial");
 
-        value.createChains();
-        value.printChains();
+        // 2. Make pairs
+        pmerge.makePairs();
+        pmerge.printPairs();
 
-        value.insertFirstPending();
-        value.printChains();
+        // 3. Recursively sort pairs by their larger elements
+        pmerge.sortPairs();
+        pmerge.printPairs();
 
-        value.insertPending();
-        value.printChains();
+        // 4. Create main chain + pending
+        pmerge.createChains();
+        pmerge.printChains();
 
-        value.insertOdd();
-        value.printChains();
-        // PmergeMe value;
+        // 5. Insert first pending
+        pmerge.insertFirstPending();
+        pmerge.printChains();
 
-        // // 1. Parse
-        // value.parseValue(argc, argv);
-        // value.printValue("Initial");
+        // 6. Insert remaining pending
+        pmerge.insertPending();
+        pmerge.printChains();
 
-        // // 2. Make pairs
-        // value.makePairs();
-        // value.printPairs();
-
-        // // 3. Sort pairs
-        // value.sortPairs();
-        // value.printPairs();
-
-        // // 4. Create main + pending chains
-        // value.createChains();
-        // value.printChains();
-
-        // // 5. Insert first pending value
-        // value.insertFirstPending();
-        // value.printChains();
-
-        // // 6 + 7. Insert remaining pending values
-        // value.insertPending();
-        // value.printChains();
-
-        // // 8. Insert odd leftover
-        // value.insertOdd();
-        // value.printChains();
+        // 7. Insert odd leftover
+        pmerge.insertOdd();
+        pmerge.printChains();
     }
     catch (const std::exception &e)
     {
@@ -72,6 +56,67 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+// int main(int argc, char *argv[])
+// {
+//     try
+//     {
+//         PmergeMe value;
+        
+//         value.parseValue(argc, argv);
+
+//         value.makePairs();
+//         value.sortPairs();
+
+//         value.createChains();
+//         value.printChains();
+
+//         value.insertFirstPending();
+//         value.printChains();
+
+//         value.insertPending();
+//         value.printChains();
+
+//         value.insertOdd();
+//         value.printChains();
+//         // PmergeMe value;
+
+//         // // 1. Parse
+//         // value.parseValue(argc, argv);
+//         // value.printValue("Initial");
+
+//         // // 2. Make pairs
+//         // value.makePairs();
+//         // value.printPairs();
+
+//         // // 3. Sort pairs
+//         // value.sortPairs();
+//         // value.printPairs();
+
+//         // // 4. Create main + pending chains
+//         // value.createChains();
+//         // value.printChains();
+
+//         // // 5. Insert first pending value
+//         // value.insertFirstPending();
+//         // value.printChains();
+
+//         // // 6 + 7. Insert remaining pending values
+//         // value.insertPending();
+//         // value.printChains();
+
+//         // // 8. Insert odd leftover
+//         // value.insertOdd();
+//         // value.printChains();
+//     }
+//     catch (const std::exception &e)
+//     {
+//         std::cerr << e.what() << std::endl;
+//         return 1;
+//     }
+
+//     return 0;
+// }
 
 /*
     createChains()

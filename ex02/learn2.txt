@@ -1,0 +1,182 @@
+INPUT
+3 2 1 6 5 9 7 11
+        │
+        ▼
+1. MAKE PAIRS
+(3,2) (1,6) (5,9) (7,11)
+        │
+        ▼
+2. SMALLER / BIGGER
+(2,3) (1,6) (5,9) (7,11)
+        │
+        ▼
+3. RECURSIVELY SORT BIG ELEMENTS
+3 6 9 11
+        │
+        ▼
+4. INSERT a1
+2 3 6 9 11
+        │
+        ▼
+5. INSERT REMAINING a's
+1, 5, 7
+using special Jacobsthal order
++ binary search
+        │
+        ▼
+1 2 3 5 6 7 9 11
+
+---
+
+INPUT
+3 2 1 6 5 9 7 11
+        │
+        ├───────────────┐
+        ▼               ▼
+     VECTOR            DEQUE
+        │               │
+ Ford-Johnson       Ford-Johnson
+        │               │
+        ▼               ▼
+1 2 3 5 6 7 9 11   1 2 3 5 6 7 9 11
+        │               │
+        ▼               ▼
+ measure time       measure time
+
+ ---
+
+🧩 PmergeMe step by step
+
+Take:
+    3 2 1 6 5 9 7 11
+
+1️⃣ Make pairs
+
+    (3,2)
+    (1,6)
+    (5,9)
+    (7,11)
+
+    Put smaller first:
+
+    (2,3)
+    (1,6)
+    (5,9)
+    (7,11)
+
+    Think:
+
+    (small, big)
+
+---
+
+2️⃣ Sort the pairs using BIG values
+    Look only at:
+        3
+        6
+        9
+        11
+
+    They are already ordered.
+
+    So:
+        (2,3)
+        (1,6)
+        (5,9)
+        (7,11)
+
+    If they weren't ordered, you'd reorder the whole pairs.
+
+    This is important because:
+        small stays attached to its big partner
+
+---
+
+3️⃣ Create two chains
+
+    From:
+        (2,3)
+        (1,6)
+        (5,9)
+        (7,11)
+
+    Big numbers become:
+
+        vectorMainChain:    3 6 9 11
+
+    Small numbers become:
+
+        vectorPending:      2 1 5 7
+
+
+    PAIR
+    ↓
+    (2,3)
+    ↑ ↑
+    │ └── MainChain
+    └──── Pending
+
+---
+
+4️⃣ Insert first pending number
+    You already know:
+        2 < 3
+
+    because they originally came from:
+        (2,3)
+
+    So insert 2:
+
+        Before:     3 6 9 11
+
+        After:      2 3 6 9 11
+
+---
+
+5️⃣ Insert the remaining pending numbers
+
+    Remaining:   1 5 7
+
+    You insert them into the correct position.
+
+    For example:
+
+        Main:
+            2 3 6 9 11
+
+            insert 5
+
+        Find:
+
+            2 3 [5] 6 9 11
+
+        You don't search manually from beginning to end.
+        You use binary search.
+
+---
+
+🧍 What about an odd number?
+
+    Suppose:
+        3 2 1 6 5
+
+    Pairs:
+        (2,3)
+        (1,6)
+
+    leftover:
+        5
+
+    Your class stores:
+        hasOdd = true;
+        oddValue = 5;
+
+    Then after processing the pairs, you insert:
+
+        5
+
+    into the correct position.
+
+---
+
+std::pair is simply a C++ container for two values that belong together.
