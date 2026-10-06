@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 15:31:22 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 16:43:02 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,9 @@
 class PmergeMe
 {
     private:
-
-        // Original containers
         std::vector<int> vector;
         std::deque<int>  deque;
 
-        // Vector Ford-Johnson
         void fordJohnsonVector(std::vector<int> &values);
         std::vector<int> vectorMainChain;
         
@@ -38,7 +35,6 @@ class PmergeMe
         // first  = pending/small value, second = partner/big value
         std::vector<std::pair<int, int> > vectorPending;
 
-        // Odd leftover
         bool    hasOdd;
         int     straggler;
 
@@ -46,7 +42,7 @@ class PmergeMe
         /* Orthodox Canonical Form */
         PmergeMe();
         PmergeMe(const PmergeMe &other);
-        PmergeMe &operator=(const PmergeMe &other);
+        PmergeMe&   operator=(const PmergeMe &other);
         ~PmergeMe();
 
         /* 1. Parse */
@@ -75,9 +71,10 @@ class PmergeMe
         void insertOdd();
 
         /* Debug */
-        void printState(const char *msg);
-        void printPairs();
-        void printChains();
+        void    printState(const char *msg);
+        void    printPairs();
+        // void printChains();
+        void    printChains(bool firstInserted);
 };
 
 #endif

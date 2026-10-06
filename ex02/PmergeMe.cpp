@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 15:32:28 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 16:43:42 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,11 @@ PmergeMe::PmergeMe(const PmergeMe &other)
     *this = other;
 }
 
-PmergeMe &PmergeMe::operator=(const PmergeMe &other)
+PmergeMe&   PmergeMe::operator=(const PmergeMe &other)
 {
     if (this != &other)
     {
         vector = other.vector;
-        // deque           = other.deque;
 
         // vectorMainChain = other.vectorMainChain;
         // vectorPending = other.vectorPending;
@@ -58,7 +57,6 @@ void PmergeMe::parseValue(int argc, char *argv[])
             throw(std::runtime_error("Error"));
 
         vector.push_back(value);
-        // deque.push_back(value);
     }
 }
 
@@ -69,7 +67,7 @@ void PmergeMe::makePairs()
 {
     hasOdd = false;
 
-    for (size_t i = 0; i + 1 < vector.size(); i += 2)
+    for (size_t i = 0; i+1 < vector.size(); i+=2)
     {
         if (vector[i] > vector[i + 1])
             std::swap(vector[i], vector[i + 1]);
@@ -86,8 +84,6 @@ void PmergeMe::makePairs()
 /*  FORD-JOHNSON -- 2. SORT PAIRS into (smaller, larger)                      */
 /* ************************************************************************** */
 /*
-    ! need to be implemented with Ford-Johnson Algorithm
-
     sortPairs()
     (8,9) (3,4) (1,7) (5,6)
                 │
@@ -99,161 +95,145 @@ void PmergeMe::makePairs()
     fordJohnsonVector(larger)
 */
 
-// void PmergeMe::sortPairs()
-// {
-//     std::vector<std::pair<int, int>> pairs;
+void PmergeMe::sortPairs()
+{
+    std::vector<std::pair<int, int> > pairs;
 
-//     size_t pairCount = vector.size() / 2;
+    size_t pairCount = vector.size() / 2;
 
-//     // 1. Create pairs
-//     for (size_t i = 0; i < pairCount; i++)
-//     {
-//         size_t index = i * 2;
+    // 1. Create pairs
+    for (size_t i = 0; i < pairCount; i++)
+    {
+        size_t index = i * 2;
 
-//         int small = vector[index];
-//         int large = vector[index + 1];
+        int small = vector[index];
+        int large = vector[index + 1];
 
-//         pairs.push_back(
-//             std::make_pair(small, large));
-//     }
+        pairs.push_back(std::make_pair(small, large));
+    }
 
-//     // 2. Extract larger elements
-//     std::vector<int> larger;
+    // 2. Extract larger elements
+    std::vector<int> larger;
 
-//     for (size_t i = 0; i < pairs.size(); i++)
-//         larger.push_back(pairs[i].second);
+    for (size_t i = 0; i < pairs.size(); i++)
+        larger.push_back(pairs[i].second);
 
-//     // 3. Sort larger elements recursively
-//     fordJohnsonVector(larger);
+    // 3. Sort larger elements recursively
+    fordJohnsonVector(larger);
 
-//     // 4. Reorder pairs
-//     std::vector<std::pair<int, int>> sortedPairs;
-//     std::vector<bool> used(pairs.size(), false);
+    // 4. Reorder pairs
+    std::vector<std::pair<int, int> > sortedPairs;
+    std::vector<bool> used(pairs.size(), false);
 
-//     for (size_t i = 0; i < larger.size(); i++)
-//     {
-//         for (size_t j = 0; j < pairs.size(); j++)
-//         {
-//             if (!used[j] && pairs[j].second == larger[i])
-//             {
-//                 sortedPairs.push_back(pairs[j]);
-//                 used[j] = true;
-//                 break;
-//             }
-//         }
-//     }
+    for (size_t i = 0; i < larger.size(); i++)
+    {
+        for (size_t j = 0; j < pairs.size(); j++)
+        {
+            if (!used[j] && pairs[j].second == larger[i])
+            {
+                sortedPairs.push_back(pairs[j]);
+                used[j] = true;
+                break;
+            }
+        }
+    }
 
-//     // 5. Put pairs back into vector
-//     for (size_t i = 0; i < sortedPairs.size(); i++)
-//     {
-//         vector[i * 2] = sortedPairs[i].first;
-//         vector[i * 2 + 1] = sortedPairs[i].second;
-//     }
-// }
+    // 5. Put pairs back into vector
+    for (size_t i = 0; i < sortedPairs.size(); i++)
+    {
+        vector[i * 2]       = sortedPairs[i].first;
+        vector[i * 2 + 1]   = sortedPairs[i].second;
+    }
+}
 
 // /* ************************************************************************** */
 // /*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
 // /* ************************************************************************** */
-// /*
-//     inside fordJohnsonVector(), turn them into pair again
-// */
-// void PmergeMe::fordJohnsonVector(std::vector<int> &values)
-// {
-//     if (values.size() <= 1)
-//         return;
 
-//     std::vector<std::pair<int, int> > pairs;
+void PmergeMe::fordJohnsonVector(std::vector<int> &values)
+{
+    if (values.size() <= 1)
+        return;
 
-//     bool hasstraggler = (values.size() % 2 != 0);
-//     int odd = 0;
+    std::vector<std::pair<int, int> > pairs;
 
-//     if (hasstraggler)
-//         odd = values.back();
-//     // 1. Make pairs
-//     for (size_t i = 0; i + 1 < values.size(); i += 2)
-//     {
-//         int first = values[i];
-//         int second = values[i + 1];
+    bool hasOdd = (values.size() % 2 != 0);
+    int odd     = 0;
 
-//         if (first > second)
-//             std::swap(first, second);
+    if (hasOdd)
+        odd = values.back();
 
-//         pairs.push_back(
-//             std::make_pair(first, second));
-//     }
+    // 1. Make pairs
+    for (size_t i = 0; i + 1 < values.size(); i += 2)
+    {
+        int first   = values[i];
+        int second  = values[i + 1];
 
-//     // 2. Extract larger values
-//     std::vector<int> larger;
+        if (first > second)
+            std::swap(first, second);
+        pairs.push_back(std::make_pair(first, second));
+    }
 
-//     for (size_t i = 0; i < pairs.size(); i++)
-//         larger.push_back(pairs[i].second);
+    // 2. Extract larger values
+    std::vector<int> larger;
 
-//     // 3. Recursively sort larger values
-//     fordJohnsonVector(larger);
+    for (size_t i = 0; i < pairs.size(); i++)
+        larger.push_back(pairs[i].second);
 
-//     // 4. Start main chain with sorted larger values
-//     std::vector<int> mainChain = larger;
+    // 3. Recursively sort larger values
+    fordJohnsonVector(larger);
 
-//     // 5. Insert smaller values
-//     for (size_t i = 0; i < pairs.size(); i++)
-//     {
-//         int pending = pairs[i].first;
+    // 4. Start main chain with sorted larger values
+    std::vector<int> mainChain = larger;
 
-//         std::vector<int>::iterator position =
-//             std::lower_bound(
-//                 mainChain.begin(),
-//                 mainChain.end(),
-//                 pending);
+    // 5. Insert smaller values
+    for (size_t i = 0; i < pairs.size(); i++)
+    {
+        int pending = pairs[i].first;
 
-//         mainChain.insert(position, pending);
-//     }
+        std::vector<int>::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), pending);
+        mainChain.insert(position, pending);
+    }
 
-//     if (hasstraggler)
-//     {
-//         std::vector<int>::iterator position =
-//             std::lower_bound(
-//                 mainChain.begin(),
-//                 mainChain.end(),
-//                 odd);
-
-//         mainChain.insert(position, odd);
-//     }
-//     // 6. Give sorted result back to caller
-//     values = mainChain;
-// }
+    if (hasOdd)
+    {
+        std::vector<int>::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), odd);
+        mainChain.insert(position, odd);
+    }
+    
+    // 6. Give sorted result back to caller
+    values = mainChain;
+}
 
 // /* ************************************************************************** */
 // /*  FORD-JOHNSON -- 4. Insert the partner of the smallest big element         */
 // /* ************************************************************************** */
-// void PmergeMe::createChains()
-// {
-//     vectorMainChain.clear();
-//     vectorPending.clear();
+void PmergeMe::createChains()
+{
+    vectorMainChain.clear();
+    vectorPending.clear();
 
-//     size_t pairCount = vector.size() / 2;
+    size_t pairCount = vector.size() / 2;
 
-//     for (size_t i = 0; i < pairCount; i++)
-//     {
-//         size_t index = i * 2;
+    for (size_t i = 0; i < pairCount; i++)
+    {
+        size_t index = i * 2;
 
-//         int small = vector[index];
-//         int large = vector[index + 1];
+        int small = vector[index];
+        int large = vector[index + 1];
 
-//         vectorPending.push_back(
-//             std::make_pair(small, large));
-//         vectorMainChain.push_back(large);
-//     }
-// }
+        vectorPending.push_back(std::make_pair(small, large));
+        vectorMainChain.push_back(large);
+    }
+}
 
-// void PmergeMe::insertFirstPending()
-// {
-//     if (vectorPending.empty())
-//         return;
+void PmergeMe::insertFirstPending()
+{
+    if (vectorPending.empty())
+        return;
 
-//     vectorMainChain.insert(
-//         vectorMainChain.begin(),
-//         vectorPending[0].first);
-// }
+    vectorMainChain.insert(vectorMainChain.begin(),vectorPending[0].first);
+}
 
 // /* ************************************************************************** */
 // /*  FORD-JOHNSON -- 5. Insert the remaining small elements                    */
@@ -387,29 +367,88 @@ void PmergeMe::printPairs()
     std::cout << std::endl;
 }
 
-void PmergeMe::printChains()
+// void PmergeMe::printChains()
+// {
+//     std::cout << "[Chains ]" << std::endl;
+
+//     std::cout << "  Main chain:\n" << "     ";
+//     for (size_t i = 0; i < vectorMainChain.size(); i++)
+//         std::cout << "[" << vectorMainChain[i] << "]" << "\n     ";
+//     std::cout << std::endl;
+
+//     std::cout << "  Pending:\n" << "     ";
+//     for (size_t i = 0; i < vectorPending.size(); i++)
+//     {
+//         std::cout << "["
+//                   << vectorPending[i].first
+//                   << "] -> "
+//                   << vectorPending[i].second
+//                   << "" << "\n     ";
+//     }
+//     std::cout << std::endl;
+// }
+
+// void PmergeMe::printChains()
+// {
+//     std::cout << "[Chains ]" << std::endl;
+//     std::cout << "  Main chain     Pending" << std::endl;
+
+//     size_t i = 0;
+//     while (i < vectorMainChain.size() || i < vectorPending.size())
+//     {
+//         std::cout << "     ";
+
+//         if (i < vectorMainChain.size())
+//             std::cout << "[" << vectorMainChain[i] << "]";
+//         else
+//             std::cout << "   ";
+
+//         std::cout << "          ";
+
+//         if (i < vectorPending.size())
+//         {
+//             std::cout << "[" << vectorPending[i].first
+//                       << "] -> "
+//                       << vectorPending[i].second;
+//         }
+
+//         std::cout << std::endl;
+//         i++;
+//     }
+
+//     std::cout << std::endl;
+// }
+
+void PmergeMe::printChains(bool firstInserted)
 {
-    std::cout << "printChains()" << std::endl;
-    std::cout << "------------------" << std::endl;
+    std::cout << "[Chains ]" << std::endl;
+    std::cout << "  Main chain     Pending" << std::endl;
 
-    std::cout << "Main chain: ";
+    size_t mainIndex    = false;
+    size_t pendingIndex = firstInserted ? true : false;
 
-    for (size_t i = 0; i < vectorMainChain.size(); i++)
-        std::cout << vectorMainChain[i] << " ";
-
-    std::cout << std::endl;
-
-    std::cout << "Pending:    ";
-
-    for (size_t i = 0; i < vectorPending.size(); i++)
+    while (mainIndex < vectorMainChain.size()
+        || pendingIndex < vectorPending.size())
     {
-        std::cout << "("
-                  << vectorPending[i].first
-                  << " -> "
-                  << vectorPending[i].second
-                  << ") ";
-    }
+        std::cout << "     ";
 
-    std::cout << std::endl
-              << std::endl;
+        if (mainIndex < vectorMainChain.size())
+            std::cout << "[" << vectorMainChain[mainIndex] << "]";
+        else
+            std::cout << "   ";
+
+        std::cout << "          ";
+
+        if (pendingIndex < vectorPending.size())
+        {
+            std::cout << "[" << vectorPending[pendingIndex].first
+                      << "] -> "
+                      << vectorPending[pendingIndex].second;
+            pendingIndex++;
+        }
+
+        std::cout << std::endl;
+        mainIndex++;
+    }
+    std::cout << std::endl;
 }

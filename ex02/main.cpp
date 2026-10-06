@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 14:42:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 16:42:20 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,30 @@ int main(int argc, char *argv[])
     {
         PmergeMe pmerge;
 
-        // 1. Parse input
+        // Parse input
         pmerge.parseValue(argc, argv);
         pmerge.printState("Initial");
 
-        // 2. Make pairs
+        // 1. Make pairs
         pmerge.makePairs();
         pmerge.printPairs();
 
-        // // 3. Recursively sort pairs by their larger elements
-        // pmerge.sortPairs();
-        // pmerge.printPairs();
+        // 2. Compare each pairs, and sort
+        pmerge.sortPairs();
+        pmerge.printPairs();
 
-        // // 4. Create main chain + pending
-        // pmerge.createChains();
-        // pmerge.printChains();
+        // 3. Recursively, sort, big elements, Create main chain + pending
+        pmerge.createChains();
+        pmerge.printChains(false);
 
-        // // 5. Insert first pending
-        // pmerge.insertFirstPending();
-        // pmerge.printChains();
+        // // 4. Insert first pending
+        pmerge.insertFirstPending();
+        pmerge.printChains(true);
 
-        // // 6. Insert remaining pending
+        // // 5. Insert remaining pending
         // pmerge.insertPending();
         // pmerge.printChains();
 
-        // // 7. Insert odd leftover
         // pmerge.insertOdd();
         // pmerge.printChains();
     }

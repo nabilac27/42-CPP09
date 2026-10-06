@@ -1,3 +1,115 @@
+
+Jacobsthal sequence → WHICH element should I insert next?
+
+Binary search      → WHERE should I insert that element?
+
+
+---
+
+        Numbers
+        ↓
+        1. Make pairs
+        ↓
+        2. Compare each pair, separate small and big elements
+        ↓
+        3. Recursively sort the larger elements from each pair using merge-insertion sort,
+            creating a sorted sequence S
+        ↓
+        4. Insert at the beginning of S the element that was paired with
+            the first (smallest) element of S
+        ↓
+        5. Insert the remaining smaller elements in a specific order
+            using binary search
+
+
+---
+
+
+                 PmergeMe
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+   Parse input      Sort         Measure
+       │             │             │
+positive ints    Ford-Johnson     timing
+                     │
+               ┌─────┴─────┐
+               ↓           ↓
+          Container 1  Container 2
+
+
+----
+
+INPUT
+  ↓
+PARSE
+  ↓
+VALIDATE
+  ↓
+STORE
+  ↓
+PRINT "Before"
+  ↓
+SORT using Ford-Johnson
+  ↓
+PRINT "After"
+  ↓
+PRINT TIME
+
+---
+
+| Step              | What happens                                   |
+| ----------------- | ---------------------------------------------- |
+| **1. Parse**      | Read `argv[]`                                  |
+| **2. Validate**   | Positive integer? Invalid character? Overflow? |
+| **3. Store**      | Put numbers into your two containers           |
+| **4. Before**     | Print original sequence                        |
+| **5. Sort**       | Ford-Johnson on container 1                    |
+| **6. Sort again** | Ford-Johnson on container 2                    |
+| **7. After**      | Print sorted sequence                          |
+| **8. Timing**     | Print time for each container                  |
+
+---
+
+→ PAIR + COMPARE
+  Sort larger elements
+  Main chain
+  Pending chain
+  Jacobsthal
+  Binary insertion
+
+---
+
+Take
+    3 5 9 7 4
+
+Make Pairs
+    (3, 5)  (9, 7)   4
+
+Compare each pair so the smaller is first, larger is second:
+    (3, 5)  (7, 9)   4
+
+The 4 is odd, so it has no partner. Keep it aside for later.
+
+----
+
+Initial:
+3 5 9 7 4
+
+        ↓ makePairs()
+
+(3,5) (7,9) 4
+  ↑     ↑    ↑
+ pair  pair  odd/straggler
+
+
+ ---
+
+ https://en.wikipedia.org/wiki/Merge-insertion_sort
+
+
+ ---
+
 INPUT
 3 2 1 6 5 9 7 11
         │
