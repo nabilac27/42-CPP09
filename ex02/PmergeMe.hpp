@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 18:06:52 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 18:53:59 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,49 +15,59 @@
 
 #include <iostream> 
 #include <string> 
+#include <cctype>
 #include <stdexcept> 
 #include <vector>
-#include <deque>
 #include <cstdlib>
 #include <algorithm>
 #include <utility>
 
-typedef std::vector<int>                  vect;
-typedef std::vector<size_t>               vectSize;
-typedef std::vector<std::pair<int, int> > vectPair;
+typedef std::vector<int>                  Vector;
+typedef std::vector<size_t>               VectorSizeT;
+typedef std::vector<std::pair<int, int> > VectorPair;
+
+enum Debug
+{
+    PAIRS,
+    CHAINS,
+    CHAINS_FIRST_INSERTED
+};
 
 class PmergeMe
 {
     private:
-            vect     vector;
-            vect     vectorMainChain;
-            vectPair vectorPending;
+        Vector      vectorValues;
 
-            bool     hasOdd;
-            int      straggler;
+        Vector      vectorMainChain;
+        VectorPair  vectorPending;
 
-        public:
-            PmergeMe();
-            PmergeMe(const PmergeMe &other);
-            PmergeMe& operator=(const PmergeMe &other);
-            ~PmergeMe();
+        bool        hasOdd;
+        int         straggler;
 
-            void parseValue(int argc, char *argv[]);
-            void makePairs();
-            void sortPairs();
-            void createChains();
-            void fordJohnsonVector(vect&    values);
-            void insertFirstPending();
+    public:
+        PmergeMe();
+        PmergeMe(const PmergeMe &other);
+        PmergeMe& operator=(const PmergeMe &other);
+        ~PmergeMe();
 
-            vectSize generateJacobsthal(size_t size);
-            vectSize generateInsertionOrder(size_t size);
+        void        parseValue(int argc, char *argv[]);
+        void        makePairs();
+        void        sortPairs();
+        void        createChains();
+        void        fordJohnsonVector(Vector &values);
+        void        insertFirstPending();
 
-            void insertPending();
-            void insertStraggler();
+        VectorSizeT generateJacobsthal(size_t size);
+        VectorSizeT generateInsertionOrder(size_t size);
 
-            void printState(const char *msg, bool debug);
-            void printPairs();
-            void printChains(bool firstInserted);
+        void        insertPending();
+        void        insertStraggler();
+
+        void        printState(const char *msg, bool debug);
+        void        printDebugging(Debug type);
+        
+        // void        printPairs();
+        // void        printChains(bool firstInserted);
 };
 
 #endif

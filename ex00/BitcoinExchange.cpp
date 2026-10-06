@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/10 18:54:15 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 19:12:43 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ BitcoinExchange::~BitcoinExchange()
 }
 
 /* ************************************************************************** */
-/*  loadDataCsvFile()                                           	     		  */
+/*  loadDataCsvFile()                                           	          */
 /* ************************************************************************** */
 void BitcoinExchange::loadDataCsvFile(const String& filename)
 {
@@ -69,7 +69,7 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 }
 
 /* ************************************************************************** */
-/*  processInputTxtFile()                                                		  */
+/*  processInputTxtFile()                                                     */
 /* ************************************************************************** */
 void BitcoinExchange::processInputTxtFile(const String& filename)
 {
@@ -89,7 +89,7 @@ void BitcoinExchange::processInputTxtFile(const String& filename)
 }
 
 /* ************************************************************************** */
-/*  parseKeyDate()                                                		  */
+/*  parseKeyDate()                                                		      */
 /* ************************************************************************** */
 bool BitcoinExchange::parseKeyDate(const String& line, String& date,String& valueString)
 {

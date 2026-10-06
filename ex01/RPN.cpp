@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/10 19:03:01 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 19:12:20 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,9 @@ bool RPN::parseExpression(const std::string& expression)
 
 	while (ss >> token)
 	{
-		/* Number */
 		if (token.length() == 1
 			&& std::isdigit(static_cast<unsigned char>(token[0])))
 			numbers.push(token[0] - '0');
-
-		/* Operator */
 		else if (token.length() == 1 && isOperator(token[0]))
 		{
 			if (numbers.size() < 2)
@@ -78,8 +75,6 @@ bool RPN::parseExpression(const std::string& expression)
 
 			numbers.push(result);
 		}
-		
-		/* Invalid */
 		else
 			return (false);
 	}

@@ -141,10 +141,11 @@ For example:
                     ▼
              [10] [20] [30] [40] [50]
 ```
-
 </details>
 
+
 ---
+
 
 <details>
 <summary><b><code>std::map</code></b></summary>
@@ -669,20 +670,24 @@ For example:
     ```cpp
         Numbers
         ↓
-        Make pairs
+        1. Make pairs
         ↓
-        Compare each pair
+        2. Compare each pair, separate small and big elements
         ↓
-        Separate small and big elements
+        3. Recursively sort the larger elements from each pair using merge-insertion sort,
+            creating a sorted sequence S
         ↓
-        Sort the big elements
+        4. Insert at the beginning of S the element that was paired with
+            the first (smallest) element of S
         ↓
-        Insert the small elements
-        ↓
-        Sorted result
+        5. Insert the remaining smaller elements in a specific order
+            using binary search
     ```
 
 - In one sentence: Ford–Johnson first creates ordered pairs, recursively sorts the larger elements, and then inserts the smaller elements in a carefully chosen order.
+
+- https://en.wikipedia.org/wiki/Merge-insertion_sort
+
 </details>
 
 ---
