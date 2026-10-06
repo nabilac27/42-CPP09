@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/23 06:07:57 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 15:31:22 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ class PmergeMe
         std::vector<std::pair<int, int> > vectorPending;
 
         // Odd leftover
-        bool hasOdd;
-        int oddValue;
+        bool    hasOdd;
+        int     straggler;
 
     public:
         /* Orthodox Canonical Form */
@@ -75,7 +75,7 @@ class PmergeMe
         void insertOdd();
 
         /* Debug */
-        void printValue(const char *msg);
+        void printState(const char *msg);
         void printPairs();
         void printChains();
 };

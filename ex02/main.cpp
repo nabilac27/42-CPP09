@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/23 06:13:44 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 14:42:48 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,31 +22,31 @@ int main(int argc, char *argv[])
 
         // 1. Parse input
         pmerge.parseValue(argc, argv);
-        pmerge.printValue("Initial");
+        pmerge.printState("Initial");
 
         // 2. Make pairs
         pmerge.makePairs();
         pmerge.printPairs();
 
-        // 3. Recursively sort pairs by their larger elements
-        pmerge.sortPairs();
-        pmerge.printPairs();
+        // // 3. Recursively sort pairs by their larger elements
+        // pmerge.sortPairs();
+        // pmerge.printPairs();
 
-        // 4. Create main chain + pending
-        pmerge.createChains();
-        pmerge.printChains();
+        // // 4. Create main chain + pending
+        // pmerge.createChains();
+        // pmerge.printChains();
 
-        // 5. Insert first pending
-        pmerge.insertFirstPending();
-        pmerge.printChains();
+        // // 5. Insert first pending
+        // pmerge.insertFirstPending();
+        // pmerge.printChains();
 
-        // 6. Insert remaining pending
-        pmerge.insertPending();
-        pmerge.printChains();
+        // // 6. Insert remaining pending
+        // pmerge.insertPending();
+        // pmerge.printChains();
 
-        // 7. Insert odd leftover
-        pmerge.insertOdd();
-        pmerge.printChains();
+        // // 7. Insert odd leftover
+        // pmerge.insertOdd();
+        // pmerge.printChains();
     }
     catch (const std::exception &e)
     {
