@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 16:43:02 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 18:06:52 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,64 +22,42 @@
 #include <algorithm>
 #include <utility>
 
+typedef std::vector<int>                  vect;
+typedef std::vector<size_t>               vectSize;
+typedef std::vector<std::pair<int, int> > vectPair;
+
 class PmergeMe
 {
     private:
-        std::vector<int> vector;
-        std::deque<int>  deque;
+            vect     vector;
+            vect     vectorMainChain;
+            vectPair vectorPending;
 
-        void fordJohnsonVector(std::vector<int> &values);
-        std::vector<int> vectorMainChain;
-        
-        
-        // first  = pending/small value, second = partner/big value
-        std::vector<std::pair<int, int> > vectorPending;
+            bool     hasOdd;
+            int      straggler;
 
-        bool    hasOdd;
-        int     straggler;
+        public:
+            PmergeMe();
+            PmergeMe(const PmergeMe &other);
+            PmergeMe& operator=(const PmergeMe &other);
+            ~PmergeMe();
 
-    public:
-        /* Orthodox Canonical Form */
-        PmergeMe();
-        PmergeMe(const PmergeMe &other);
-        PmergeMe&   operator=(const PmergeMe &other);
-        ~PmergeMe();
+            void parseValue(int argc, char *argv[]);
+            void makePairs();
+            void sortPairs();
+            void createChains();
+            void fordJohnsonVector(vect&    values);
+            void insertFirstPending();
 
-        /* 1. Parse */
-        void parseValue(int argc, char *argv[]);
+            vectSize generateJacobsthal(size_t size);
+            vectSize generateInsertionOrder(size_t size);
 
-        /* 2. Make pairs */
-        void makePairs();
+            void insertPending();
+            void insertStraggler();
 
-        /* 3. Sort pairs */
-        void sortPairs();
-
-        /* 4. Create chains */
-        void createChains();
-
-        /* 5. Insert first pending */
-        void insertFirstPending();
-
-        /* 6. Jacobsthal */
-        std::vector<size_t> generateJacobsthal(size_t size);
-        std::vector<size_t> generateInsertionOrder(size_t size); 
-
-        /* 7. Insert pending */
-        void insertPending();
-
-        /* 8. Odd leftover */
-        void insertOdd();
-
-        /* Debug */
-        void    printState(const char *msg);
-        void    printPairs();
-        // void printChains();
-        void    printChains(bool firstInserted);
+            void printState(const char *msg, bool debug);
+            void printPairs();
+            void printChains(bool firstInserted);
 };
 
 #endif
-
-/*
-    program must use the merge-insert sort algorithm to sort the positive integer
-    sequence.
-*/

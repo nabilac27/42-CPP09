@@ -4,6 +4,11 @@ Jacobsthal sequence → WHICH element should I insert next?
 Binary search      → WHERE should I insert that element?
 
 
+/*
+    program must use the merge-insert sort algorithm to sort the positive integer
+    sequence.
+*/
+
 ---
 
         Numbers

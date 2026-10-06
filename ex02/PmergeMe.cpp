@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 16:43:42 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 18:06:58 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,11 @@ PmergeMe&   PmergeMe::operator=(const PmergeMe &other)
 {
     if (this != &other)
     {
-        vector = other.vector;
-
-        // vectorMainChain = other.vectorMainChain;
-        // vectorPending = other.vectorPending;
-
-        hasOdd = other.hasOdd;
-        straggler = other.straggler;
+        vector          = other.vector;
+        vectorMainChain = other.vectorMainChain;
+        vectorPending   = other.vectorPending;
+        hasOdd          = other.hasOdd;
+        straggler       = other.straggler;
     }
     return (*this);
 }
@@ -55,7 +53,6 @@ void PmergeMe::parseValue(int argc, char *argv[])
         int value = std::atoi(argv[i]);
         if (value <= 0)
             throw(std::runtime_error("Error"));
-
         vector.push_back(value);
     }
 }
@@ -72,7 +69,6 @@ void PmergeMe::makePairs()
         if (vector[i] > vector[i + 1])
             std::swap(vector[i], vector[i + 1]);
     }
-
     if (vector.size() % 2 != 0)
     {
         hasOdd    = true;
@@ -98,7 +94,6 @@ void PmergeMe::makePairs()
 void PmergeMe::sortPairs()
 {
     std::vector<std::pair<int, int> > pairs;
-
     size_t pairCount = vector.size() / 2;
 
     // 1. Create pairs
@@ -108,13 +103,11 @@ void PmergeMe::sortPairs()
 
         int small = vector[index];
         int large = vector[index + 1];
-
         pairs.push_back(std::make_pair(small, large));
     }
 
     // 2. Extract larger elements
     std::vector<int> larger;
-
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
@@ -141,27 +134,26 @@ void PmergeMe::sortPairs()
     // 5. Put pairs back into vector
     for (size_t i = 0; i < sortedPairs.size(); i++)
     {
-        vector[i * 2]       = sortedPairs[i].first;
-        vector[i * 2 + 1]   = sortedPairs[i].second;
+        vector[i * 2]       = sortedPairs[i].first;     // ?
+        vector[i * 2 + 1]   = sortedPairs[i].second;    // ?
     }
 }
 
 // /* ************************************************************************** */
 // /*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
 // /* ************************************************************************** */
-
-void PmergeMe::fordJohnsonVector(std::vector<int> &values)
+void PmergeMe::fordJohnsonVector(std::vector<int>&  values)
 {
     if (values.size() <= 1)
         return;
 
     std::vector<std::pair<int, int> > pairs;
 
-    bool hasOdd = (values.size() % 2 != 0);
-    int odd     = 0;
+    bool    hasOdd = (values.size() % 2 != 0);
+    int     straggler     = 0;
 
     if (hasOdd)
-        odd = values.back();
+        straggler = values.back();
 
     // 1. Make pairs
     for (size_t i = 0; i + 1 < values.size(); i += 2)
@@ -176,7 +168,6 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &values)
 
     // 2. Extract larger values
     std::vector<int> larger;
-
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
@@ -197,8 +188,8 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &values)
 
     if (hasOdd)
     {
-        std::vector<int>::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), odd);
-        mainChain.insert(position, odd);
+        std::vector<int>::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), straggler);
+        mainChain.insert(position, straggler);
     }
     
     // 6. Give sorted result back to caller
@@ -221,7 +212,6 @@ void PmergeMe::createChains()
 
         int small = vector[index];
         int large = vector[index + 1];
-
         vectorPending.push_back(std::make_pair(small, large));
         vectorMainChain.push_back(large);
     }
@@ -231,131 +221,124 @@ void PmergeMe::insertFirstPending()
 {
     if (vectorPending.empty())
         return;
-
     vectorMainChain.insert(vectorMainChain.begin(),vectorPending[0].first);
 }
 
 // /* ************************************************************************** */
 // /*  FORD-JOHNSON -- 5. Insert the remaining small elements                    */
 // /* ************************************************************************** */
+/*
+    generateJacobsthal
+    previous = 1
+    current  = 3
 
-// std::vector<size_t> PmergeMe::generateJacobsthal(size_t size)
-// {
-//     std::vector<size_t> jacobsthal;
+    next = 3 + 2×1 = 5
+    next = 5 + 2×3 = 11
+    next = 11 + 2×5 = 21
 
-//     size_t previous = 1;
-//     size_t current = 3;
+    3, 5, 11, 21, 43...
 
-//     while (current <= size)
-//     {
-//         jacobsthal.push_back(current);
+    For :   generateJacobsthal(10)  --> [3, 5]
+    11 isn't included because we only have 10 pending elements.
+*/
+std::vector<size_t> PmergeMe::generateJacobsthal(size_t size)
+{
+    std::vector<size_t> jacobsthal;
 
-//         size_t next = current + (2 * previous);
+    size_t previous = 1;
+    size_t current = 3;
 
-//         previous = current;
-//         current = next;
-//     }
+    while (current <= size)
+    {
+        jacobsthal.push_back(current);
 
-//     return jacobsthal;
-// }
+        size_t next = current + (2 * previous);
 
-// std::vector<size_t> PmergeMe::generateInsertionOrder(size_t size)
-// {
-//     std::vector<size_t> order;
-//     std::vector<size_t> jacobsthal = generateJacobsthal(size);
+        previous = current;
+        current = next;
+    }
 
-//     size_t previous = 1;
+    return (jacobsthal);
+}
 
-//     for (size_t i = 0; i < jacobsthal.size(); i++)
-//     {
-//         size_t current = jacobsthal[i];
+std::vector<size_t> PmergeMe::generateInsertionOrder(size_t size)
+{
+    std::vector<size_t> order;
+    std::vector<size_t> jacobsthal = generateJacobsthal(size);
 
-//         for (size_t j = current; j > previous; j--)
-//             order.push_back(j - 1);
+    size_t previous = 1;
 
-//         previous = current;
-//     }
+    for (size_t i = 0; i < jacobsthal.size(); i++)
+    {
+        size_t current = jacobsthal[i];
 
-//     for (size_t j = size; j > previous; j--)
-//         order.push_back(j - 1);
+        for (size_t j = current; j > previous; j--)
+            order.push_back(j - 1);
+        previous = current;
+    }
+    for (size_t j = size; j > previous; j--)
+        order.push_back(j - 1);
 
-//     return order;
-// }
+    return (order);
+}
 
 // /* ************************************************************************** */
 // /*  BINARY INSERT PENDING                                                     */
 // /* ************************************************************************** */
-// void PmergeMe::insertPending()
-// {
-//     if (vectorPending.size() <= 1)
-//         return;
+void PmergeMe::insertPending()
+{
+    if (vectorPending.size() <= 1)
+        return;
 
-//     std::vector<size_t> order =
-//         generateInsertionOrder(vectorPending.size());
+    std::vector<size_t> order = generateInsertionOrder(vectorPending.size());
 
-//     for (size_t i = 0; i < order.size(); i++)
-//     {
-//         size_t index = order[i];
+    for (size_t i = 0; i < order.size(); i++)
+    {
+        size_t  index   = order[i];
+        int     value   = vectorPending[index].first;
+        int     partner = vectorPending[index].second;
 
-//         int value = vectorPending[index].first;
-//         int partner = vectorPending[index].second;
-
-//         std::vector<int>::iterator partnerPosition =
-//             std::find(
-//                 vectorMainChain.begin(),
-//                 vectorMainChain.end(),
-//                 partner);
-
-//         std::vector<int>::iterator position =
-//             std::lower_bound(
-//                 vectorMainChain.begin(),
-//                 partnerPosition,
-//                 value);
-
-//         vectorMainChain.insert(position, value);
-//     }
-// }
+        std::vector<int>::iterator partnerPosition = std::find(vectorMainChain.begin(), vectorMainChain.end(), partner);
+        std::vector<int>::iterator position        = std::lower_bound(vectorMainChain.begin(), partnerPosition, value);
+        vectorMainChain.insert(position, value);
+    }
+    vectorPending.clear();
+}
 
 // /* ************************************************************************** */
-// /*  INSERT ODD LEFTOVER                                                       */
+// /*  INSERT STRAGGLER                                                          */
 // /* ************************************************************************** */
+void PmergeMe::insertStraggler()
+{
+    if (hasOdd)
+    {
+        std::vector<int>::iterator position;
 
-// void PmergeMe::insertOdd()
-// {
-//     if (!hasOdd)
-//         return;
-
-//     std::vector<int>::iterator position;
-
-//     position = std::lower_bound(
-//         vectorMainChain.begin(),
-//         vectorMainChain.end(),
-//         straggler);
-
-//     vectorMainChain.insert(position, straggler);
-
-//     hasOdd = false;
-// }
+        position    = std::lower_bound(vectorMainChain.begin(), vectorMainChain.end(), straggler);
+        vectorMainChain.insert(position, straggler);
+        hasOdd      = false;
+    }
+    vector  = vectorMainChain;
+}
 
 /* ************************************************************************** */
 /*  PRINT																	  */
 /* ************************************************************************** */
-void PmergeMe::printState(const char *msg)
+void PmergeMe::printState(const char *msg, bool debug)
 {
-    std::cout << "[" << msg << "]   " << "Vector: ";
+    if (debug)
+        std::cout << "\n[" << msg << "]   Vector: ";
+    else
+        std::cout << msg << ": ";
+
     for (size_t i = 0; i < vector.size(); i++)
         std::cout << vector[i] << " ";
     std::cout << std::endl;
-
-    // std::cout << "[" << msg << "] " << "Deque:  ";
-    // for (size_t i = 0; i < deque.size(); i++)
-    //     std::cout << deque[i] << " ";
-    // std::cout << std::endl;
 }
 
 void PmergeMe::printPairs()
 {
-    std::cout << "[Pairs  ]   " << "Vector: ";
+    std::cout << "\n[Pairs  ]   " << "Vector: ";
     for (size_t i = 0; i < vector.size(); i += 2)
     {
         if (i + 1 < vector.size())
@@ -367,68 +350,15 @@ void PmergeMe::printPairs()
     std::cout << std::endl;
 }
 
-// void PmergeMe::printChains()
-// {
-//     std::cout << "[Chains ]" << std::endl;
-
-//     std::cout << "  Main chain:\n" << "     ";
-//     for (size_t i = 0; i < vectorMainChain.size(); i++)
-//         std::cout << "[" << vectorMainChain[i] << "]" << "\n     ";
-//     std::cout << std::endl;
-
-//     std::cout << "  Pending:\n" << "     ";
-//     for (size_t i = 0; i < vectorPending.size(); i++)
-//     {
-//         std::cout << "["
-//                   << vectorPending[i].first
-//                   << "] -> "
-//                   << vectorPending[i].second
-//                   << "" << "\n     ";
-//     }
-//     std::cout << std::endl;
-// }
-
-// void PmergeMe::printChains()
-// {
-//     std::cout << "[Chains ]" << std::endl;
-//     std::cout << "  Main chain     Pending" << std::endl;
-
-//     size_t i = 0;
-//     while (i < vectorMainChain.size() || i < vectorPending.size())
-//     {
-//         std::cout << "     ";
-
-//         if (i < vectorMainChain.size())
-//             std::cout << "[" << vectorMainChain[i] << "]";
-//         else
-//             std::cout << "   ";
-
-//         std::cout << "          ";
-
-//         if (i < vectorPending.size())
-//         {
-//             std::cout << "[" << vectorPending[i].first
-//                       << "] -> "
-//                       << vectorPending[i].second;
-//         }
-
-//         std::cout << std::endl;
-//         i++;
-//     }
-
-//     std::cout << std::endl;
-// }
-
 void PmergeMe::printChains(bool firstInserted)
 {
-    std::cout << "[Chains ]" << std::endl;
+    std::cout << "\n[Chains ]" << std::endl;
     std::cout << "  Main chain     Pending" << std::endl;
 
     size_t mainIndex    = false;
     size_t pendingIndex = firstInserted ? true : false;
 
-    while (mainIndex < vectorMainChain.size()
-        || pendingIndex < vectorPending.size())
+    while (mainIndex < vectorMainChain.size() || pendingIndex < vectorPending.size())
     {
         std::cout << "     ";
 

@@ -6,107 +6,44 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 16:42:20 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 17:58:23 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 
-#include "PmergeMe.hpp"
-
-int main(int argc, char *argv[])
-{
-    try
-    {
-        PmergeMe pmerge;
-
-        // Parse input
-        pmerge.parseValue(argc, argv);
-        pmerge.printState("Initial");
-
-        // 1. Make pairs
-        pmerge.makePairs();
-        pmerge.printPairs();
-
-        // 2. Compare each pairs, and sort
-        pmerge.sortPairs();
-        pmerge.printPairs();
-
-        // 3. Recursively, sort, big elements, Create main chain + pending
-        pmerge.createChains();
-        pmerge.printChains(false);
-
-        // // 4. Insert first pending
-        pmerge.insertFirstPending();
-        pmerge.printChains(true);
-
-        // // 5. Insert remaining pending
-        // pmerge.insertPending();
-        // pmerge.printChains();
-
-        // pmerge.insertOdd();
-        // pmerge.printChains();
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
-
-    return 0;
-}
-
 // int main(int argc, char *argv[])
 // {
 //     try
 //     {
-//         PmergeMe value;
-        
-//         value.parseValue(argc, argv);
+//         PmergeMe pmerge;
 
-//         value.makePairs();
-//         value.sortPairs();
+//         pmerge.parseValue(argc, argv);
+//         pmerge.printState("Initial");
 
-//         value.createChains();
-//         value.printChains();
+//         // 1. Make pairs
+//         pmerge.makePairs();
+//         pmerge.printPairs();
 
-//         value.insertFirstPending();
-//         value.printChains();
+//         // 2. Compare each pairs, and sort
+//         pmerge.sortPairs();
+//         pmerge.printPairs();
 
-//         value.insertPending();
-//         value.printChains();
+//         // 3. Recursively, sort, big elements, Create main chain + pending
+//         pmerge.createChains();
+//         pmerge.printChains(false);
 
-//         value.insertOdd();
-//         value.printChains();
-//         // PmergeMe value;
+//         // // 4. Insert first pending
+//         pmerge.insertFirstPending();
+//         pmerge.printChains(true);
 
-//         // // 1. Parse
-//         // value.parseValue(argc, argv);
-//         // value.printValue("Initial");
-
-//         // // 2. Make pairs
-//         // value.makePairs();
-//         // value.printPairs();
-
-//         // // 3. Sort pairs
-//         // value.sortPairs();
-//         // value.printPairs();
-
-//         // // 4. Create main + pending chains
-//         // value.createChains();
-//         // value.printChains();
-
-//         // // 5. Insert first pending value
-//         // value.insertFirstPending();
-//         // value.printChains();
-
-//         // // 6 + 7. Insert remaining pending values
-//         // value.insertPending();
-//         // value.printChains();
-
-//         // // 8. Insert odd leftover
-//         // value.insertOdd();
-//         // value.printChains();
+//         // 5. Insert remaining pending using Jacobsthal order
+//         pmerge.insertPending();
+//         pmerge.printChains(true);
+//         pmerge.printState("Sorted");
+//         pmerge.insertStraggler();
+//         pmerge.printChains(true);
+//         pmerge.printState("Sorted");
 //     }
 //     catch (const std::exception &e)
 //     {
@@ -116,6 +53,35 @@ int main(int argc, char *argv[])
 
 //     return 0;
 // }
+
+int main(int argc, char *argv[])
+{
+    try
+    {
+        PmergeMe pmerge;
+
+        pmerge.parseValue(argc, argv);
+        pmerge.printState("Before", false);
+        
+        pmerge.makePairs();
+        pmerge.sortPairs();
+
+        pmerge.createChains();
+        pmerge.insertFirstPending();
+        
+        pmerge.insertPending();
+        pmerge.insertStraggler();
+
+        pmerge.printState("After", false);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
 
 /*
     createChains()
