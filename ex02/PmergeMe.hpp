@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 00:32:17 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 01:07:40 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ class PmergeMe
         void        makePairs();
         void        sortPairs();
         void        createChains();
-        void        fordJohnsonVector(Vector&   values);
+        // void        fordJohnsonVector(Vector&   values);
+        void        fordJohnsonVector(Vector &values, int depth = 0, bool debug = false);
         void        insertFirstPending();
 
         VectorSizeT generateJacobsthal(size_t size);
@@ -71,6 +72,7 @@ class PmergeMe
         double      getTime();
         
         void        printState(const char*  msg, bool debug);
+        void        printTime(double time, const std::string &container) const;
         void        printDebugging(Debug type);
 };
 

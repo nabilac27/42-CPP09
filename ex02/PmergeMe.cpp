@@ -121,7 +121,7 @@ void    PmergeMe::sortPairs()
         larger.push_back(pairs[i].second);
 
     // 3. Sort larger elements recursively
-    fordJohnsonVector(larger);
+    fordJohnsonVector(larger, 0, false);     // for debugging: 'true'
 
     // 4. Reorder pairs
     VectorPair        sortedPairs;
@@ -151,8 +151,20 @@ void    PmergeMe::sortPairs()
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
 /* ************************************************************************** */
-void    PmergeMe::fordJohnsonVector(Vector&  values)
+void    PmergeMe::fordJohnsonVector(Vector &values, int depth, bool debug)
 {
+    if (debug)
+    {
+        std::cout << "  [fordJohnsonVector()] "
+                  << std::string(depth * 4, ' ')
+                  << "Depth " << depth << ": ";
+
+        for (size_t i = 0; i < values.size(); i++)
+            std::cout << values[i] << " ";
+
+        std::cout << std::endl;
+    }
+
     if (values.size() <= 1)
         return;
 
@@ -180,7 +192,8 @@ void    PmergeMe::fordJohnsonVector(Vector&  values)
         larger.push_back(pairs[i].second);
 
     // 3. Recursively sort larger values
-    fordJohnsonVector(larger);
+    fordJohnsonVector(larger, depth + 1, debug);
+
 
     // 4. Start main chain with sorted larger values
     Vector mainChain = larger;
@@ -202,6 +215,17 @@ void    PmergeMe::fordJohnsonVector(Vector&  values)
     
     // 6. Give sorted result back to caller
     values = mainChain;
+
+    if (debug)
+    {
+        std::cout << "  [fordJohnsonVector()] "
+                  << std::string(depth * 4, ' ')
+                  << "Return " << depth << ": ";
+
+        for (size_t i = 0; i < values.size(); i++)
+            std::cout << values[i] << " ";
+        std::cout << std::endl;
+    }
 }
 
 /* ************************************************************************** */
@@ -399,6 +423,17 @@ void    PmergeMe::printState(const char* msg, bool debug)
     for (size_t i = 0; i < vectorValues.size(); i++)
         std::cout << vectorValues[i] << " ";
     std::cout << std::endl;
+}
+
+void PmergeMe::printTime(double time, const std::string &container) const
+{
+    std::cout << "Time to process a range of "
+              << getVectorSize()
+              << " elements with " << container << " : "
+              << std::fixed << std::setprecision(5)
+              << time
+              << " us"
+              << std::endl;
 }
 
 void    PmergeMe::printDebugging(Debug type)
