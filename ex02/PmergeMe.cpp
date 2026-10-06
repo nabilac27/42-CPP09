@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 19:04:14 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 20:43:13 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,6 +390,20 @@ void PmergeMe::printDebugging(Debug type)
         std::cout << std::endl;
     }
 }
+
+size_t PmergeMe::getSize() const
+{
+    return (vectorValues.size());
+}
+
+double PmergeMe::getTime()
+{
+    struct timeval time;
+
+    gettimeofday(&time, NULL);
+    return (time.tv_sec * 1000000.0 + time.tv_usec);
+}
+
 
 // void PmergeMe::printPairs()
 // {

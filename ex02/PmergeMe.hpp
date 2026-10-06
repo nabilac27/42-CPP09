@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 18:53:59 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 20:40:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <utility>
+#include <sys/time.h>
 
 typedef std::vector<int>                  Vector;
 typedef std::vector<size_t>               VectorSizeT;
@@ -63,6 +64,9 @@ class PmergeMe
         void        insertPending();
         void        insertStraggler();
 
+        size_t      getSize() const;
+        double      getTime();
+        
         void        printState(const char *msg, bool debug);
         void        printDebugging(Debug type);
         

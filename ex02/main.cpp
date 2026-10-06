@@ -6,14 +6,17 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 19:06:49 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 20:47:08 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+#include <iomanip>
 
 /*
-    TO-DO: handle duplicate values 
+    TO-DO: handle duplicate values*
+    timestamp
+    second container
 */
 
 int main(int argc, char *argv[])
@@ -25,6 +28,8 @@ int main(int argc, char *argv[])
         pmerge.parseValue(argc, argv);
         pmerge.printState("Before", false);
         
+        double start = pmerge.getTime();
+             
         pmerge.makePairs();
         pmerge.sortPairs();
 
@@ -34,7 +39,21 @@ int main(int argc, char *argv[])
         pmerge.insertPending();
         pmerge.insertStraggler();
 
-        pmerge.printState("After", false);
+        double end = pmerge.getTime();
+        
+        pmerge.printState("After ", false);
+
+
+        double vectorTime = end - start;
+        // double vectorTime = (end - start) / 1000000.0; (seconds)
+
+        std::cout << "Time to process a range of "
+                << pmerge.getSize()
+                << " elements with std::vector : "
+                << std::fixed << std::setprecision(5)
+                << vectorTime
+                << " us"
+                << std::endl;
     }
     catch (const std::exception &e)
     {
