@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PmergeMe.cpp                                       :+:      :+:    :+:   */
+/*      PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 20:43:13 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 23:18:59 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ PmergeMe::PmergeMe() : hasOdd(false), straggler(0)
 {
 }
 
-PmergeMe::PmergeMe(const PmergeMe &other)
+PmergeMe::PmergeMe(const PmergeMe&  other)
 {
     *this = other;
 }
 
-PmergeMe&   PmergeMe::operator=(const PmergeMe &other)
+PmergeMe&   PmergeMe::operator=(const PmergeMe& other)
 {
     if (this != &other)
     {
@@ -44,7 +44,7 @@ PmergeMe::~PmergeMe()
 /* ************************************************************************** */
 /*  PARSE                                                                     */
 /* ************************************************************************** */
-void PmergeMe::parseValue(int argc, char *argv[])
+void    PmergeMe::parseValue(int argc, char*    argv[])
 {
     if (argc < 2)
         throw (std::runtime_error("Error"));
@@ -69,7 +69,7 @@ void PmergeMe::parseValue(int argc, char *argv[])
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 1. MAKE PAIRS                                             */
 /* ************************************************************************** */
-void PmergeMe::makePairs()
+void    PmergeMe::makePairs()
 {
     hasOdd = false;
 
@@ -100,7 +100,7 @@ void PmergeMe::makePairs()
     fordJohnsonVector(larger)
 */
 
-void PmergeMe::sortPairs()
+void    PmergeMe::sortPairs()
 {
     VectorPair  pairs;
     size_t      pairCount = vectorValues.size() / 2;
@@ -151,7 +151,7 @@ void PmergeMe::sortPairs()
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
 /* ************************************************************************** */
-void PmergeMe::fordJohnsonVector(Vector&  values)
+void    PmergeMe::fordJohnsonVector(Vector&  values)
 {
     if (values.size() <= 1)
         return;
@@ -207,7 +207,7 @@ void PmergeMe::fordJohnsonVector(Vector&  values)
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 4. Insert the partner of the smallest big element         */
 /* ************************************************************************** */
-void PmergeMe::createChains()
+void    PmergeMe::createChains()
 {
     vectorMainChain.clear();
     vectorPending.clear();
@@ -225,7 +225,7 @@ void PmergeMe::createChains()
     }
 }
 
-void PmergeMe::insertFirstPending()
+void    PmergeMe::insertFirstPending()
 {
     if (vectorPending.empty())
         return;
@@ -291,7 +291,7 @@ VectorSizeT PmergeMe::generateInsertionOrder(size_t size)
 /* ************************************************************************** */
 /*  INSERT PENDING                                                            */
 /* ************************************************************************** */
-void PmergeMe::insertPending()
+void    PmergeMe::insertPending()
 {
     if (vectorPending.size() <= 1)
         return;
@@ -314,7 +314,7 @@ void PmergeMe::insertPending()
 // /* ************************************************************************** */
 // /*  INSERT STRAGGLER                                                          */
 // /* ************************************************************************** */
-void PmergeMe::insertStraggler()
+void    PmergeMe::insertStraggler()
 {
     if (hasOdd)
     {
@@ -327,10 +327,28 @@ void PmergeMe::insertStraggler()
     vectorValues  = vectorMainChain;
 }
 
+
 /* ************************************************************************** */
 /*  PRINT																	  */
 /* ************************************************************************** */
-void PmergeMe::printState(const char *msg, bool debug)
+size_t  PmergeMe::getVectorSize() const
+{
+    return (vectorValues.size());
+}
+
+double  PmergeMe::getTime()
+{
+    struct timeval time;
+
+    gettimeofday(&time, NULL);
+    return (time.tv_sec * 1000000.0 + time.tv_usec);
+}
+
+
+/* ************************************************************************** */
+/*  PRINT																	  */
+/* ************************************************************************** */
+void    PmergeMe::printState(const char* msg, bool debug)
 {
     if (debug)
         std::cout << "\n[" << msg << "]   Vector: ";
@@ -342,7 +360,7 @@ void PmergeMe::printState(const char *msg, bool debug)
     std::cout << std::endl;
 }
 
-void PmergeMe::printDebugging(Debug type)
+void    PmergeMe::printDebugging(Debug type)
 {
     if (type == PAIRS)
     {
@@ -390,64 +408,3 @@ void PmergeMe::printDebugging(Debug type)
         std::cout << std::endl;
     }
 }
-
-size_t PmergeMe::getSize() const
-{
-    return (vectorValues.size());
-}
-
-double PmergeMe::getTime()
-{
-    struct timeval time;
-
-    gettimeofday(&time, NULL);
-    return (time.tv_sec * 1000000.0 + time.tv_usec);
-}
-
-
-// void PmergeMe::printPairs()
-// {
-//     std::cout << "\n[Pairs  ]   " << "Vector: ";
-//     for (size_t i = 0; i < vectorValues.size(); i += 2)
-//     {
-//         if (i + 1 < vectorValues.size())
-//             std::cout << "(" << vectorValues[i] << ", " << vectorValues[i + 1] << ") ";
-//         else
-//             std::cout << vectorValues[i];
-//     }
-
-//     std::cout << std::endl;
-// }
-
-// void PmergeMe::printChains(bool firstInserted)
-// {
-//     std::cout << "\n[Chains ]" << std::endl;
-//     std::cout << "  Main chain     Pending" << std::endl;
-
-//     size_t mainIndex    = false;
-//     size_t pendingIndex = firstInserted ? true : false;
-
-//     while (mainIndex < vectorMainChain.size() || pendingIndex < vectorPending.size())
-//     {
-//         std::cout << "     ";
-
-//         if (mainIndex < vectorMainChain.size())
-//             std::cout << "[" << vectorMainChain[mainIndex] << "]";
-//         else
-//             std::cout << "   ";
-
-//         std::cout << "          ";
-
-//         if (pendingIndex < vectorPending.size())
-//         {
-//             std::cout << "[" << vectorPending[pendingIndex].first
-//                       << "] -> "
-//                       << vectorPending[pendingIndex].second;
-//             pendingIndex++;
-//         }
-
-//         std::cout << std::endl;
-//         mainIndex++;
-//     }
-//     std::cout << std::endl;
-// }

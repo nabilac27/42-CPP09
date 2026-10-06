@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 20:40:44 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/06 23:21:25 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,15 @@ class PmergeMe
 
     public:
         PmergeMe();
-        PmergeMe(const PmergeMe &other);
-        PmergeMe& operator=(const PmergeMe &other);
+        PmergeMe(const PmergeMe&    other);
+        PmergeMe& operator=(const PmergeMe& other);
         ~PmergeMe();
 
-        void        parseValue(int argc, char *argv[]);
+        void        parseValue(int argc, char*  argv[]);
         void        makePairs();
         void        sortPairs();
         void        createChains();
-        void        fordJohnsonVector(Vector &values);
+        void        fordJohnsonVector(Vector&   values);
         void        insertFirstPending();
 
         VectorSizeT generateJacobsthal(size_t size);
@@ -64,14 +64,11 @@ class PmergeMe
         void        insertPending();
         void        insertStraggler();
 
-        size_t      getSize() const;
+        size_t      getVectorSize() const;
         double      getTime();
         
-        void        printState(const char *msg, bool debug);
+        void        printState(const char*  msg, bool debug);
         void        printDebugging(Debug type);
-        
-        // void        printPairs();
-        // void        printChains(bool firstInserted);
 };
 
 #endif
