@@ -6,12 +6,11 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 23:25:27 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 00:33:39 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
-#include <iomanip>
 
 // int main(int argc, char *argv[])
 // {
@@ -100,13 +99,13 @@ int main(int argc, char *argv[])
         // 5. Insert remaining pending using Jacobsthal order
         pmerge.insertPending();
         pmerge.printDebugging(CHAINS_FIRST_INSERTED);
-        pmerge.printState("Sorted", true);
         std::cout << " ------------------------------------" << std::endl;
         
         pmerge.insertStraggler();
         pmerge.printDebugging(CHAINS_FIRST_INSERTED);
         pmerge.printState("Sorted", true);
     }
+        
     catch (const std::exception &e)
     {
         std::cerr << e.what() << std::endl;

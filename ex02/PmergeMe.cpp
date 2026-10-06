@@ -30,7 +30,7 @@ PmergeMe&   PmergeMe::operator=(const PmergeMe& other)
     {
         vectorValues    = other.vectorValues;
         vectorMainChain = other.vectorMainChain;
-        vectorPending   = other.vectorPending;
+        vectorPendingChain   = other.vectorPendingChain;
         hasOdd          = other.hasOdd;
         straggler       = other.straggler;
     }
@@ -210,7 +210,7 @@ void    PmergeMe::fordJohnsonVector(Vector&  values)
 void    PmergeMe::createChains()
 {
     vectorMainChain.clear();
-    vectorPending.clear();
+    vectorPendingChain.clear();
 
     size_t pairCount = vectorValues.size() / 2;
 
@@ -220,16 +220,16 @@ void    PmergeMe::createChains()
         int     small = vectorValues[index];
         int     large = vectorValues[index + 1];
 
-        vectorPending.push_back(std::make_pair(small, large));
+        vectorPendingChain.push_back(std::make_pair(small, large));
         vectorMainChain.push_back(large);
     }
 }
 
 void    PmergeMe::insertFirstPending()
 {
-    if (vectorPending.empty())
+    if (vectorPendingChain.empty())
         return;
-    vectorMainChain.insert(vectorMainChain.begin(),vectorPending[0].first);
+    vectorMainChain.insert(vectorMainChain.begin(),vectorPendingChain[0].first);
 }
 
 /* ************************************************************************** */
@@ -291,29 +291,70 @@ VectorSizeT PmergeMe::generateInsertionOrder(size_t size)
 /* ************************************************************************** */
 /*  INSERT PENDING                                                            */
 /* ************************************************************************** */
-void    PmergeMe::insertPending()
+void PmergeMe::insertPending()
 {
-    if (vectorPending.size() <= 1)
+    if (vectorPendingChain.size() <= 1)
         return;
 
-    VectorSizeT order = generateInsertionOrder(vectorPending.size());
+    VectorSizeT order           = generateInsertionOrder(vectorPendingChain.size());
+
+    size_t      group           = 0;
+    size_t      previousJacob   = 1;
+    VectorSizeT jacob           = generateJacobsthal(vectorPendingChain.size());
 
     for (size_t i = 0; i < order.size(); i++)
     {
-        size_t  index   = order[i];
-        int     value   = vectorPending[index].first;
-        int     partner = vectorPending[index].second;
+        size_t index = order[i];
+    
+        // Move to the correct Jacobsthal group
+        while (group < jacob.size() && index >= jacob[group])
+        {
+            previousJacob = jacob[group];
+            group++;
+        }
 
-        std::vector<int>::iterator partnerPosition = std::find(vectorMainChain.begin(), vectorMainChain.end(), partner);
-        std::vector<int>::iterator position        = std::lower_bound(vectorMainChain.begin(), partnerPosition, value);
+        // size_t  searchSize = (1 << (group + 2)) - 1;
+        size_t searchSize = static_cast<size_t>(std::pow(2.0, group + 2)) - 1;
+        /*
+            Ford-Johnson arranges the insertion groups so binary search operates on at most 2^(i+1)-1 elements, 
+            giving ranges like 3, 7, 15.
+            My group index starts from 0, so in my code that becomes (1 << (group + 2)) - 1
+        */
+
+        if (searchSize > vectorMainChain.size())
+            searchSize = vectorMainChain.size();
+
+        int value = vectorPendingChain[index].first;
+        Vector::iterator position = std::lower_bound(vectorMainChain.begin(), vectorMainChain.begin() + searchSize, value);
         vectorMainChain.insert(position, value);
+        (void)previousJacob;
     }
-    vectorPending.clear();
+    vectorPendingChain.clear();
 }
 
-// /* ************************************************************************** */
-// /*  INSERT STRAGGLER                                                          */
-// /* ************************************************************************** */
+// void    PmergeMe::insertPending()
+// {
+//     if (vectorPendingChain.size() <= 1)
+//         return;
+
+//     VectorSizeT order = generateInsertionOrder(vectorPendingChain.size());
+
+//     for (size_t i = 0; i < order.size(); i++)
+//     {
+//         size_t  index   = order[i];
+//         int     value   = vectorPendingChain[index].first;
+//         int     partner = vectorPendingChain[index].second;
+
+//         std::vector<int>::iterator partnerPosition = std::find(vectorMainChain.begin(), vectorMainChain.end(), partner);
+//         std::vector<int>::iterator position        = std::lower_bound(vectorMainChain.begin(), partnerPosition, value);
+//         vectorMainChain.insert(position, value);
+//     }
+//     vectorPendingChain.clear();
+// }
+
+/* ************************************************************************** */
+/*  INSERT STRAGGLER                                                          */
+/* ************************************************************************** */
 void    PmergeMe::insertStraggler()
 {
     if (hasOdd)
@@ -329,7 +370,7 @@ void    PmergeMe::insertStraggler()
 
 
 /* ************************************************************************** */
-/*  PRINT																	  */
+/*  TIME																	  */
 /* ************************************************************************** */
 size_t  PmergeMe::getVectorSize() const
 {
@@ -378,33 +419,52 @@ void    PmergeMe::printDebugging(Debug type)
     else if (type == CHAINS || type == CHAINS_FIRST_INSERTED)
     {
         std::cout << "\n[Chains ]" << std::endl;
-        std::cout << "  Main chain     Pending" << std::endl;
 
-        size_t mainIndex    = false;
+        std::cout << "  "
+                << std::left << std::setw(15) << "Main chain"
+                << std::setw(20) << "Pending chain"
+                << "Straggler"
+                << std::endl;
+
+        size_t mainIndex    = 0;
         size_t pendingIndex = (type == CHAINS_FIRST_INSERTED) ? 1 : 0;
 
-        while (mainIndex < vectorMainChain.size() || pendingIndex < vectorPending.size())
+        while (mainIndex < vectorMainChain.size()
+            || pendingIndex < vectorPendingChain.size())
         {
-            std::cout << "     ";
+            std::string mainText;
+            std::string pendingText;
 
             if (mainIndex < vectorMainChain.size())
-                std::cout << "[" << vectorMainChain[mainIndex] << "]";
-            else
-                std::cout << "   ";
-
-            std::cout << "          ";
-
-            if (pendingIndex < vectorPending.size())
             {
-                std::cout << "[" << vectorPending[pendingIndex].first
-                        << "] -> "
-                        << vectorPending[pendingIndex].second;
+                std::ostringstream oss;
+                oss << "[" << vectorMainChain[mainIndex] << "]";
+                mainText = oss.str();
+            }
+
+            if (pendingIndex < vectorPendingChain.size())
+            {
+                std::ostringstream oss;
+                oss << "[" << vectorPendingChain[pendingIndex].first
+                    << "] -> "
+                    << vectorPendingChain[pendingIndex].second;
+                pendingText = oss.str();
+
                 pendingIndex++;
             }
 
+            std::cout << "  "
+                    << std::left << std::setw(15) << mainText
+                    << std::setw(20) << pendingText;
+
+            if (mainIndex == 0 && hasOdd)
+                std::cout << "[" << straggler << "]";
+
             std::cout << std::endl;
+
             mainIndex++;
         }
+
         std::cout << std::endl;
     }
 }
