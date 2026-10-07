@@ -60,31 +60,48 @@ void    PmergeMe::parseValue(int argc, char*    argv[])
 
         if (value <= 0)
             throw (std::runtime_error("Error"));
-        // if (std::find(vectorValues.begin(), vectorValues.end(), value) != vectorValues.end())
-        //     throw (std::runtime_error("Error: duplicate value"));
+
         vectorValues.push_back(value);
+        dequeValues.push_back(value);
     }
 }
 
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 1. MAKE PAIRS                                             */
 /* ************************************************************************** */
-void    PmergeMe::makePairs()
+void PmergeMe::makePairs(Container type)
 {
     hasOdd = false;
 
-    for (size_t i = 0; i+1 < vectorValues.size(); i+=2)
+    if (type == VECTOR)
     {
-        if (vectorValues[i] > vectorValues[i + 1])
-            std::swap(vectorValues[i], vectorValues[i + 1]);
-    }
-    if (vectorValues.size() % 2 != 0)
-    {
-        hasOdd    = true;
-        straggler = vectorValues.back();
-    };
-}
+        for (size_t i = 0; i + 1 < vectorValues.size(); i += 2)
+        {
+            if (vectorValues[i] > vectorValues[i + 1])
+                std::swap(vectorValues[i], vectorValues[i + 1]);
+        }
 
+        if (vectorValues.size() % 2 != 0)
+        {
+            hasOdd    = true;
+            straggler = vectorValues.back();
+        }
+    }
+    else if (type == DEQUE)
+    {
+        for (size_t i = 0; i + 1 < dequeValues.size(); i += 2)
+        {
+            if (dequeValues[i] > dequeValues[i + 1])
+                std::swap(dequeValues[i], dequeValues[i + 1]);
+        }
+
+        if (dequeValues.size() % 2 != 0)
+        {
+            hasOdd    = true;
+            straggler = dequeValues.back();
+        }
+    }
+}
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 2. SORT PAIRS into (smaller, larger)                      */
 /* ************************************************************************** */
@@ -100,52 +117,56 @@ void    PmergeMe::makePairs()
     fordJohnsonVector(larger)
 */
 
-void    PmergeMe::sortPairs()
+void    PmergeMe::sortPairs(Container type)
 {
-    VectorPair  pairs;
-    size_t      pairCount = vectorValues.size() / 2;
-
-    // 1. Create pairs
-    for (size_t i = 0; i < pairCount; i++)
+    if (type == VECTOR)
     {
-        size_t  index = i * 2;
-        int     small = vectorValues[index];
-        int     large = vectorValues[index + 1];
+        VectorPair  pairs;
+        size_t      pairCount = vectorValues.size() / 2;
 
-        pairs.push_back(std::make_pair(small, large));
-    }
-
-    // 2. Extract larger elements
-    Vector larger;
-    for (size_t i = 0; i < pairs.size(); i++)
-        larger.push_back(pairs[i].second);
-
-    // 3. Sort larger elements recursively
-    fordJohnsonVector(larger, 0, false);     // for debugging: 'true'
-
-    // 4. Reorder pairs
-    VectorPair        sortedPairs;
-    std::vector<bool> used(pairs.size(), false);
-
-    for (size_t i = 0; i < larger.size(); i++)
-    {
-        for (size_t j = 0; j < pairs.size(); j++)
+        // 1. Create pairs
+        for (size_t i = 0; i < pairCount; i++)
         {
-            if (!used[j] && pairs[j].second == larger[i])
+            size_t  index = i * 2;
+            int     small = vectorValues[index];
+            int     large = vectorValues[index + 1];
+
+            pairs.push_back(std::make_pair(small, large));
+        }
+
+        // 2. Extract larger elements
+        Vector larger;
+        for (size_t i = 0; i < pairs.size(); i++)
+            larger.push_back(pairs[i].second);
+
+        // 3. Sort larger elements recursively
+        fordJohnsonVector(larger, 0, false);     // for debugging: 'true'
+
+        // 4. Reorder pairs
+        VectorPair        sortedPairs;
+        std::vector<bool> used(pairs.size(), false);
+
+        for (size_t i = 0; i < larger.size(); i++)
+        {
+            for (size_t j = 0; j < pairs.size(); j++)
             {
-                sortedPairs.push_back(pairs[j]);
-                used[j] = true;
-                break;
+                if (!used[j] && pairs[j].second == larger[i])
+                {
+                    sortedPairs.push_back(pairs[j]);
+                    used[j] = true;
+                    break;
+                }
             }
         }
-    }
 
-    // 5. Put pairs back into vector
-    for (size_t i = 0; i < sortedPairs.size(); i++)
-    {
-        vectorValues[i * 2]       = sortedPairs[i].first;     // ?
-        vectorValues[i * 2 + 1]   = sortedPairs[i].second;    // ?
+        // 5. Put pairs back into vector
+        for (size_t i = 0; i < sortedPairs.size(); i++)
+        {
+            vectorValues[i * 2]       = sortedPairs[i].first;     // ?
+            vectorValues[i * 2 + 1]   = sortedPairs[i].second;    // ?
+        }
     }
+    
 }
 
 /* ************************************************************************** */

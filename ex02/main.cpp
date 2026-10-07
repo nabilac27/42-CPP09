@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 01:09:28 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 02:39:50 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 
         double start = pmerge.getTime();
              
-        pmerge.makePairs();
-        pmerge.sortPairs();
+        pmerge.makePairs(VECTOR);
+        pmerge.sortPairs(VECTOR);
 
         pmerge.createChains();
         pmerge.insertFirstPending();
