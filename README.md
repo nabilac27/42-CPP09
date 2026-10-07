@@ -7,6 +7,7 @@
 ## Overview
 CPP Module 09 focuses on the **Standard Template Library (STL)** and introduces more advanced usage of **containers, algorithms, parsing, and sorting**.
 
+
 | Exercise | Description | Container |
 |----------|-------------|---------------|
 | **ex00 — Bitcoin Exchange** | Calculate the value of Bitcoin on a given date using historical exchange-rate data. | `std::map` |
@@ -14,12 +15,10 @@ CPP Module 09 focuses on the **Standard Template Library (STL)** and introduces 
 | **ex02 — PmergeMe** | Sort a sequence of positive integers using the Ford-Johnson merge-insertion algorithm. | `std::vector`, `std::deque` |
 
 
-
-**Each exercise** requires the use of at least **one STL container**, with the final exercise requiring two different containers.
+Each exercise requires the use of at least one **STL container**, with the final exercise requiring two different containers.
 
 
 ---
-
 
 ## Concepts Learned 
 
@@ -28,263 +27,128 @@ CPP Module 09 focuses on the **Standard Template Library (STL)** and introduces 
 
 ### Standard Template Library (STL)
 
-The **Standard Template Library**, or STL, is a collection of reusable C++ components.
+The Standard Template Library, or STL, is a collection of reusable C++ components.
 
 It mainly consists of:
 
-* **Containers** for storing data.
+* Containers for storing data.
 
-* **Algorithms** for searching, sorting, and manipulating data.
+* Algorithms for searching, sorting, and manipulating data.
 
-* **Iterators** for navigating through containers.
+* Iterators for navigating through containers.
 
 ---
 
-
 ### Containers
 
-A **container** is a class that stores a collection of objects.
+A container is a class that stores a collection of objects.
 
 - Different containers are designed for different operations.
 
-
     ```shell
+
             | Container     | Description                                          |
             | ------------- | ---------------------------------------------------- |
             | `std::vector` | Dynamic array with fast random access.               |
             | `std::list`   | Doubly linked list with fast insertion and deletion. |
             | `std::deque`  | Double-ended queue with fast insertion at both ends. |
             | `std::stack`  | Last-in, first-out container adapter.                |
-            | `std::set`    | Stores unique values in sorted order.                |
             | `std::map`    | Stores sorted key-value pairs.                       |
+
     ```
-
-
 
 ---
 
 ### Algorithms
-**C++ STL Algorithm Library** provides predefined functions for performing common operations such as searching, sorting, counting, comparing, and modifying data stored in containers. 
+
+C++ STL Algorithm Library provides predefined functions for performing common operations such as searching, sorting, counting, comparing, and modifying data stored in containers. 
 
 These algorithms are mainly defined in the `<algorithm>` header files.
 
-Common types of algorithms:
-1. `std::find()` : Searches for an element and returns its iterator if present.
-2. `std::distance()` : Calculates the number of increments needed to go from one iterator to another.
-3. `sort()`:  Arranges elements in a given range into ascending order by default.
+- Common types of algorithms:
+
+    ```shell
+
+            | Functions         | Description                                                                      |
+            | ----------------- | -------------------------------------------------------------------------------- |
+            | `std::find()`     | Searches for an element and returns its iterator if present.                     |
+            | `std::distance()` | Calculates the number of increments needed to go from one iterator to another.   |
+            | `sort()`          | Arranges elements in a given range into ascending order by default.              |
+    ```
 
 ---
 
 ### Iterators
 
-An **iterator** is an object that behaves similarly to a pointer and allows you to **traverse and access elements** in a container.
-
+An iterator is an object that behaves similarly to a pointer and allows you to traverse and access elements in a container.
 
 - STL algorithms such as `std::sort()`, `std::find()`, and `std::count()` work with iterators.
 
 - An iterator can be declared using the container's iterator type:
 
     ```cpp
+
         std::vector<int>::iterator it;
+
     ```
 
     Or obtained directly from the container:
 
     ```cpp
+
         std::vector<int>::iterator it = v.begin();
+
     ```
 
-### Common Iterator Functions
-- `.begin()`  → Returns an iterator pointing to the first element.
-- `.end()`  →  Returns an iterator pointing one position past the last element.
+- Common Iterator Functions
+    ```shell
 
----
+            | Functions         | Description                                                                      |
+            | ----------------- | -------------------------------------------------------------------------------- |
+            | `.begin()`        | Returns an iterator pointing to the first element.                               |
+            | `.end()`          | Returns an iterator pointing one position past the last element.                 |
+    ```
 
-### Algorithm + Iterator
-```shell
-        Container
-            │
-            ▼
-        Iterators
-        ┌───┴───┐
-     begin()  end()
-        │       │
-        └───┬───┘
-            ▼
-        Algorithm
-            │
-            ▼
-       operates on
-          range
-```
-
-For example:
-
-```cpp
-        std::sort(v.begin(), v.end());
-
-        v.begin()   → start of the range
-        v.end()     → one position past the last element
-        std::sort() → operates on that range
-```
-
-
-```cpp
-    begin()                       end()
-       ↓                           ↓
-    [10] [30] [20] [40] [50]     [end]
-     └────────── range ────────────┘
-                    │
-                    ▼
-                std::sort()
-                    │
-                    ▼
-             [10] [20] [30] [40] [50]
-```
 </details>
 
-
 ---
-
 
 <details>
 <summary><b><code>std::map</code></b></summary>
 
-----
+---
 
-- `std::map` stores **key-value pairs**.
-- Each **key is unique**.
-- Elements are automatically **sorted by key**.
-- Supports ordered operations such as `lower_bound()` and `upper_bound()`.
+- `std::map` stores **sorted key-value pairs**.
+- Each key is unique.
 
     ```cpp
-            #include <map>
+        #include <map>
 
-            std::map<key_type, value_type> map;
+        std::map<std::string, double> database;
     ```
-
 - In Bitcoin Exchange:
-
+  
     ```cpp
-            std::map<std::string, double> database;
+    std::map <    KEY      ,  VALUE  >
+                ↓            ↓
+                date          rate
+
     ```
 
-    ```text
-            std::map <    KEY      ,  VALUE  >
-                        ↓           ↓
-                    std::string     double
-                        ↓           ↓
-                        date          rate
-    ```
-
-- Example:
-
-    ```text
-            2011-01-01 → 0.3
-            2011-01-02 → 0.4
-            2011-01-03 → 10
-    ```
-
-    ### Iterator
+- Iterator
 
     ```cpp
         std::map<std::string, double>::const_iterator it;
-    ```
 
-    Each map element is a key-value pair:
+        it->first;   // key / date
+        it->second;  // value / rate
 
-    ```text
-            map element
-                │
-            ┌────┴────┐
-            ↓         ↓
-        first     second
-            ↓         ↓
-        KEY       VALUE
-            ↓         ↓
-        date        rate
-    ```
+        lower_bound() vs upper_bound()
 
-    ```cpp
-        it->first;   // date
-        it->second;  // exchange rate
-    ```
-
-### `lower_bound()` vs `upper_bound()`
-
-- **`lower_bound()`**
-
-    Returns an iterator to the **first key greater than or equal to (`>=`)** the requested key.
-
-    ```cpp
-        it = database.lower_bound(date);
-    ```
-
-    Example:
-
-    ```text
-        Requested: 2011-01-06
-
-        2011-01-01
-        2011-01-04  ← closest earlier date
-        2011-01-10  ← lower_bound()
-    ```
-
-    ```text
         lower_bound(x) → first key >= x
+        upper_bound(x) → first key >  x
     ```
-
-    If the exact date exists, `lower_bound()` points directly to it:
-
-    ```text
-        Requested: 2011-01-04
-
-        2011-01-01
-        2011-01-04  ← lower_bound()
-        2011-01-10
-    ```
-
----
-
-- **`upper_bound()`**
-
-    Returns an iterator to the **first key greater than (`>`)** the requested key.
-
-    ```cpp
-        it = database.upper_bound(date);
-    ```
-
-    Example:
-
-    ```text
-        Requested: 2011-01-06
-
-        2011-01-01
-        2011-01-04  ← closest earlier date
-        2011-01-10  ← upper_bound()
-    ```
-
-    Then move one position backward:
-
-    ```cpp
-        --it;
-    ```
-
-    ```text
-        2011-01-04  ← result
-    ```
-
-    It also works when the exact date exists:
-
-    ```text
-        Requested: 2011-01-04
-
-        2011-01-01
-        2011-01-04  ← result after --it
-        2011-01-10  ← upper_bound()
-    ```
-
-    Therefore Bitcoin Exchange can simply use:
+- Bitcoin Exchange uses:
 
     ```cpp
         it = database.upper_bound(date);
@@ -294,160 +158,20 @@ For example:
 
         --it;
     ```
+- This gives the exact date if it exists, otherwise the closest earlier date.
 
-    This gives the **exact date if it exists**, otherwise the **closest earlier date**.
+- Summary
 
-- **Summary**
-
-    ```text
+    ```shell
         map              → key → value
-
-        it->first        → key / date
-        it->second       → value / rate
-
+        it->first        → key
+        it->second       → value
         begin()          → first element
         end()            → after last element
-
         lower_bound(x)   → first key >= x
-        upper_bound(x)   → first key >  x
-
+        upper_bound(x)   → first key > x
         --it             → previous element
     ```
-
-    https://www.geeksforgeeks.org/cpp/map-associative-containers-the-c-standard-template-library-stl/
-
-</details>
-
----
-
-<details>
-<summary><b><code>std::stack</code></b></summary>
-
----
-
-- `std::stack` is a container adapter that follows **LIFO**:
-
-    ```text
-        Last In, First Out
-    ```
-
-- The last value pushed into the stack is the first one removed.
-
-    ```cpp
-        #include <stack>
-
-        std::stack<value_type> stack;
-    ```
-
-- In RPN:
-
-    ```cpp
-        std::stack<int> numbers;
-    ```
-
-    ```text
-    std::stack < VALUE >
-                   ↓
-                  int
-                   ↓
-                operand
-    ```
-
-- Example:
-
-    ```text
-        push(7)
-        push(3)
-
-        stack:
-
-            TOP
-            ↓
-            [3]
-            [7]
-    ```
-
-### Main Operations
-
-- **`push()`**
-
-    Adds a value to the top of the stack.
-
-    ```cpp
-        numbers.push(7);
-        numbers.push(3);
-    ```
-
-    ```text
-        TOP
-         ↓
-        [3]
-        [7]
-    ```
-
-- **`top()`**
-
-    Returns the value currently at the top.
-
-    ```cpp
-    int value = numbers.top();
-    ```
-
-    ```text
-        TOP
-         ↓
-        [3]  → top() = 3
-        [7]
-    ```
-
-    `top()` does **not** remove the value.
-
-- **`pop()`**
-
-    Removes the top value.
-
-    ```cpp
-        numbers.pop();
-    ```
-
-    Before:
-
-    ```text
-        [3] ← TOP
-        [7]
-    ```
-
-    After:
-
-    ```text
-        [7] ← TOP
-    ```
-
-    `pop()` does **not return** the removed value.
-
-    So normally:
-
-    ```cpp
-        int value = numbers.top();
-        numbers.pop();
-    ```
-
-- **`size()`**
-
-    Returns the number of elements.
-
-    ```cpp
-        numbers.size();
-    ```
-
-- **`empty()`**
-
-    Checks whether the stack contains no elements.
-
-    ```cpp
-        numbers.empty();
-    ```
-
 </details>
 
 ---
@@ -455,104 +179,27 @@ For example:
 <details>
 <summary><b><code>std::list</code></b></summary>
 
-- std::list is a doubly linked list.
+---
 
-- Each element is stored separately and connected to the previous and next elements.
-
-- Unlike vector and deque, it does not support random access with operator[].
-
-- Insertion and removal are efficient when the position is already known.
+- `std::list` is a doubly linked list.
+- No random access with operator[].
+- Efficient insertion/removal when the position is known.
 
     ```cpp
-            #include <list>
+        #include <list>
 
-            std::list<int> numbers;
-
-            [3] ↔ [5] ↔ [9] ↔ [7]
-            ↑                   ↑
-        front                back
-    ```
-- In RPN:
-  
-    ```cpp
         std::list<long long> numbers;
-    ```
 
-- The back of the list is used like the top of a stack:
+        [3] ↔ [5] ↔ [9]
+        ↑             ↑
+        front         back
 
-    ```cpp
-        list:
+        In RPN, the back is used like the top of a stack:
 
-        [8] ↔ [9]
-            ↑
-            back
-            TOP
-    ```
-- Main Operations
-  - push_back()
+        numbers.push_back(8);   // add
+        numbers.back();         // read last
+        numbers.pop_back();     // remove last
 
-    Adds an element to the end of the list.
-
-        numbers.push_back(8);
-        numbers.push_back(9);
-
-        [8] ↔ [9]
-            ↑
-            back
-
-  - back()
-
-    Returns the last element.
-
-    ```cpp
-        int value = numbers.back();
-
-        [8] ↔ [9]
-            ↑
-        back() = 9
-    ```
-    back() does not remove the element.
-
-- pop_back()
-
-    Removes the last element.
-
-    ```cpp
-        numbers.pop_back();
-    ```
-
-    Before:
-
-    ```cpp
-        [8] ↔ [9]
-            ↑
-            back
-    ```
-    After:
-    ```cpp
-        [8]
-        ↑
-        back
-    ```
-
-- push_front() / pop_front()
-
-    A list can also efficiently add and remove elements from the front.
-
-    ``cpp
-        numbers.push_front(5);
-        numbers.pop_front();
-    ```
-- size() / empty()
-
-    ```cpp
-        numbers.size();
-        numbers.empty();
-    ```
-
-- std::stack vs std::list in RPN
-
-    ```cpp
         std::stack          std::list
         ──────────────────────────────
         push(x)             push_back(x)
@@ -562,45 +209,16 @@ For example:
         empty()             empty()
     ```
 
-    So:
-
-    ```cpp
-        // stack
-        int right = numbers.top();
-        numbers.pop();
-    ```
-
-    becomes:
-
-    ```cpp
-        // list
-        int right = numbers.back();
-        numbers.pop_back();
-    ```
-
-- vector vs deque vs list
-
-    ```cpp
-                        vector       deque        list
-        ───────────────────────────────────────────────
-        Memory          contiguous   segmented    linked nodes
-        Random access   yes          yes          no
-        push_back       fast         fast         fast
-        push_front      expensive    fast         fast
-        operator[]      yes          yes          no
-    ```
-
 - Summary
-    - list
+
+    ```shell
+        list
         → doubly linked list
         → no operator[]
         → no random access
-        → fast front + back operations
-        → push_back() / back() / pop_back()
-        can be used like a stack
-
-- Used in RPN as the container holding operands while evaluating the expression.
-
+        → fast front/back operations
+        → back() can act like stack top
+    ```
 </details>
 
 ---
@@ -610,10 +228,10 @@ For example:
 
 ---
 
-- Dynamic array that stores elements in **contiguous memory**.
-- Fast random access with `operator[]`.
+- Dynamic array using contiguous memory.
+- Fast random access with operator`[]`.
 - Efficient `push_back()`.
-- Inserting/removing in the middle can be expensive because elements may need to move.
+- Middle insertion/removal can be expensive.
 
     ```cpp
         #include <vector>
@@ -621,224 +239,73 @@ For example:
         std::vector<int> numbers;
     ```
 
-    ```text
-        [3][5][9][7][4]
-        ↑  ↑  ↑  ↑  ↑
-        contiguous memory
-    ```
-
-- **Common Operations**
+- Common Operations
 
     ```cpp
-        numbers.push_back(5);    // add at end
-        numbers.pop_back();      // remove last
-        numbers[0];              // access by index
-        numbers.size();          // number of elements
-        numbers.begin();         // first element
-        numbers.end();           // after last element
-    ```
-- **Summary**
+        numbers.push_back(5);
+        numbers.pop_back();
+        numbers[0];
+        numbers.size();
+        numbers.begin();
+        numbers.end();
+    ````
 
-    ```text
+- Summary
+
+    ```cpp
         vector
         → dynamic array
         → contiguous memory
         → fast random access
         → efficient push_back()
     ```
-
-- Used in `PmergeMe` as one of the two containers for Ford-Johnson sorting.
+- Used in `PmergeMe` as one of the two containers for `Ford-Johnson sorting`.
 
 </details>
 
 ---
 
-
 <details>
 <summary><b><code>std::deque</code></b></summary>
 
----
+----
 
-- `deque` means **double-ended queue**.
-- Supports efficient insertion/removal at **both front and back**.
-- Unlike `vector`, its elements are not guaranteed to be stored in one contiguous memory block.
-- Still supports random access with `operator[]`.
-
+- `deque` means double-ended queue.
+- Fst insertion/removal at both ends.
+- Supports random access with operator`[]`.
+- Memory is not guaranteed to be contiguous.
     ```cpp
         #include <deque>
 
         std::deque<int> numbers;
     ```
 
-- **Common Operations**
+- Common Operations
 
     ```cpp
-        numbers.push_back(5);     // add at back
-        numbers.push_front(5);    // add at front
+        numbers.push_back(5);
+        numbers.push_front(5);
 
-        numbers.pop_back();       // remove back
-        numbers.pop_front();      // remove front
+        numbers.pop_back();
+        numbers.pop_front();
 
-        numbers[0];               // random access
+        numbers[0];
         numbers.size();
         numbers.begin();
         numbers.end();
     ```
 
-- `Vector` vs `Deque`
+- `vector` vs `deque` vs `list`
 
-    ```text
-                        vector              deque
-        ────────────────────────────────────────────
-        Memory          contiguous          segmented
-        push_back       fast                fast
-        push_front      expensive           fast
-        random access   yes                 yes
-    ```
-
-- **Summary**
-
-    ```text
-        deque
-        → double-ended queue
-        → fast front + back operations
-        → random access
-        → non-contiguous storage
-    ```
-
-- Used in `PmergeMe` as the second container for Ford-Johnson sorting.
-
-</details>
-
----
-
-
-<details>
-<summary><b>Reverse Polish Notation</b></summary>
-
----
-
-- RPN places the **operator after its operands**.
-
-    ```text
-        Normal:
-        7 + 3
-
-        RPN:
-        7 3 +
-    ```
-
-- It is naturally evaluated using a `std::stack`.
-
-- **Main Idea**
-
-    ```text
-        NUMBER
-        ↓
-        push()
-
-        OPERATOR
-        ↓
-        pop right
-        pop left
-        ↓
-        calculate left OP right
-        ↓
-        push(result)
-
-        END
-        ↓
-        exactly 1 value must remain
-    ```
-
-    Example:
-
-    ```text
-        Expression: 7 7 * 7 7 + -
-
-        Token     Stack           Operation
-        ────────────────────────────────────────
-        7         [7]             push(7)
-
-        7         [7, 7]          push(7)
-
-        *         [49]            7 * 7 = 49
-                                push(49)
-
-        7         [49, 7]         push(7)
-
-        7         [49, 7, 7]      push(7)
-
-        +         [49, 14]        7 + 7 = 14
-                                push(14)
-
-        -         [35]            49 - 14 = 35
-                                push(35)
-
-        Result: 35
-    ```
-
-- **Important**
-
-  - For `-` and `/`, operand order matters:
-
-      ```cpp
-          int right = numbers.top();
-          numbers.pop();
-
-          int left = numbers.top();
-          numbers.pop();
-      ```
-
-  - Then:
-
-      ```text
-      left - right
-      left / right
-      ```
-
-- **Summary**
-
-    ```text
-        RPN number    → push
-        RPN operator  → pop 2 → calculate → push
-        final stack   → must contain exactly 1 result
-    ```
-
-</details>
-
-
----
-
-<details>
-<summary><b>Ford-Johnson Algorithm (merge-insertion sort)</b></summary>
-
----
-
-- The **Ford–Johnson algorithm**, also called the **merge-insertion sort**, is a sorting algorithm designed to sort elements using a small number of comparisons.
-
-- Basic Idea:
-  
     ```cpp
-        Numbers
-        ↓
-        1. Make pairs
-        ↓
-        2. Compare each pair, separate small and big elements
-        ↓
-        3. Recursively sort the larger elements from each pair using merge-insertion sort,
-            creating a sorted sequence S
-        ↓
-        4. Insert at the beginning of S the element that was paired with
-            the first (smallest) element of S
-        ↓
-        5. Insert the remaining smaller elements in a specific order
-            using binary search
+                        vector       deque        list
+        ───────────────────────────────────────────────
+        Memory          contiguous   segmented    linked
+        Random access   yes          yes          no
+        operator[]      yes          yes          no
     ```
 
-- In one sentence: Ford–Johnson first creates ordered pairs, recursively sorts the larger elements, and then inserts the smaller elements in a carefully chosen order.
-
-- https://en.wikipedia.org/wiki/Merge-insertion_sort
+- Used in `PmergeMe` as the second container for `Ford-Johnson sorting`.
 
 </details>
 
@@ -847,9 +314,7 @@ For example:
 ## Exercises
 
 <details>
-<summary><b>Ex00</b></summary>
-
----
+<summary><b>ex00 | Bitcoin Exchange</b></summary>
 
 ## ex00 | Bitcoin Exchange
 
@@ -861,6 +326,7 @@ For example:
         data.csv                    input.txt
         ────────                    ─────────
         date,exchange_rate          date | value
+
         2011-01-03,0.3              2011-01-03 | 3
         2011-01-09,0.32             2011-01-09 | 2
             │                           │
@@ -869,223 +335,413 @@ For example:
     ```
 
 - `data.csv` contains the historical Bitcoin exchange rates.
+
 - `input.txt` contains the requested dates and Bitcoin amounts.
+
 - The exchange rates are stored in a `std::map`.
-- If an exact date does not exist, the **closest earlier date** is used.
+
+- If an exact date does not exist, the closest earlier date is used.
+
 - Each value must be between `0` and `1000`.
 
-- **Program Flow**
-
-    ```text
-                    ./btc input.txt
-                            │
-                            ▼
-                    BitcoinExchange btc
-                            │
-                ┌───────────┴───────────┐
-                ▼                       ▼
-        loadDataCsv()            processInputTxt()
-                │                       │
-                ▼                       ▼
-            data.csv                 input.txt
-                │                       │
-                ▼                       ▼
-        load date → rate          read each line
-                │                       │
-                ▼                       ▼
-            std::map              processInputLine()
-                                        │
-                                        ▼
-                                    parseDateValue()
-                                         │
-                            ┌────────────┴────────────┐
-                            ▼                         ▼
-                        isValidDate()             isValidValue()
-                            │                         │
-                            └────────────┬────────────┘
-                                        ▼
-                                findExchangeRate()
-                                        │
-                                        ▼
-                                `map::upper_bound()`
-                                        │
-                                        ▼
-                            exact / closest lower date
-                                        │
-                                        ▼
-                                value × exchange rate
-                                        │
-                                        ▼
-                                        output
-    ```
-
 - **Example**
-
+    
     ```bash
         ./btc input.txt
     ```
 
   -  input.txt
-    
+
       ```text
           date        | value
           2011-01-03  | 3
+
       ```
 
   - data.csv
-    
+
       ```text
           date        ,exchange_rate
           2011-01-03  ,0.3
+
       ```
 
   - Calculation:
 
-      ```text
+      ```cpp
           3 × 0.3 = 0.9
       ```
 
   - Output:
 
-      ```text
+      ```cpp
           2011-01-03 => 3 = 0.9
     ```
 
-
 </details>
 
----
 
+
+---
 <details>
-<summary><b>Ex01</b></summary>
+<summary><b>ex01 | RPN</b></summary>
 
 ## ex01 | RPN
 
-- The goal of **RPN (Reverse Polish Notation)** is to calculate a mathematical expression where the operator comes after the numbers.
+- The goal of RPN (Reverse Polish Notation) is to calculate a mathematical expression where the operator comes after the numbers.
 
 - Normal notation:
-  
-    ```cpp
-        7 * 7 - 7
-    ```
+
+   ```text
+   7 * 7 - 7
+   ```
+
 - RPN:
 
-    ```cpp
-        7 7 * 7 -
-    ```
+   ```text
+   7 7 * 7 -
+   ```
 
-- **Program Flow**
-  
-    ```cpp
-                    Read token
-                        │
-          ┌─────────────┼─────────────┐
-          │             │             │
-          ▼             ▼             ▼
-       Number        Operator       Invalid
-          │             │             │
-          ▼             ▼             ▼
-   Convert to int   Need 2 values    Error
-          │             │
-          ▼             ▼
-       push()       pop() → right
-                        │
-                        ▼
-                   pop() → left
-                        │
-                        ▼
-                    calculate()
-                        │
-                        ▼
-                  push(result)
-                        │
-          ┌─────────────┘
-          │
-          ▼
-     Read next token
-          │
-          ▼
-   End of expression
-          │
-          ▼
-   stack.size() == 1?
-       ┌──┴──┐
-       ▼     ▼
-      YES    NO
-       │      │
-       ▼      ▼
-     Print   Error
-     result
-    ````
+- In this implementation, a `std::list` stores the operands:
 
-    ```cpp
-        NUMBER   → push
-        OPERATOR → pop, pop, calculate, push
-        END      → stack must contain exactly 1 value
-    ```
+   ```cpp
+   std::list<long long> numbers;
+   ```
 
-- **Example**
+- The back of the list acts like the top of a stack:
 
-    ```shell
-        Expression: 7 7 * 7 -
+   ```text
+   [7] ↔ [3]
+         ↑
+         back
+   ```
 
-        Token           Stack
-        ──────────────────────
-        7               [7]
+-  **Example**
 
-        7               [7, 7]
+   ```text
+   Expression: 7 7 * 7 7 + -
 
-        *               [49]
+   Token           List                Operation
+   ─────────────────────────────────────────────────────────
+   7               [7]                 push_back(7)
 
-        7               [49, 7]
+   7               [7, 7]              push_back(7)
 
-        -               [42]
+   *               [49]                7 * 7 = 49
+                                       push_back(49)
 
-        Result: 42
-    ```
+   7               [49, 7]             push_back(7)
 
-    ```shell
-        Expression: 7 7 * 7 7 + -
+   7               [49, 7, 7]          push_back(7)
 
-        Token           Stack               Operation
-        ────────────────────────────────────────────────────────
-        7               [7]                 push(7)
+   +               [49, 14]            7 + 7 = 14
+                                       push_back(14)
 
-        7               [7, 7]              push(7)
+   -               [35]                right = 14
+                                       left  = 49
+                                       49 - 14 = 35
+                                       push_back(35)
 
-        *               [49]                pop 7, pop 7
-                                            7 * 7 = 49
-                                            push(49)
+   Result: 35
+   ```
 
-        7               [49, 7]             push(7)
+- **Summary**
 
-        7               [49, 7, 7]          push(7)
+   ```text
+      NUMBER
+         ↓
+      push_back()
 
-        +               [49, 14]            pop 7, pop 7
-                                            7 + 7 = 14
-                                            push(14)
+      OPERATOR
+         ↓
+      back() → right
+      pop_back()
+         ↓
+      back() → left
+      pop_back()
+         ↓
+      calculate(left, right, operator)
+         ↓
+      push_back(result)
 
-        -               [35]                pop 14 → right
-                                            pop 49 → left
-                                            49 - 14 = 35
-                                            push(35)
+      END
+         ↓
+      size() == 1
+         ↓
+      numbers.back()
+         ↓
+      RESULT
+   ```
 
-        Result: 35
-    ```
 </details>
 
 ---
 
 <details>
-<summary><b>Ex02</b></summary>
+<summary><b>ex02 | PmergeMe</b></summary>
+
+## ex02 | PmergeMe
+
+- `PmergeMe` sorts a sequence of positive integers using the **Ford-Johnson algorithm**, also known as **merge-insertion sort**.
+
+- The algorithm is designed to sort elements using a small number of comparisons.
+
+- Reference: [Merge-insertion sort - Wikipedia](https://en.wikipedia.org/wiki/Merge-insertion_sort)
+
+- The same algorithm is executed separately using:
+
+    ```cpp
+    std::vector<int>
+    std::deque<int>
+    ```
+
+
+### Ford-Johnson Algorithm
+
+The algorithm follows these main steps:
+
+1. **Make pairs**
+   
+    - Group the elements into pairs. 
+    
+    - If the number of elements is odd, keep one element unpaired as a straggler.
+
+2. **Compare each pair**
+    - Compare the two elements and arrange them as: (small, big)
+
+3. **Recursively sort the larger elements**
+    - Take the larger element from each pair and recursively sort them using Ford-Johnson.
+
+4. **Insert the first smaller element**
+    - Insert the element paired with the smallest element of the sorted main chain at the beginning.
+
+5. **Insert the remaining smaller elements**
+    - Insert them in a specially chosen order and use binary search to find their positions.
+
+
+### Main Logic
+- 
+    ```cpp
+            Numbers
+            │
+            ▼
+            Make pairs
+            │
+            ▼
+            Order each pair
+            (small, big)
+            │
+            ▼
+            Recursively sort BIG values
+            │
+            ▼
+            Create Main + Pending chains
+            │
+            ▼
+            Insert first pending
+            │
+            ▼
+            Insert remaining pending
+            │
+            ├── Jacobsthal    → WHICH element to insert next
+            └── Binary Search → WHERE to insert it
+            │
+            ▼
+            Insert straggler
+            │
+            ▼
+        SORTED
+    ```
+
+### Example
+
+- Input:
+    ```cpp
+    3 2 1 6 5 9 7 11
+    ```
+            ↓ make pairs
+    ```cpp
+    (3,2) (1,6) (5,9) (7,11)
+    ```
+        ↓ order each pair
+    ```cpp
+    (2,3) (1,6) (5,9) (7,11)
+     ↑ ↑
+     │ └── big
+     └──── small
+    ```
+        ↓ recursively sort by BIG values
+
+    ```cpp
+    3 6 9 11
+    ```
+    ↓ create chains
+
+    ```cp
+    Main:       3 6 9 11
+
+    Pending:
+                2 → partner 3
+                1 → partner 6
+                5 → partner 9
+                7 → partner 11
+    ```
+        ↓ insert first pending
+
+    ```cpp
+    2 3 6 9 11
+    ```
+        ↓ insert remaining pending
+
+    ```cpp
+    Jacobsthal    → WHICH element comes next
+    Binary Search → WHERE it should be inserted
+    ```
+        ↓
+    ```cpp
+    1 2 3 5 6 7 9 11
+    ```
+
+- **Jacobsthal Insertion Order**
+
+    `Ford-Johnson` does not simply insert the pending elements from left to right.
+ 
+    - The uninserted elements are divided into groups:
+
+        2, 2, 6, 10, 22, 42, ...
+
+    - The elements inside each group are processed in reverse order.
+
+    - ❗ This ordering is related to the `Jacobsthal sequence` and is chosen so that the binary-search ranges are often one less than a power of two:
+        
+        1, 3, 7, 15, 31, ...
+
+
+    - These sizes are efficient for `binary search` because the search tree can be balanced, 
+        
+        helping reduce the worst-case number of comparisons.
+
+
+
+- So the two ideas have different jobs:
+
+    - **Jacobsthal**            
+
+        ↓
+
+        WHICH pending element should I insert next?
+
+
+    - **Binary Search**
+
+        ↓
+
+        WHERE should I insert that element?
+
+
+- Partner-Limited Binary Search
+
+
+    Each pending value remains associated with its larger partner:
+
+
+    small → partner
+
+    ```cpp
+        2 → 3
+        1 → 6
+        5 → 9
+        7 → 11
+    ```
+
+  Because:
+
+    small < partner
+
+    - the pending value never needs to be searched after its partner.
+    - Therefore, binary search is performed only from the beginning of the main chain up to, but not including, its partner:
+
+        ```cpp
+            partnerPosition = std::find(mainChain.begin(), mainChain.end(), partner);
+
+            position        = std::lower_bound(mainChain.begin(), partnerPosition, value);
+
+            mainChain.insert(position, value);
+        ```
+
+- This restricted search range is an important part of `Ford-Johnson`.
+
+    - **`Straggler`**
+
+        If the input contains an odd number of elements:
+
+        3 2 1 6 5
+
+        - one element has no partner:
+
+        ```cpp
+        Pairs:
+                    (2,3) (1,6)
+
+        Straggler:
+                    5
+        ```
+
+    - The `straggler` is kept aside and inserted into the sorted chain later using `binary search`.
+
+
+### Implementation
+- 
+    ```cpp
+        Ford-Johnson               PmergeMe
+        ────────────────────────────────────────────
+        Make pairs              →  makePairs()
+
+        Sort pairs recursively  →  sortPairs()
+
+        Create chains           →  createChains()
+
+        Insert first pending    →  insertFirstPending()
+
+        Jacobsthal order        →  generateInsertionOrder()
+
+        Binary insertion        →  insertPending()
+
+        Insert odd element      →  insertStraggler()
+    ```
+
+
+### Key Idea
+- `Ford-Johnson` pairs the elements, recursively sorts the larger elements, then inserts the smaller elements in a specially chosen `Jacobsthal`-based order using `binary search`.
+
+    ```cpp
+        PAIR        → create (small, big)
+
+        RECURSION   → sort the big values
+
+        MAIN CHAIN  → sorted big values
+
+        PENDING     → small values waiting to be inserted
+
+        JACOBSTHAL  → WHICH pending element to insert next
+
+        BINARY      → WHERE to insert that element
+
+        STRAGGLER   → leftover element when input size is odd
+    ```
+
+
 </details>
 
 ---
 
-
 ## Resources
+
 - https://www.geeksforgeeks.org/cpp/containers-cpp-stl/
+
 - https://www.geeksforgeeks.org/cpp/c-magicians-stl-algorithms/
+
 - https://www.geeksforgeeks.org/cpp/iterators-c-stl/
+
 - https://cplusplus.com/reference/stack/stack/
 

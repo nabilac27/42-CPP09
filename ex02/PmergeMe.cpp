@@ -28,17 +28,14 @@ PmergeMe&   PmergeMe::operator=(const PmergeMe& other)
 {
     if (this != &other)
     {
-        // Vector
         vectorValues       = other.vectorValues;
         vectorMainChain    = other.vectorMainChain;
         vectorPendingChain = other.vectorPendingChain;
 
-        // Deque
         dequeValues        = other.dequeValues;
         dequeMainChain     = other.dequeMainChain;
         dequePendingChain  = other.dequePendingChain;
 
-        // State
         hasOdd             = other.hasOdd;
         straggler          = other.straggler;
     }
@@ -85,7 +82,7 @@ double PmergeMe::sort(Container type)
     insertPending(type);
     insertStraggler(type);
 
-    return (getTime() - start);
+    return (getTime() - start);  // in s = (end - start) / 1000000.0; 
 }
 
 /* ************************************************************************** */
@@ -127,18 +124,6 @@ void PmergeMe::makePairs(Container type)
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 2. SORT PAIRS into (smaller, larger)                      */
 /* ************************************************************************** */
-/*
-    sortPairs()
-    (8,9) (3,4) (1,7) (5,6)
-                │
-                │ take .second
-                ▼
-            9 4 7 6
-                │
-                ▼
-    fordJohnsonVector(larger)
-*/
-
 void    PmergeMe::sortPairs(Container type)
 {
     if (type == VECTOR)
@@ -256,6 +241,7 @@ void    PmergeMe::fordJohnsonVector(Vector &values, int depth, bool debug)
         std::cout << std::endl;
     }
 
+    // Base case
     if (values.size() <= 1)
         return;
 
@@ -321,19 +307,6 @@ void    PmergeMe::fordJohnsonVector(Vector &values, int depth, bool debug)
 
 void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
 {
-    if (debug)
-    {
-        std::cout << "[fordJohnsonDeque()] "
-                  << std::string(depth * 4, ' ')
-                  << "Depth " << depth << ": ";
-
-        for (size_t i = 0; i < values.size(); i++)
-            std::cout << values[i] << " ";
-
-        std::cout << std::endl;
-    }
-
-    // Base case
     if (values.size() <= 1)
         return;
 
@@ -345,7 +318,6 @@ void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
     if (hasOddLocal)
         stragglerLocal = values.back();
 
-    // 1. Create and sort pairs
     for (size_t i = 0; i + 1 < values.size(); i += 2)
     {
         int first  = values[i];
@@ -357,19 +329,15 @@ void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
         pairs.push_back(std::make_pair(first, second));
     }
 
-    // 2. Extract larger elements
     Deque larger;
 
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
-    // 3. Recursively sort larger elements
     fordJohnsonDeque(larger, depth + 1, debug);
 
-    // 4. Create main chain
     Deque mainChain = larger;
 
-    // 5. Insert smaller elements
     for (size_t i = 0; i < pairs.size(); i++)
     {
         int pending = pairs[i].first;
@@ -382,7 +350,6 @@ void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
         mainChain.insert(position, pending);
     }
 
-    // 6. Insert straggler
     if (hasOddLocal)
     {
         Deque::iterator position =
@@ -393,20 +360,7 @@ void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
         mainChain.insert(position, stragglerLocal);
     }
 
-    // 7. Copy sorted result back
     values = mainChain;
-
-    if (debug)
-    {
-        std::cout << "[fordJohnsonDeque()] "
-                  << std::string(depth * 4, ' ')
-                  << "Return " << depth << ": ";
-
-        for (size_t i = 0; i < values.size(); i++)
-            std::cout << values[i] << " ";
-
-        std::cout << std::endl;
-    }
 }
 
 /* ************************************************************************** */

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 19:12:43 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 05:38:37 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,12 +114,6 @@ bool BitcoinExchange::processInputLine(const String& line)
 	String date;
 	String valueString;
 	double valueDouble;
-	
-	// if (!parseKeyDate(line, date, valueString)
-	// 	|| !isValidDate(date, line)
-	// 	|| !isValidValue(valueString, valueDouble, line)
-	// 	|| !findExchangeRate(date, valueDouble))
-	// 	return (false);
 
 	if (!isValidDate(date, line)
 		|| !isValidValue(valueString, valueDouble, line)
