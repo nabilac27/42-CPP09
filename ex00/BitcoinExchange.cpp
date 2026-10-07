@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 05:38:37 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 22:04:36 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 
 		if (comma == String::npos)
 			continue;
-
 		String date 		= trim(line.substr(0, comma));
 		String rateString	= trim(line.substr(comma + 1));
 
@@ -63,7 +62,7 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 
 		if (!(ss >> rateDouble) || !ss.eof())
 			continue;
-		
+
 		database[date] = rateDouble;
 	}
 }
@@ -78,6 +77,7 @@ void BitcoinExchange::processInputTxtFile(const String& filename)
 
 	if (!inputFile.is_open())
 		throw (std::runtime_error("Error: could not open file."));
+
 	if (!std::getline(inputFile, line)
 		|| !parseKeyDate(line, key, value)
 		|| key != "date"
@@ -111,15 +111,16 @@ bool BitcoinExchange::parseKeyDate(const String& line, String& date,String& valu
 /* ************************************************************************** */
 bool BitcoinExchange::processInputLine(const String& line)
 {
-	String date;
-	String valueString;
-	double valueDouble;
+    String date;
+    String valueString;
+    double valueDouble;
 
-	if (!isValidDate(date, line)
-		|| !isValidValue(valueString, valueDouble, line)
-		|| !findExchangeRate(date, valueDouble))
-		return (false);
-	return (true);
+    if (!parseKeyDate(line, date, valueString)
+        || !isValidDate(date, line)
+        || !isValidValue(valueString, valueDouble, line)
+        || !findExchangeRate(date, valueDouble))
+        return (false);
+    return (true);
 }
 
 /* ************************************************************************** */
@@ -129,7 +130,6 @@ bool BitcoinExchange::isValidDate(const String& date, const String& line)
 {
 	if (date.length() != 10)
 		return (printError("Error: bad input => " + line));
-
 	if (date[4] != '-' || date[7] != '-')
 		return (printError("Error: bad input => " + line));
 
