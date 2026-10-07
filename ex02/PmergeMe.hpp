@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 02:39:37 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 03:33:15 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ typedef std::vector<size_t>               VectorSizeT;
 typedef std::vector<std::pair<int, int> > VectorPair;
 
 typedef std::deque<int>                   Deque;
-typedef std::deque<size_t>                DequeSizeT;
 typedef std::deque<std::pair<int, int> >  DequePair;
 
 /* ************************************************************************** */
@@ -83,36 +82,37 @@ class PmergeMe
 
         // Parsing
         void        parseValue(int argc, char*  argv[]);
+        double      sort(Container type);
 
         // Ford-Johnson
         void        makePairs(Container type);
-    
-    /* ------ to change for deque ------ */
         void        sortPairs(Container type);
 
-        void        createChains();
-        void        insertFirstPending();
-        void        insertPending();
-        void        insertStraggler();
+        void        createChains(Container type);
+        void        insertFirstPending(Container type);
+        void        insertPending(Container type);
+        void        insertStraggler(Container type);
 
         // Recursive sorting
         void        fordJohnsonVector(Vector&   values, 
                                         int   depth = 0, 
                                         bool  debug = false);
+        void        fordJohnsonDeque(Deque& values,
+                                        int depth = 0,
+                                        bool debug = false);    // to be implemented
         
         // Jacobsthal
         VectorSizeT generateJacobsthal(size_t size);
         VectorSizeT generateInsertionOrder(size_t size);
 
         // Utilities
-        size_t      getVectorSize() const;
+        size_t      getSize(Container type) const;
         double      getTime();
         
-/* ------ to change for deque ------ */
 
         // Print
-        void        printState(const char*  msg, bool debug);
-        void        printTime(double time, const std::string &container) const;
+        void        printState(const char* msg, Container type, bool debug);
+        void        printTime(double time, Container type) const;
         void        printDebugging(Debug type);
 };
 

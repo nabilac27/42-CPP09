@@ -6,11 +6,12 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 02:39:50 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 03:33:35 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+
 
 int main(int argc, char *argv[])
 {
@@ -19,24 +20,14 @@ int main(int argc, char *argv[])
         PmergeMe pmerge;
 
         pmerge.parseValue(argc, argv);
-        pmerge.printState("Before", false);
+        pmerge.printState("Before", VECTOR, false);
 
-        double start = pmerge.getTime();
-             
-        pmerge.makePairs(VECTOR);
-        pmerge.sortPairs(VECTOR);
+        double vectorTime = pmerge.sort(VECTOR);
+        double dequeTime  = pmerge.sort(DEQUE);
 
-        pmerge.createChains();
-        pmerge.insertFirstPending();
-        
-        pmerge.insertPending();
-        pmerge.insertStraggler();
-
-        double end        = pmerge.getTime();
-        double vectorTime = end - start;    // in s = (end - start) / 1000000.0; 
-        
-        pmerge.printState("After ", false);
-        pmerge.printTime(vectorTime, "std::vector");
+        pmerge.printState("After ", VECTOR, false);
+        pmerge.printTime(vectorTime, VECTOR);
+        pmerge.printTime(dequeTime, DEQUE);
     }
     catch (const std::exception &e)
     {
@@ -46,6 +37,90 @@ int main(int argc, char *argv[])
 
     return (0);
 }
+
+// int main(int argc, char *argv[])
+// {
+//     try
+//     {
+//         PmergeMe pmerge;
+
+//         pmerge.parseValue(argc, argv);
+//         pmerge.printState("Before", VECTOR, false);
+
+//         // Vector
+//         double vectorStart = pmerge.getTime();
+
+//         pmerge.makePairs(VECTOR);
+//         pmerge.sortPairs(VECTOR);
+//         pmerge.createChains(VECTOR);
+//         pmerge.insertFirstPending(VECTOR);
+//         pmerge.insertPending(VECTOR);
+//         pmerge.insertStraggler(VECTOR);
+
+//         double vectorEnd  = pmerge.getTime();
+//         double vectorTime = vectorEnd - vectorStart;
+
+//         // Deque
+//         double dequeStart = pmerge.getTime();
+
+//         pmerge.makePairs(DEQUE);
+//         pmerge.sortPairs(DEQUE);
+//         pmerge.createChains(DEQUE);
+//         pmerge.insertFirstPending(DEQUE);
+//         pmerge.insertPending(DEQUE);
+//         pmerge.insertStraggler(DEQUE);
+
+//         double dequeEnd  = pmerge.getTime();
+//         double dequeTime = dequeEnd - dequeStart;
+
+//         // Print
+//         pmerge.printState("After ", VECTOR, false);
+//         pmerge.printTime(vectorTime, VECTOR);
+//         pmerge.printTime(dequeTime, DEQUE);
+//     }
+//     catch (const std::exception &e)
+//     {
+//         std::cerr << e.what() << std::endl;
+//         return (1);
+//     }
+
+//     return (0);
+// }
+
+// int main(int argc, char *argv[])
+// {
+//     try
+//     {
+//         PmergeMe pmerge;
+
+//         pmerge.parseValue(argc, argv);
+//         pmerge.printState("Before", VECTOR, false);
+
+//         double start = pmerge.getTime();
+             
+//         pmerge.makePairs(VECTOR);
+//         pmerge.sortPairs(VECTOR);
+
+//         pmerge.createChains(VECTOR);
+//         pmerge.insertFirstPending(VECTOR);
+        
+//         pmerge.insertPending(VECTOR);
+//         pmerge.insertStraggler(VECTOR);
+
+//         double end        = pmerge.getTime();
+//         double vectorTime = end - start;    // in s = (end - start) / 1000000.0; 
+        
+//         pmerge.printState("After ", VECTOR, false);
+//         pmerge.printTime(vectorTime, VECTOR);
+//     }
+//     catch (const std::exception &e)
+//     {
+//         std::cerr << e.what() << std::endl;
+//         return (1);
+//     }
+
+//     return (0);
+// }
 
 /* ************************************************************************** */
 /* Main function with step-by-step debugging output                           */
