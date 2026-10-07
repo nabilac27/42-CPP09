@@ -10,7 +10,7 @@ CPP Module 09 focuses on the **Standard Template Library (STL)** and introduces 
 | Exercise | Description | Container |
 |----------|-------------|---------------|
 | **ex00 — Bitcoin Exchange** | Calculate the value of Bitcoin on a given date using historical exchange-rate data. | `std::map` |
-| **ex01 — Reverse Polish Notation** | Evaluate mathematical expressions written in Reverse Polish Notation. | `std::stack` |
+| **ex01 — Reverse Polish Notation** | Evaluate mathematical expressions written in Reverse Polish Notation. | `std::list` |
 | **ex02 — PmergeMe** | Sort a sequence of positive integers using the Ford-Johnson merge-insertion algorithm. | `std::vector`, `std::deque` |
 
 
@@ -450,6 +450,158 @@ For example:
 
 </details>
 
+---
+
+<details>
+<summary><b><code>std::list</code></b></summary>
+
+- std::list is a doubly linked list.
+
+- Each element is stored separately and connected to the previous and next elements.
+
+- Unlike vector and deque, it does not support random access with operator[].
+
+- Insertion and removal are efficient when the position is already known.
+
+    ```cpp
+            #include <list>
+
+            std::list<int> numbers;
+
+            [3] ↔ [5] ↔ [9] ↔ [7]
+            ↑                   ↑
+        front                back
+    ```
+- In RPN:
+  
+    ```cpp
+        std::list<long long> numbers;
+    ```
+
+- The back of the list is used like the top of a stack:
+
+    ```cpp
+        list:
+
+        [8] ↔ [9]
+            ↑
+            back
+            TOP
+    ```
+- Main Operations
+  - push_back()
+
+    Adds an element to the end of the list.
+
+        numbers.push_back(8);
+        numbers.push_back(9);
+
+        [8] ↔ [9]
+            ↑
+            back
+
+  - back()
+
+    Returns the last element.
+
+    ```cpp
+        int value = numbers.back();
+
+        [8] ↔ [9]
+            ↑
+        back() = 9
+    ```
+    back() does not remove the element.
+
+- pop_back()
+
+    Removes the last element.
+
+    ```cpp
+        numbers.pop_back();
+    ```
+
+    Before:
+
+    ```cpp
+        [8] ↔ [9]
+            ↑
+            back
+    ```
+    After:
+    ```cpp
+        [8]
+        ↑
+        back
+    ```
+
+- push_front() / pop_front()
+
+    A list can also efficiently add and remove elements from the front.
+
+    ``cpp
+        numbers.push_front(5);
+        numbers.pop_front();
+    ```
+- size() / empty()
+
+    ```cpp
+        numbers.size();
+        numbers.empty();
+    ```
+
+- std::stack vs std::list in RPN
+
+    ```cpp
+        std::stack          std::list
+        ──────────────────────────────
+        push(x)             push_back(x)
+        top()               back()
+        pop()               pop_back()
+        size()              size()
+        empty()             empty()
+    ```
+
+    So:
+
+    ```cpp
+        // stack
+        int right = numbers.top();
+        numbers.pop();
+    ```
+
+    becomes:
+
+    ```cpp
+        // list
+        int right = numbers.back();
+        numbers.pop_back();
+    ```
+
+- vector vs deque vs list
+
+    ```cpp
+                        vector       deque        list
+        ───────────────────────────────────────────────
+        Memory          contiguous   segmented    linked nodes
+        Random access   yes          yes          no
+        push_back       fast         fast         fast
+        push_front      expensive    fast         fast
+        operator[]      yes          yes          no
+    ```
+
+- Summary
+    - list
+        → doubly linked list
+        → no operator[]
+        → no random access
+        → fast front + back operations
+        → push_back() / back() / pop_back()
+        can be used like a stack
+
+- Used in RPN as the container holding operands while evaluating the expression.
+
+</details>
 
 ---
 

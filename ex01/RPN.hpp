@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/10 18:56:49 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 05:00:13 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define RPN_HPP
 
 #include <iostream>
-#include <stack>
+#include <list>
 #include <string>
 #include <sstream>
 #include <stdexcept>
@@ -22,7 +22,7 @@
 class RPN
 {
   private:
-	  std::stack<long long> numbers;
+	  std::list<long long> numbers;
 
 	public:
 		RPN();

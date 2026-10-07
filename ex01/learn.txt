@@ -1,3 +1,11 @@
+stack to list
+stack              list
+top()       →       back()
+push(x)     →       push_back(x)
+pop()       →       pop_back()
+
+---
+
                     process(expression)
                            │
                            ▼

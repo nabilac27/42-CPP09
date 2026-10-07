@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/06 19:12:20 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 05:01:23 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ void RPN::process(const std::string& expression)
 	if (!parseExpression(expression))
 		throw (std::runtime_error("ERROR: parseExpression()"));
 	if (numbers.size() != 1)
-		throw (std::runtime_error("ERROR: stack size() not 1"));
-	std::cout << numbers.top() << std::endl;
+		throw (std::runtime_error("ERROR: list size() not 1"));
+	std::cout << numbers.back() << std::endl;
 }
 
 /* ************************************************************************** */
@@ -59,21 +59,21 @@ bool RPN::parseExpression(const std::string& expression)
 	{
 		if (token.length() == 1
 			&& std::isdigit(static_cast<unsigned char>(token[0])))
-			numbers.push(token[0] - '0');
+			numbers.push_back(token[0] - '0');
 		else if (token.length() == 1 && isOperator(token[0]))
 		{
 			if (numbers.size() < 2)
 				return (false);
 
-			int right = numbers.top();
-			numbers.pop();
+			int right = numbers.back();
+			numbers.pop_back();
 
-			int left = numbers.top();
-			numbers.pop();
+			int left = numbers.back();
+			numbers.pop_back();
 
 			int result = calculate(left, right, token[0]);
 
-			numbers.push(result);
+			numbers.push_back(result);
 		}
 		else
 			return (false);
