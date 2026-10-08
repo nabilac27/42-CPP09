@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:09:14 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 05:14:05 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/07 20:30:46 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ int main(int argc, char **argv)
 }
 
 /*
-	valgrind --leak-check=full --show-leak-kinds=all ./RPN "8 9 * 9 - 9 - 9 - 4 - 1 +"
+	valgrind --leak-check=full --show-leak-kinds=all ./btc input.txt
 */

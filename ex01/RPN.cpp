@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 05:01:23 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 05:01:14 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ RPN::~RPN()
 void RPN::process(const std::string& expression)
 {
 	if (!parseExpression(expression))
-		throw (std::runtime_error("ERROR: parseExpression()"));
+		throw (std::runtime_error("ERROR: invalid token in parseExpression()"));
 	if (numbers.size() != 1)
 		throw (std::runtime_error("ERROR: list size() not 1"));
 	std::cout << numbers.back() << std::endl;
@@ -65,13 +65,11 @@ bool RPN::parseExpression(const std::string& expression)
 			if (numbers.size() < 2)
 				return (false);
 
-			int right = numbers.back();
+			long long right = numbers.back();
 			numbers.pop_back();
-
-			int left = numbers.back();
+			long long left = numbers.back();
 			numbers.pop_back();
-
-			int result = calculate(left, right, token[0]);
+			long long result = calculate(left, right, token[0]);
 
 			numbers.push_back(result);
 		}
@@ -85,7 +83,7 @@ bool RPN::parseExpression(const std::string& expression)
 /* ************************************************************************** */
 /*  calculate()   				                                              */
 /* ************************************************************************** */
-int RPN::calculate(int left, int right, char operation)
+long long RPN::calculate(long long left, long long right, char operation)
 {
 	switch (operation)
 	{
@@ -96,11 +94,16 @@ int RPN::calculate(int left, int right, char operation)
 			return (left - right);
 
 		case '*':
-			return (left * right);
+			if ((left > 0 && right > 0 && left > LLONG_MAX / right)
+			|| (left < 0 && right < 0 && left < LLONG_MAX / right)
+			|| (left > 0 && right < 0 && right < LLONG_MIN / left)
+			|| (left < 0 && right > 0 && left < LLONG_MIN / right))
+				throw std::runtime_error("ERROR: multiplication overflow in calculate()");
+    		return (left * right);
 
 		case '/':
 			if (right == 0)
-				throw (std::runtime_error("ERROR: calculate(), division by zero"));
+				throw (std::runtime_error("ERROR: division by zero in calculate()"));
 			return (left / right);
 	}
 	throw (std::runtime_error("ERROR: calculate()"));

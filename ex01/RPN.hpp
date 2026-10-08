@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 05:00:13 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 04:59:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,13 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <cctype>
+#include <climits>
 
 class RPN
 {
   private:
-	  std::list<long long> numbers;
+	  std::list<long long>	numbers;
 
 	public:
 		RPN();
@@ -30,10 +32,10 @@ class RPN
 		RPN& operator=(const RPN& other);
 		~RPN();
 
-    void	process(const std::string& expression);
-    bool	parseExpression(const std::string& expression);
-    bool  	isOperator(char token);
-    int   	calculate(int left, int right, char operation);
+		void		process(const std::string& expression);
+		bool		parseExpression(const std::string& expression);
+		bool  		isOperator(char token);
+		long long  	calculate(long long left, long long right, char operation);
 };
 
 #endif
