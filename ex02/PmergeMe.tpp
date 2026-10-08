@@ -6,15 +6,160 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 23:50:41 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 00:18:35 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FORDJOHNSON_TPP
-# define FORDJOHNSON_TPP
+#ifndef mergeInsertionSort_TPP
+# define mergeInsertionSort_TPP
 
+template <typename ContainerType> 
+void PmergeMe::makePairs(ContainerType &values)
+{
+	hasOdd = false;
+	// 1. Compare and sort each pair
+	for (size_t i = 0; i + 1 < values.size(); i += 2)
+	{
+		if (values[i] > values[i + 1])
+			std::swap(values[i], values[i + 1]);
+	}
+	// 2. Handle odd element (straggler)
+	if (values.size() % 2 != 0)
+	{
+		hasOdd = true;
+		straggler = values.back();
+	}
+}
+
+template <typename ContainerType> 
+void PmergeMe::sortPairs(ContainerType &values)
+{
+	typedef std::pair<int, int> Pair;
+	typedef std::vector<Pair> PairVector;
+
+	PairVector		pairs;
+	size_t			pairCount;
+	size_t			index;
+	int				small;
+	int				large;
+	ContainerType	larger;
+	PairVector		sortedPairs;
+
+	pairCount = values.size() / 2;
+	// 1. Create pairs
+	for (size_t i = 0; i < pairCount; i++)
+	{
+		index = i * 2;
+		small = values[index];
+		large = values[index + 1];
+		pairs.push_back(std::make_pair(small, large));
+	}
+	// 2. Extract larger elements
+	for (size_t i = 0; i < pairs.size(); i++)
+		larger.push_back(pairs[i].second);
+	// 3. Sort larger elements recursively
+	mergeInsertionSort(larger, 0, false); // --- FOR DEBUGGING: TRUE ---
+	// 4. Reorder pairs
+	std::vector<bool> used(pairs.size(), false);
+	for (size_t i = 0; i < larger.size(); i++)
+	{
+		for (size_t j = 0; j < pairs.size(); j++)
+		{
+			if (!used[j] && pairs[j].second == larger[i])
+			{
+				sortedPairs.push_back(pairs[j]);
+				used[j] = true;
+				break ;
+			}
+		}
+	}
+	// 5. Put pairs back into container
+	for (size_t i = 0; i < sortedPairs.size(); i++)
+	{
+		values[i * 2] = sortedPairs[i].first;
+		values[i * 2 + 1] = sortedPairs[i].second;
+	}
+}
+
+template <typename ContainerType,typename PairContainerType> 
+void PmergeMe::createChains(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain)
+{
+	size_t	pairCount;
+	size_t	index;
+	int		small;
+	int		large;
+
+	mainChain.clear();
+	pendingChain.clear();
+	pairCount = values.size() / 2;
+	for (size_t i = 0; i < pairCount; i++)
+	{
+		index = i * 2;
+		small = values[index];
+		large = values[index + 1];
+		pendingChain.push_back(std::make_pair(small, large));
+		mainChain.push_back(large);
+	}
+}
+
+template <typename ContainerType, typename PairContainerType> 
+void PmergeMe::insertFirstPending(ContainerType &mainChain, PairContainerType &pendingChain)
+{
+	if (pendingChain.empty())
+		return ;
+	mainChain.insert(mainChain.begin(), pendingChain[0].first);
+}
+
+template <typename ContainerType, typename PairContainerType> 
+void PmergeMe::insertPending(ContainerType &mainChain, PairContainerType &pendingChain)
+{
+	typedef typename ContainerType::iterator Iterator;
+	
+	VectorSizeT	order;
+	size_t		index;
+	int			pending;
+	int			partner;
+	Iterator	partnerPosition;
+	Iterator	position;
+
+	if (pendingChain.size() <= 1)
+		return ;
+	order = generateInsertionOrder<VectorSizeT>(pendingChain.size());
+	for (size_t i = 0; i < order.size(); i++)
+	{
+		index = order[i];
+		pending = pendingChain[index].first;
+		partner = pendingChain[index].second;
+		partnerPosition = std::find(mainChain.begin(), mainChain.end(),
+				partner);
+		position = std::lower_bound(mainChain.begin(), partnerPosition,
+				pending);
+		mainChain.insert(position, pending);
+	}
+	pendingChain.clear();
+}
+
+template <typename ContainerType> 
+void PmergeMe::insertStraggler(ContainerType &values, ContainerType &mainChain)
+{
+	typedef typename ContainerType::iterator Iterator;
+	Iterator	position;
+
+	if (hasOdd)
+	{
+		position = std::lower_bound(mainChain.begin(), mainChain.end(),
+				straggler);
+		mainChain.insert(position, straggler);
+		hasOdd = false;
+	}
+	values = mainChain;
+}
+
+/* ************************************************************************** */
+/*  MERGE-INSERTION SORT								                      */
+/* ************************************************************************** */
 template <typename ContainerType>
-void PmergeMe::fordJohnson(ContainerType &values, int depth, bool debug)
+void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
 {
     typedef typename ContainerType::iterator Iterator;
     typedef std::pair<int, int> Pair;
@@ -51,7 +196,7 @@ void PmergeMe::fordJohnson(ContainerType &values, int depth, bool debug)
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
-    fordJohnson(larger, depth + 1, debug);
+    mergeInsertionSort(larger, depth + 1, debug);
 
     // 4. Reorder pairs according to sorted larger values
     PairVector sortedPairs;
@@ -119,150 +264,8 @@ void PmergeMe::fordJohnson(ContainerType &values, int depth, bool debug)
     }
 }
 
-template <typename ContainerType> 
-void PmergeMe::makePairsTemp(ContainerType &values)
-{
-	hasOdd = false;
-	// 1. Compare and sort each pair
-	for (size_t i = 0; i + 1 < values.size(); i += 2)
-	{
-		if (values[i] > values[i + 1])
-			std::swap(values[i], values[i + 1]);
-	}
-	// 2. Handle odd element (straggler)
-	if (values.size() % 2 != 0)
-	{
-		hasOdd = true;
-		straggler = values.back();
-	}
-}
-
-template <typename ContainerType> 
-void PmergeMe::sortPairsTemp(ContainerType &values)
-{
-	typedef std::pair<int, int> Pair;
-	typedef std::vector<Pair> PairVector;
-
-	PairVector		pairs;
-	size_t			pairCount;
-	size_t			index;
-	int				small;
-	int				large;
-	ContainerType	larger;
-	PairVector		sortedPairs;
-
-	pairCount = values.size() / 2;
-	// 1. Create pairs
-	for (size_t i = 0; i < pairCount; i++)
-	{
-		index = i * 2;
-		small = values[index];
-		large = values[index + 1];
-		pairs.push_back(std::make_pair(small, large));
-	}
-	// 2. Extract larger elements
-	for (size_t i = 0; i < pairs.size(); i++)
-		larger.push_back(pairs[i].second);
-	// 3. Sort larger elements recursively
-	fordJohnson(larger, 0, false); // --- FOR DEBUGGING: TRUE ---
-	// 4. Reorder pairs
-	std::vector<bool> used(pairs.size(), false);
-	for (size_t i = 0; i < larger.size(); i++)
-	{
-		for (size_t j = 0; j < pairs.size(); j++)
-		{
-			if (!used[j] && pairs[j].second == larger[i])
-			{
-				sortedPairs.push_back(pairs[j]);
-				used[j] = true;
-				break ;
-			}
-		}
-	}
-	// 5. Put pairs back into container
-	for (size_t i = 0; i < sortedPairs.size(); i++)
-	{
-		values[i * 2] = sortedPairs[i].first;
-		values[i * 2 + 1] = sortedPairs[i].second;
-	}
-}
-
-template <typename ContainerType,typename PairContainerType> 
-void PmergeMe::createChainsTemp(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain)
-{
-	size_t	pairCount;
-	size_t	index;
-	int		small;
-	int		large;
-
-	mainChain.clear();
-	pendingChain.clear();
-	pairCount = values.size() / 2;
-	for (size_t i = 0; i < pairCount; i++)
-	{
-		index = i * 2;
-		small = values[index];
-		large = values[index + 1];
-		pendingChain.push_back(std::make_pair(small, large));
-		mainChain.push_back(large);
-	}
-}
-
-template <typename ContainerType, typename PairContainerType> 
-void PmergeMe::insertFirstPendingTemp(ContainerType &mainChain, PairContainerType &pendingChain)
-{
-	if (pendingChain.empty())
-		return ;
-	mainChain.insert(mainChain.begin(), pendingChain[0].first);
-}
-
-template <typename ContainerType, typename PairContainerType> 
-void PmergeMe::insertPendingTemplate(ContainerType &mainChain, PairContainerType &pendingChain)
-{
-	typedef typename ContainerType::iterator Iterator;
-	
-	VectorSizeT	order;
-	size_t		index;
-	int			pending;
-	int			partner;
-	Iterator	partnerPosition;
-	Iterator	position;
-
-	if (pendingChain.size() <= 1)
-		return ;
-	order = generateInsertionOrder<VectorSizeT>(pendingChain.size());
-	for (size_t i = 0; i < order.size(); i++)
-	{
-		index = order[i];
-		pending = pendingChain[index].first;
-		partner = pendingChain[index].second;
-		partnerPosition = std::find(mainChain.begin(), mainChain.end(),
-				partner);
-		position = std::lower_bound(mainChain.begin(), partnerPosition,
-				pending);
-		mainChain.insert(position, pending);
-	}
-	pendingChain.clear();
-}
-
-template <typename ContainerType> 
-void PmergeMe::insertStragglerTemplate(ContainerType &values, ContainerType &mainChain)
-{
-	typedef typename ContainerType::iterator Iterator;
-	Iterator	position;
-
-	if (hasOdd)
-	{
-		position = std::lower_bound(mainChain.begin(), mainChain.end(),
-				straggler);
-		mainChain.insert(position, straggler);
-		hasOdd = false;
-	}
-	values = mainChain;
-}
-
 /* ************************************************************************** */
-/*  FORD-JOHNSON -- 5. Insert the remaining small elements                    */
+/*  JACOBSTHAL SEQUENCE									                      */
 /* ************************************************************************** */
 /*
     generateJacobsthal

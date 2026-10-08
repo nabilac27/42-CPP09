@@ -6,27 +6,29 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 23:52:15 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 00:19:56 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PMERGEME_HPP
 #define PMERGEME_HPP
 
-#include <iostream> 
-#include <string> 
-#include <cctype>
-#include <stdexcept> 
-#include <vector>
-#include <cstdlib>
+/* ************************************************************************** */
+/*  INCLUDES                                                                  */
+/* ************************************************************************** */
 #include <algorithm>
-#include <utility>
-#include <sys/time.h>
+#include <cctype>
 #include <cmath>
-#include <sstream>
-#include <iomanip>
+#include <cstdlib>
 #include <deque>
-
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <sys/time.h>
+#include <utility>
+#include <vector>
 
 /* ************************************************************************** */
 /*  TYPEDEFS                                                                  */
@@ -61,73 +63,72 @@ enum Debug
 class PmergeMe
 {
     private:
-        // Vector
+        /*  CONTAINERS   **************************************************** */
         Vector      vectorValues;
         Vector      vectorMainChain;
         VectorPair  vectorPendingChain;
         
-        // Deque
         Deque       dequeValues;
         Deque       dequeMainChain;
         DequePair   dequePendingChain;
 
-        // Current container state
         bool        hasOdd;
         int         straggler;
 
-
     public:
+        /*  OCF   ************************************************************ */
         PmergeMe();
         PmergeMe(const PmergeMe&    other);
         PmergeMe& operator=(const PmergeMe& other);
         ~PmergeMe();
 
-        // Parsing
+        /*  PUBLIC INTERFACE   ********************************************** */
         void        parseValue(int argc, char*  argv[]);
         double      sort(Container type);
-
-        // FordJohnson
-        template <typename ContainerType>
-        void fordJohnson(ContainerType &values, int depth, bool debug);
-
-        template <typename ContainerType>
-        void makePairsTemp(ContainerType &values);
-
-        template <typename ContainerType>
-        void sortPairsTemp(ContainerType &values);
-
-        template <typename ContainerType, typename PairContainerType>
-        void createChainsTemp(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
-
-        template <typename ContainerType, typename PairContainerType>
-        void insertFirstPendingTemp(ContainerType &mainChain, PairContainerType &pendingChain);
-
-        template <typename ContainerType, typename PairContainerType>
-        void insertPendingTemplate(ContainerType &mainChain, PairContainerType &pendingChain);
-
-        template <typename ContainerType>
-        void insertStragglerTemplate(ContainerType &values, ContainerType &mainChain);
-        
-        // Jacobsthal
-        template <typename ContainerType>
-        ContainerType generateJacobsthal(size_t size);
-
-        template <typename ContainerType>
-        ContainerType generateInsertionOrder(size_t size);
-
-        // Utilities
-        size_t      getSize(Container type) const;
         double      getTime();
 
-        // Print
+        /*  PRINT     ******************************************************* */
         void        printState(const char* msg, Container type, bool debug);
         void        printTime(double time, Container type) const;
         void        printDebugging(Debug type);
         void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
         void        printRecursiveChains(const Vector& mainChain, const VectorPair& pendingChain, int depth, const std::string& stage);
+
+    private:
+        /*  FORD-JOHNSON    ************************************************* */
+        template <typename ContainerType>
+        void makePairs(ContainerType &values);
+
+        template <typename ContainerType>
+        void sortPairs(ContainerType &values);
+
+        template <typename ContainerType, typename PairContainerType>
+        void createChains(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
+
+        template <typename ContainerType, typename PairContainerType>
+        void insertFirstPending(ContainerType &mainChain, PairContainerType &pendingChain);
+
+        template <typename ContainerType, typename PairContainerType>
+        void insertPending(ContainerType &mainChain, PairContainerType &pendingChain);
+
+        template <typename ContainerType>
+        void insertStraggler(ContainerType &values, ContainerType &mainChain);
+        
+        /*  MERGE-INSERTION SORT  ******************************************** */
+        template <typename ContainerType>
+        void mergeInsertionSort(ContainerType &values, int depth, bool debug);
+
+        /*  JACOBSTHAL SEQUENCE  ********************************************* */
+        template <typename ContainerType>
+        ContainerType generateJacobsthal(size_t size);
+
+        template <typename ContainerType>
+        ContainerType generateInsertionOrder(size_t size);
 };
 
-
+/* ************************************************************************** */
+/*  TEMPLATE IMPLEMENTATIONS                                                  */
+/* ************************************************************************** */
 #include "PmergeMe.tpp"
 
 #endif
