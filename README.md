@@ -510,7 +510,7 @@ The algorithm follows these main steps:
     - Compare the two elements and arrange them as: (small, big)
 
 3. **Recursively sort the larger elements**
-    - Take the larger element from each pair and recursively sort them using Ford-Johnson.
+    - Take the larger element from each pair and recursively sort them using `Ford-Johnson`.
 
 4. **Insert the first smaller element**
     - Insert the element paired with the smallest element of the sorted main chain at the beginning.

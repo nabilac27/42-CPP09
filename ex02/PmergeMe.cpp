@@ -227,82 +227,178 @@ void    PmergeMe::sortPairs(Container type)
 /* ************************************************************************** */
 /*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
 /* ************************************************************************** */
-void    PmergeMe::fordJohnsonVector(Vector &values, int depth, bool debug)
+// void    PmergeMe::fordJohnsonVector(Vector &values, int depth, bool debug)
+// {
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonVector()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Depth " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+
+//         std::cout << std::endl;
+//     }
+
+//     // Base case
+//     if (values.size() <= 1)
+//         return;
+
+//     VectorPair  pairs;
+//     bool        hasOdd    = (values.size() % 2 != 0);
+//     int         straggler = 0;
+
+//     if (hasOdd)
+//         straggler = values.back();
+
+//     // 1. Make pairs
+//     for (size_t i = 0; i + 1 < values.size(); i += 2)
+//     {
+//         int first   = values[i];
+//         int second  = values[i + 1];
+
+//         if (first > second)
+//             std::swap(first, second);
+//         pairs.push_back(std::make_pair(first, second));
+//     }
+
+//     // 2. Extract larger values
+//     Vector larger;
+//     for (size_t i = 0; i < pairs.size(); i++)
+//         larger.push_back(pairs[i].second);
+
+//     // 3. Recursively sort larger values
+//     fordJohnsonVector(larger, depth + 1, debug);
+
+
+//     // 4. Start main chain with sorted larger values
+//     Vector mainChain = larger;
+
+//     // 5. Insert smaller values !! maybe wrong
+//     for (size_t i = 0; i < pairs.size(); i++)
+//     {
+//         int pending = pairs[i].first;
+
+//         Vector::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), pending);
+//         mainChain.insert(position, pending);
+//     }
+
+//     if (hasOdd)
+//     {
+//         Vector::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), straggler);
+//         mainChain.insert(position, straggler);
+//     }
+    
+//     // 6. Give sorted result back to caller
+//     values = mainChain;
+
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonVector()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Return " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+//         std::cout << std::endl;
+//     }
+// }
+
+
+void PmergeMe::fordJohnsonVector(Vector& values, int depth, bool debug)
 {
-    if (debug)
-    {
-        std::cout << "  [fordJohnsonVector()] "
-                  << std::string(depth * 4, ' ')
-                  << "Depth " << depth << ": ";
+    (void)depth;
+    (void)debug;
 
-        for (size_t i = 0; i < values.size(); i++)
-            std::cout << values[i] << " ";
-
-        std::cout << std::endl;
-    }
-
-    // Base case
     if (values.size() <= 1)
         return;
 
-    VectorPair  pairs;
-    bool        hasOdd    = (values.size() % 2 != 0);
-    int         straggler = 0;
+    // 1. Handle odd element
+    bool hasOddLocal = (values.size() % 2 != 0);
+    int stragglerLocal = 0;
 
-    if (hasOdd)
-        straggler = values.back();
+    if (hasOddLocal)
+        stragglerLocal = values.back();
 
-    // 1. Make pairs
+    // 2. Create pairs (small, large)
+    VectorPair pairs;
+
     for (size_t i = 0; i + 1 < values.size(); i += 2)
     {
-        int first   = values[i];
-        int second  = values[i + 1];
+        int small = values[i];
+        int large = values[i + 1];
 
-        if (first > second)
-            std::swap(first, second);
-        pairs.push_back(std::make_pair(first, second));
+        if (small > large)
+            std::swap(small, large);
+
+        pairs.push_back(std::make_pair(small, large));
     }
 
-    // 2. Extract larger values
+    // 3. Extract and recursively sort larger values
     Vector larger;
+
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
-    // 3. Recursively sort larger values
     fordJohnsonVector(larger, depth + 1, debug);
 
+    // 4. Reorder pairs according to sorted larger values
+    VectorPair sortedPairs;
+    std::vector<bool> used(pairs.size(), false);
 
-    // 4. Start main chain with sorted larger values
+    for (size_t i = 0; i < larger.size(); i++)
+    {
+        for (size_t j = 0; j < pairs.size(); j++)
+        {
+            if (!used[j] && pairs[j].second == larger[i])
+            {
+                sortedPairs.push_back(pairs[j]);
+                used[j] = true;
+                break;
+            }
+        }
+    }
+
+    // 5. Create main chain
     Vector mainChain = larger;
 
-    // 5. Insert smaller values
-    for (size_t i = 0; i < pairs.size(); i++)
-    {
-        int pending = pairs[i].first;
+    // 6. Insert first smaller element (b1)
+    if (!sortedPairs.empty())
+        mainChain.insert(mainChain.begin(), sortedPairs[0].first);
 
-        Vector::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), pending);
+    // 7. Insert remaining smaller elements in Jacobsthal order
+    VectorSizeT order = generateInsertionOrder(sortedPairs.size());
+
+    for (size_t i = 0; i < order.size(); i++)
+    {
+        size_t index = order[i];
+
+        int pending = sortedPairs[index].first;
+        int partner = sortedPairs[index].second;
+
+        Vector::iterator partnerPosition =
+            std::find(mainChain.begin(), mainChain.end(), partner);
+
+        Vector::iterator position =
+            std::lower_bound(mainChain.begin(), partnerPosition, pending);
+
         mainChain.insert(position, pending);
     }
 
-    if (hasOdd)
+    // 8. Insert straggler
+    if (hasOddLocal)
     {
-        Vector::iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), straggler);
-        mainChain.insert(position, straggler);
+        Vector::iterator position =
+            std::lower_bound(mainChain.begin(),
+                             mainChain.end(),
+                             stragglerLocal);
+
+        mainChain.insert(position, stragglerLocal);
     }
-    
-    // 6. Give sorted result back to caller
+
+    // 9. Return sorted values
     values = mainChain;
-
-    if (debug)
-    {
-        std::cout << "  [fordJohnsonVector()] "
-                  << std::string(depth * 4, ' ')
-                  << "Return " << depth << ": ";
-
-        for (size_t i = 0; i < values.size(); i++)
-            std::cout << values[i] << " ";
-        std::cout << std::endl;
-    }
 }
 
 void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
@@ -483,6 +579,88 @@ VectorSizeT PmergeMe::generateInsertionOrder(size_t size)
 /* ************************************************************************** */
 /*  INSERT PENDING                                                            */
 /* ************************************************************************** */
+// void PmergeMe::insertPending(Container type)
+// {
+//     if (type == VECTOR)
+//     {
+//         if (vectorPendingChain.size() <= 1)
+//             return;
+
+//         VectorSizeT order           = generateInsertionOrder(vectorPendingChain.size());
+
+//         size_t      group           = 0;
+//         size_t      previousJacob   = 1;
+//         VectorSizeT jacob           = generateJacobsthal(vectorPendingChain.size());
+
+//         for (size_t i = 0; i < order.size(); i++)
+//         {
+//             size_t index = order[i];
+        
+//             // Move to the correct Jacobsthal group
+//             while (group < jacob.size() && index >= jacob[group])
+//             {
+//                 previousJacob = jacob[group];
+//                 group++;
+//             }
+
+//             // size_t  searchSize = (1 << (group + 2)) - 1;
+//             size_t searchSize = static_cast<size_t>(std::pow(2.0, group + 2)) - 1;
+//             /*
+//                 Ford-Johnson arranges the insertion groups so binary search operates on at most 2^(i+1)-1 elements, 
+//                 giving ranges like 3, 7, 15.
+//                 My group index starts from 0, so in my code that becomes (1 << (group + 2)) - 1
+//             */
+
+//             if (searchSize > vectorMainChain.size())
+//                 searchSize = vectorMainChain.size();
+
+//             int value = vectorPendingChain[index].first;
+//             Vector::iterator position = std::lower_bound(vectorMainChain.begin(), vectorMainChain.begin() + searchSize, value);
+//             vectorMainChain.insert(position, value);
+//             (void)previousJacob;
+//         }
+//         vectorPendingChain.clear();
+//     }
+
+//     else
+//     {
+//         if (dequePendingChain.size() <= 1)
+//             return;
+
+//         VectorSizeT order = generateInsertionOrder(dequePendingChain.size());
+//         VectorSizeT jacob = generateJacobsthal(dequePendingChain.size());
+
+//         size_t group = 0;
+
+//         for (size_t i = 0; i < order.size(); i++)
+//         {
+//             size_t index = order[i];
+
+//             // Move to the correct Jacobsthal group
+//             while (group < jacob.size() && index >= jacob[group])
+//                 group++;
+
+//             size_t searchSize =
+//                 static_cast<size_t>(std::pow(2.0, group + 2)) - 1;
+
+//             if (searchSize > dequeMainChain.size())
+//                 searchSize = dequeMainChain.size();
+
+//             int value = dequePendingChain[index].first;
+
+//             Deque::iterator position =
+//                 std::lower_bound(dequeMainChain.begin(),
+//                                  dequeMainChain.begin() + searchSize,
+//                                  value);
+
+//             dequeMainChain.insert(position, value);
+//         }
+
+//         dequePendingChain.clear();
+//     }
+// }
+
+
 void PmergeMe::insertPending(Container type)
 {
     if (type == VECTOR)
@@ -490,74 +668,57 @@ void PmergeMe::insertPending(Container type)
         if (vectorPendingChain.size() <= 1)
             return;
 
-        VectorSizeT order           = generateInsertionOrder(vectorPendingChain.size());
-
-        size_t      group           = 0;
-        size_t      previousJacob   = 1;
-        VectorSizeT jacob           = generateJacobsthal(vectorPendingChain.size());
+        VectorSizeT order =
+            generateInsertionOrder(vectorPendingChain.size());
 
         for (size_t i = 0; i < order.size(); i++)
         {
             size_t index = order[i];
-        
-            // Move to the correct Jacobsthal group
-            while (group < jacob.size() && index >= jacob[group])
-            {
-                previousJacob = jacob[group];
-                group++;
-            }
 
-            // size_t  searchSize = (1 << (group + 2)) - 1;
-            size_t searchSize = static_cast<size_t>(std::pow(2.0, group + 2)) - 1;
-            /*
-                Ford-Johnson arranges the insertion groups so binary search operates on at most 2^(i+1)-1 elements, 
-                giving ranges like 3, 7, 15.
-                My group index starts from 0, so in my code that becomes (1 << (group + 2)) - 1
-            */
+            int pending = vectorPendingChain[index].first;
+            int partner = vectorPendingChain[index].second;
 
-            if (searchSize > vectorMainChain.size())
-                searchSize = vectorMainChain.size();
+            Vector::iterator partnerPosition =
+                std::find(vectorMainChain.begin(),
+                          vectorMainChain.end(),
+                          partner);
 
-            int value = vectorPendingChain[index].first;
-            Vector::iterator position = std::lower_bound(vectorMainChain.begin(), vectorMainChain.begin() + searchSize, value);
-            vectorMainChain.insert(position, value);
-            (void)previousJacob;
+            Vector::iterator position =
+                std::lower_bound(vectorMainChain.begin(),
+                                 partnerPosition,
+                                 pending);
+
+            vectorMainChain.insert(position, pending);
         }
+
         vectorPendingChain.clear();
     }
-
     else
     {
         if (dequePendingChain.size() <= 1)
             return;
 
-        VectorSizeT order = generateInsertionOrder(dequePendingChain.size());
-        VectorSizeT jacob = generateJacobsthal(dequePendingChain.size());
-
-        size_t group = 0;
+        VectorSizeT order =
+            generateInsertionOrder(dequePendingChain.size());
 
         for (size_t i = 0; i < order.size(); i++)
         {
             size_t index = order[i];
 
-            // Move to the correct Jacobsthal group
-            while (group < jacob.size() && index >= jacob[group])
-                group++;
+            int pending = dequePendingChain[index].first;
+            int partner = dequePendingChain[index].second;
 
-            size_t searchSize =
-                static_cast<size_t>(std::pow(2.0, group + 2)) - 1;
-
-            if (searchSize > dequeMainChain.size())
-                searchSize = dequeMainChain.size();
-
-            int value = dequePendingChain[index].first;
+            Deque::iterator partnerPosition =
+                std::find(dequeMainChain.begin(),
+                          dequeMainChain.end(),
+                          partner);
 
             Deque::iterator position =
                 std::lower_bound(dequeMainChain.begin(),
-                                 dequeMainChain.begin() + searchSize,
-                                 value);
+                                 partnerPosition,
+                                 pending);
 
-            dequeMainChain.insert(position, value);
+            dequeMainChain.insert(position, pending);
         }
 
         dequePendingChain.clear();
@@ -743,3 +904,14 @@ void    PmergeMe::printDebugging(Debug type)
         std::cout << std::endl;
     }
 }
+
+
+/*
+    ford-johnson, ford-johnson deque, insertPending
+    Next priority: Update your outer insertPending() to use partner-bounded binary search too, 
+                    so the recursive and outer implementations follow the same insertion rules.
+
+    ⚠️ fordJohnsonDeque() still needs the same recursive correction
+    ⚠️ Pair identity for duplicate values is not handled robustly
+    ⚠️ Straggler insertion still needs review for strict Ford-Johnson comparison behavior
+*/
