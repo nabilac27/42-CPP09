@@ -147,7 +147,7 @@ void    PmergeMe::sortPairs(Container type)
             larger.push_back(pairs[i].second);
 
         // 3. Sort larger elements recursively
-        fordJohnsonVector(larger, 0, false);     // for debugging: 'true'
+        fordJohnsonVector(larger, 0, true);     // --- FOR DEBUGGING: TRUE ---
 
         // 4. Reorder pairs
         VectorPair        sortedPairs;
@@ -308,9 +308,19 @@ void    PmergeMe::sortPairs(Container type)
 
 void PmergeMe::fordJohnsonVector(Vector& values, int depth, bool debug)
 {
-    (void)depth;
-    (void)debug;
+    if (debug)
+    {
+        std::cout << "  [fordJohnsonVector()] "
+                  << std::string(depth * 4, ' ')
+                  << "Depth " << depth << ": ";
 
+        for (size_t i = 0; i < values.size(); i++)
+            std::cout << values[i] << " ";
+
+        std::cout << std::endl;
+    }
+
+    // Base case
     if (values.size() <= 1)
         return;
 
@@ -399,6 +409,17 @@ void PmergeMe::fordJohnsonVector(Vector& values, int depth, bool debug)
 
     // 9. Return sorted values
     values = mainChain;
+
+    if (debug)
+    {
+        std::cout << "  [fordJohnsonVector()] "
+                  << std::string(depth * 4, ' ')
+                  << "Return " << depth << ": ";
+
+        for (size_t i = 0; i < values.size(); i++)
+            std::cout << values[i] << " ";
+        std::cout << std::endl;
+    }
 }
 
 void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
@@ -663,6 +684,7 @@ VectorSizeT PmergeMe::generateInsertionOrder(size_t size)
 
 void PmergeMe::insertPending(Container type)
 {
+    size_t insertionCount = 0;
     if (type == VECTOR)
     {
         if (vectorPendingChain.size() <= 1)
@@ -689,8 +711,18 @@ void PmergeMe::insertPending(Container type)
                                  pending);
 
             vectorMainChain.insert(position, pending);
-        }
 
+            insertionCount++;
+
+            std::cout   << "  [Insertion " << insertionCount +1 << "] "
+                        << "b"             << index + 1
+                        << " = "           << pending
+                        << " (partner a"   << index + 1
+                        << " = "           << partner << ")"
+                        << std::endl;
+
+            printInsertionChains(order, insertionCount + 1);
+        }
         vectorPendingChain.clear();
     }
     else
@@ -839,19 +871,64 @@ void PmergeMe::printTime(double time, Container type) const
 
 void    PmergeMe::printDebugging(Debug type)
 {
-    if (type == PAIRS)
-    {
-        std::cout << "\n[Pairs  ]   " << "Vector: ";
-        for (size_t i = 0; i < vectorValues.size(); i += 2)
-        {
-            if (i + 1 < vectorValues.size())
-                std::cout << "(" << vectorValues[i] << ", " << vectorValues[i + 1] << ") ";
-            else
-                std::cout << vectorValues[i];
-        }
+    // if (type == PAIRS)
+    // {
+    //     std::cout << "\n[Pairs  ]   " << "Vector: ";
+    //     for (size_t i = 0; i < vectorValues.size(); i += 2)
+    //     {
+    //         if (i + 1 < vectorValues.size())
+    //             std::cout << "(" << vectorValues[i] << ", " << vectorValues[i + 1] << ") ";
+    //         else
+    //             std::cout << vectorValues[i];
+    //     }
 
-        std::cout << std::endl;
+    //     std::cout << std::endl;
+    // }
+
+if (type == PAIRS)
+{
+    const int width = 11;
+
+    // 1. Print pair values
+    std::cout << "\n[Pairs  ]   Vector: ";
+
+    for (size_t i = 0; i < vectorValues.size(); i += 2)
+    {
+        std::ostringstream oss;
+
+        if (i + 1 < vectorValues.size())
+            oss << "(" << vectorValues[i] << ", "
+                << vectorValues[i + 1] << ")";
+        else
+            oss << vectorValues[i];
+
+        std::cout << std::left << std::setw(width) << oss.str();
     }
+
+    std::cout << std::endl;
+
+    // 2. Print pair labels
+    std::cout << "[Index  ]   Vector: ";
+
+    for (size_t i = 0; i < vectorValues.size(); i += 2)
+    {
+        std::ostringstream oss;
+
+        if (i + 1 < vectorValues.size())
+        {
+            size_t index = (i / 2) + 1;
+
+            oss << "(b" << index << ", a" << index << ")";
+        }
+        else
+            oss << "Straggler";
+
+        std::cout << std::left << std::setw(width) << oss.str();
+    }
+
+    std::cout << std::endl;
+    }
+
     else if (type == CHAINS || type == CHAINS_FIRST_INSERTED)
     {
         std::cout << "\n[Chains ]" << std::endl;
@@ -905,6 +982,60 @@ void    PmergeMe::printDebugging(Debug type)
     }
 }
 
+
+void PmergeMe::printInsertionChains(const VectorSizeT& order,
+                                   size_t insertionCount)
+{
+    Vector remainingPending;
+
+    // b1 was already inserted in insertFirstPending().
+    for (size_t j = 1; j < vectorPendingChain.size(); j++)
+    {
+        bool inserted = false;
+
+        for (size_t k = 0; k < insertionCount; k++)
+        {
+            if (order[k] == j)
+            {
+                inserted = true;
+                break;
+            }
+        }
+
+        if (!inserted)
+            remainingPending.push_back(vectorPendingChain[j].first);
+    }
+
+    std::cout << "\n[Chains ]\n";
+    std::cout << "  " << std::left
+              << std::setw(15) << "Main chain"
+              << std::setw(20) << "Pending chain"
+              << "Straggler\n";
+
+    size_t rows = std::max(vectorMainChain.size(), remainingPending.size());
+
+    for (size_t j = 0; j < rows; j++)
+    {
+        std::ostringstream mainText;
+        std::ostringstream pendingText;
+        std::ostringstream stragglerText;
+
+        if (j < vectorMainChain.size())
+            mainText << "[" << vectorMainChain[j] << "]";
+
+        if (j < remainingPending.size())
+            pendingText << "[" << remainingPending[j] << "]";
+
+        if (j == 0 && hasOdd)
+            stragglerText << "[" << straggler << "]";
+
+        std::cout << "  " << std::left
+                  << std::setw(15) << mainText.str()
+                  << std::setw(20) << pendingText.str()
+                  << stragglerText.str()
+                  << "\n";
+    }
+}
 
 /*
     ford-johnson, ford-johnson deque, insertPending

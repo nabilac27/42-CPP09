@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 03:33:15 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 15:20:29 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ class PmergeMe
         void        printState(const char* msg, Container type, bool debug);
         void        printTime(double time, Container type) const;
         void        printDebugging(Debug type);
+        void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
 };
 
 #endif
