@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 15:20:29 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 16:48:51 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ enum Container
 enum Debug
 {
     PAIRS,
+    PAIRS_INDEX,
     CHAINS,
     CHAINS_FIRST_INSERTED
 };
@@ -115,6 +116,10 @@ class PmergeMe
         void        printTime(double time, Container type) const;
         void        printDebugging(Debug type);
         void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
+        void printRecursiveChains(const Vector& mainChain,
+                          const VectorPair& pendingChain,
+                          int depth,
+                          const std::string& stage);
 };
 
 #endif
