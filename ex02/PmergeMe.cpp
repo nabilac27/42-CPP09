@@ -376,19 +376,3 @@ void PmergeMe::printRecursiveChains(const Vector &mainChain,
                   << "\n";
     }
 }
-
-/*
-    ford-johnson, ford-johnson deque, insertPending
-    Next priority: Update your outer insertPending() to use partner-bounded binary search too,
-                    so the recursive and outer implementations follow the same insertion rules.
-
-    ⚠️ fordJohnsonDeque() still needs the same recursive correction
-    ⚠️ Pair identity for duplicate values is not handled robustly
-    ⚠️ Straggler insertion still needs review for strict Ford-Johnson comparison behavior
-
-    ---
-
-    Jacobsthal order decides which pending value to insert next (b3 = 7).
-    Binary search (lower_bound) decides where to insert it (between 6 and 9).
-    Partner-bounded insertion decides how far the binary search is allowed to go (before 300).
-*/
