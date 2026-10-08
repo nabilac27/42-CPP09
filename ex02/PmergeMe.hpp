@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 16:48:51 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 17:38:36 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,26 @@ class PmergeMe
         bool        hasOdd;
         int         straggler;
 
+        template <typename ContainerType>
+        void fordJohnson(ContainerType &values, int depth, bool debug);
+
+        template <typename ContainerType>
+        void makePairsTemp(ContainerType &values);
+
+        template <typename ContainerType>
+        void sortPairsTemp(ContainerType &values);
+
+        template <typename ContainerType, typename PairContainerType>
+        void createChainsTemp(
+            ContainerType &values,
+            ContainerType &mainChain,
+            PairContainerType &pendingChain);
+
+        template <typename ContainerType, typename PairContainerType>
+        void insertFirstPendingTemp(
+            ContainerType &mainChain,
+            PairContainerType &pendingChain);
+
     public:
         PmergeMe();
         PmergeMe(const PmergeMe&    other);
@@ -95,12 +115,12 @@ class PmergeMe
         void        insertStraggler(Container type);
 
         // Recursive sorting
-        void        fordJohnsonVector(Vector&   values, 
-                                        int   depth = 0, 
-                                        bool  debug = false);
-        void        fordJohnsonDeque(Deque& values,
-                                        int depth = 0,
-                                        bool debug = false);    // to be implemented
+        // void        fordJohnsonVector(Vector&   values, 
+        //                                 int   depth = 0, 
+        //                                 bool  debug = false);
+        // void        fordJohnsonDeque(Deque& values,
+        //                                 int depth = 0,
+        //                                 bool debug = false);    // to be implemented
         
         // Jacobsthal
         VectorSizeT generateJacobsthal(size_t size);
@@ -121,5 +141,8 @@ class PmergeMe
                           int depth,
                           const std::string& stage);
 };
+
+
+#include "PmergeMe.tpp"
 
 #endif

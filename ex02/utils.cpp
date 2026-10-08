@@ -321,3 +321,427 @@ void PmergeMe::fordJohnsonVectorThoroughDebug(Vector &values, int depth, bool de
         std::cout << "\n";
     }
 }
+
+// void PmergeMe::fordJohnsonVector(Vector& values, int depth, bool debug)
+// {
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonVector()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Depth " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+
+//         std::cout << std::endl;
+//     }
+
+//     // Base case
+//     if (values.size() <= 1)
+//         return;
+
+//     // 1. Handle odd element
+//     bool hasOddLocal = (values.size() % 2 != 0);
+//     int stragglerLocal = 0;
+
+//     if (hasOddLocal)
+//         stragglerLocal = values.back();
+
+//     // 2. Create pairs (small, large)
+//     VectorPair pairs;
+
+//     for (size_t i = 0; i + 1 < values.size(); i += 2)
+//     {
+//         int small = values[i];
+//         int large = values[i + 1];
+
+//         if (small > large)
+//             std::swap(small, large);
+
+//         pairs.push_back(std::make_pair(small, large));
+//     }
+
+//     // 3. Extract and recursively sort larger values
+//     Vector larger;
+
+//     for (size_t i = 0; i < pairs.size(); i++)
+//         larger.push_back(pairs[i].second);
+
+//     fordJohnsonVector(larger, depth + 1, debug);
+
+//     // 4. Reorder pairs according to sorted larger values
+//     VectorPair sortedPairs;
+//     std::vector<bool> used(pairs.size(), false);
+
+//     for (size_t i = 0; i < larger.size(); i++)
+//     {
+//         for (size_t j = 0; j < pairs.size(); j++)
+//         {
+//             if (!used[j] && pairs[j].second == larger[i])
+//             {
+//                 sortedPairs.push_back(pairs[j]);
+//                 used[j] = true;
+//                 break;
+//             }
+//         }
+//     }
+
+//     // 5. Create main chain
+//     Vector mainChain = larger;
+
+//     // 6. Insert first smaller element (b1)
+//     if (!sortedPairs.empty())
+//         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
+
+//     // 7. Insert remaining smaller elements in Jacobsthal order
+//     VectorSizeT order = generateInsertionOrder(sortedPairs.size());
+
+//     for (size_t i = 0; i < order.size(); i++)
+//     {
+//         size_t index = order[i];
+
+//         int pending = sortedPairs[index].first;
+//         int partner = sortedPairs[index].second;
+
+//         Vector::iterator partnerPosition =
+//             std::find(mainChain.begin(), mainChain.end(), partner);
+
+//         Vector::iterator position =
+//             std::lower_bound(mainChain.begin(), partnerPosition, pending);
+
+//         mainChain.insert(position, pending);
+//     }
+
+//     // 8. Insert straggler
+//     if (hasOddLocal)
+//     {
+//         Vector::iterator position =
+//             std::lower_bound(mainChain.begin(),
+//                              mainChain.end(),
+//                              stragglerLocal);
+
+//         mainChain.insert(position, stragglerLocal);
+//     }
+
+//     // 9. Return sorted values
+//     values = mainChain;
+
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonVector()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Return " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+//         std::cout << std::endl;
+//     }
+// }
+
+// void PmergeMe::fordJohnsonDeque(Deque &values, int depth, bool debug)
+// {
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonDeque()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Depth " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+
+//         std::cout << std::endl;
+//     }
+
+//     // Base case
+//     if (values.size() <= 1)
+//         return;
+
+//     // 1. Handle odd element
+//     bool hasOddLocal = (values.size() % 2 != 0);
+//     int stragglerLocal = 0;
+
+//     if (hasOddLocal)
+//         stragglerLocal = values.back();
+
+//     // 2. Create pairs (small, large)
+//     DequePair pairs;
+
+//     for (size_t i = 0; i + 1 < values.size(); i += 2)
+//     {
+//         int small = values[i];
+//         int large = values[i + 1];
+
+//         if (small > large)
+//             std::swap(small, large);
+
+//         pairs.push_back(std::make_pair(small, large));
+//     }
+
+//     // 3. Extract and recursively sort larger values
+//     Deque larger;
+
+//     for (size_t i = 0; i < pairs.size(); i++)
+//         larger.push_back(pairs[i].second);
+
+//     fordJohnsonDeque(larger, depth + 1, debug);
+
+//     // 4. Reorder pairs according to sorted larger values
+//     DequePair sortedPairs;
+//     std::deque<bool> used(pairs.size(), false);
+
+//     for (size_t i = 0; i < larger.size(); i++)
+//     {
+//         for (size_t j = 0; j < pairs.size(); j++)
+//         {
+//             if (!used[j] && pairs[j].second == larger[i])
+//             {
+//                 sortedPairs.push_back(pairs[j]);
+//                 used[j] = true;
+//                 break;
+//             }
+//         }
+//     }
+
+//     // 5. Create main chain
+//     Deque mainChain = larger;
+
+//     // 6. Insert first smaller element (b1)
+//     if (!sortedPairs.empty())
+//         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
+
+//     // 7. Insert remaining smaller elements in Jacobsthal order
+//     VectorSizeT order = generateInsertionOrder(sortedPairs.size());
+
+//     for (size_t i = 0; i < order.size(); i++)
+//     {
+//         size_t index = order[i];
+
+//         int pending = sortedPairs[index].first;
+//         int partner = sortedPairs[index].second;
+
+//         Deque::iterator partnerPosition =
+//             std::find(mainChain.begin(), mainChain.end(), partner);
+
+//         Deque::iterator position =
+//             std::lower_bound(mainChain.begin(), partnerPosition, pending);
+
+//         mainChain.insert(position, pending);
+//     }
+
+//     // 8. Insert straggler
+//     if (hasOddLocal)
+//     {
+//         Deque::iterator position =
+//             std::lower_bound(mainChain.begin(),
+//                              mainChain.end(),
+//                              stragglerLocal);
+
+//         mainChain.insert(position, stragglerLocal);
+//     }
+
+//     // 9. Return sorted values
+//     values = mainChain;
+
+//     if (debug)
+//     {
+//         std::cout << "  [fordJohnsonDeque()] "
+//                   << std::string(depth * 4, ' ')
+//                   << "Return " << depth << ": ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+
+//         std::cout << std::endl;
+//     }
+// }
+
+void PmergeMe::sortPairs(Container type)
+{
+    if (type == VECTOR)
+    {
+        VectorPair pairs;
+        size_t pairCount = vectorValues.size() / 2;
+
+        // 1. Create pairs
+        for (size_t i = 0; i < pairCount; i++)
+        {
+            size_t index = i * 2;
+            int small = vectorValues[index];
+            int large = vectorValues[index + 1];
+
+            pairs.push_back(std::make_pair(small, large));
+        }
+
+        // 2. Extract larger elements
+        Vector larger;
+        for (size_t i = 0; i < pairs.size(); i++)
+            larger.push_back(pairs[i].second);
+
+        // 3. Sort larger elements recursively
+        fordJohnson(larger, 0, false); // --- FOR DEBUGGING: TRUE ---
+
+        // 4. Reorder pairs
+        VectorPair sortedPairs;
+        std::vector<bool> used(pairs.size(), false);
+
+        for (size_t i = 0; i < larger.size(); i++)
+        {
+            for (size_t j = 0; j < pairs.size(); j++)
+            {
+                if (!used[j] && pairs[j].second == larger[i])
+                {
+                    sortedPairs.push_back(pairs[j]);
+                    used[j] = true;
+                    break;
+                }
+            }
+        }
+
+        // 5. Put pairs back into vector
+        for (size_t i = 0; i < sortedPairs.size(); i++)
+        {
+            vectorValues[i * 2] = sortedPairs[i].first;
+            vectorValues[i * 2 + 1] = sortedPairs[i].second;
+        }
+    }
+    else
+    {
+        DequePair pairs;
+        size_t pairCount = dequeValues.size() / 2;
+
+        // 1. Create pairs
+        for (size_t i = 0; i < pairCount; i++)
+        {
+            size_t index = i * 2;
+            int small = dequeValues[index];
+            int large = dequeValues[index + 1];
+
+            pairs.push_back(std::make_pair(small, large));
+        }
+
+        // 2. Extract larger elements
+        Deque larger;
+        for (size_t i = 0; i < pairs.size(); i++)
+            larger.push_back(pairs[i].second);
+
+        // 3. Sort larger elements recursively
+        fordJohnson(larger, 0, false);
+
+        // 4. Reorder pairs
+        DequePair sortedPairs;
+        std::deque<bool> used(pairs.size(), false);
+
+        for (size_t i = 0; i < larger.size(); i++)
+        {
+            for (size_t j = 0; j < pairs.size(); j++)
+            {
+                if (!used[j] && pairs[j].second == larger[i])
+                {
+                    sortedPairs.push_back(pairs[j]);
+                    used[j] = true;
+                    break;
+                }
+            }
+        }
+
+        // 5. Put pairs back into deque
+        for (size_t i = 0; i < sortedPairs.size(); i++)
+        {
+            dequeValues[i * 2] = sortedPairs[i].first;
+            dequeValues[i * 2 + 1] = sortedPairs[i].second;
+        }
+    }
+}
+
+
+// void PmergeMe::makePairs(Container type)
+// {
+//     hasOdd = false;
+
+//     if (type == VECTOR)
+//     {
+//         for (size_t i = 0; i + 1 < vectorValues.size(); i += 2)
+//         {
+//             if (vectorValues[i] > vectorValues[i + 1])
+//                 std::swap(vectorValues[i], vectorValues[i + 1]);
+//         }
+
+//         if (vectorValues.size() % 2 != 0)
+//         {
+//             hasOdd = true;
+//             straggler = vectorValues.back();
+//         }
+//     }
+//     else
+//     {
+//         for (size_t i = 0; i + 1 < dequeValues.size(); i += 2)
+//         {
+//             if (dequeValues[i] > dequeValues[i + 1])
+//                 std::swap(dequeValues[i], dequeValues[i + 1]);
+//         }
+
+//         if (dequeValues.size() % 2 != 0)
+//         {
+//             hasOdd = true;
+//             straggler = dequeValues.back();
+//         }
+//     }
+// }
+
+
+void PmergeMe::createChains(Container type)
+{
+    if (type == VECTOR)
+    {
+        vectorMainChain.clear();
+        vectorPendingChain.clear();
+
+        size_t pairCount = vectorValues.size() / 2;
+
+        for (size_t i = 0; i < pairCount; i++)
+        {
+            size_t index = i * 2;
+            int small = vectorValues[index];
+            int large = vectorValues[index + 1];
+
+            vectorPendingChain.push_back(std::make_pair(small, large));
+            vectorMainChain.push_back(large);
+        }
+    }
+    else
+    {
+        dequeMainChain.clear();
+        dequePendingChain.clear();
+
+        size_t pairCount = dequeValues.size() / 2;
+
+        for (size_t i = 0; i < pairCount; i++)
+        {
+            size_t index = i * 2;
+            int small = dequeValues[index];
+            int large = dequeValues[index + 1];
+
+            dequePendingChain.push_back(std::make_pair(small, large));
+            dequeMainChain.push_back(large);
+        }
+    }
+}
+
+void PmergeMe::insertFirstPending(Container type)
+{
+    if (type == VECTOR)
+    {
+        if (vectorPendingChain.empty())
+            return;
+        vectorMainChain.insert(vectorMainChain.begin(), vectorPendingChain[0].first);
+    }
+    else
+    {
+        if (dequePendingChain.empty())
+            return;
+
+        dequeMainChain.insert(
+            dequeMainChain.begin(),
+            dequePendingChain[0].first);
+    }
+}

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 16:58:40 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 17:30:22 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,31 +49,55 @@
                         |                 |
                         v                 v
                     lower_bound()     lower_bound()
+
+
+
+                    fordJohnsonVector()
+                    |-- 1. Handle odd element
+                    |-- 2. Create pairs
+                    |-- 3. Recursively sort larger elements
+                    |-- 4. Reorder pairs
+                    |-- 5. Create main chain
+                    |-- 6. Insert b1
+                    |
+                    |-- 7. Insert remaining pending elements
+                    |       |
+                    |       |-- generateInsertionOrder()
+                    |       |       |
+                    |       |       +-- generateJacobsthal()
+                    |       |
+                    |       |-- Choose b_i
+                    |       |-- Find partner a_i
+                    |       |-- lower_bound() (binary search)
+                    |       +-- Insert b_i
+                    |
+                    |-- 8. Insert straggler
+                    +-- 9. Return sorted values
 */
-// int main(int argc, char *argv[])
-// {
-//     try
-//     {
-//         PmergeMe pmerge;
+int main(int argc, char *argv[])
+{
+    try
+    {
+        PmergeMe pmerge;
 
-//         pmerge.parseValue(argc, argv);
-//         pmerge.printState("Before", VECTOR, false);
+        pmerge.parseValue(argc, argv);
+        pmerge.printState("Before", VECTOR, false);
 
-//         double vectorTime = pmerge.sort(VECTOR);
-//         double dequeTime  = pmerge.sort(DEQUE);
+        double vectorTime = pmerge.sort(VECTOR);
+    //     double dequeTime  = pmerge.sort(DEQUE);
 
-//         pmerge.printState("After ", VECTOR, false);
-//         pmerge.printTime(vectorTime, VECTOR);
-//         pmerge.printTime(dequeTime, DEQUE);
-//     }
-//     catch (const std::exception &e)
-//     {
-//         std::cerr << e.what() << std::endl;
-//         return (1);
-//     }
+        pmerge.printState("After ", VECTOR, false);
+        pmerge.printTime(vectorTime, VECTOR);
+    //     pmerge.printTime(dequeTime, DEQUE);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return (1);
+    }
 
-//     return (0);
-// }
+    return (0);
+}
 
 /*
     valgrind --leak-check=full --show-leak-kinds=all ./PmergeMe 9 8 7 6 5 4 3 2 1
@@ -135,52 +159,52 @@
 // }
 
 // old main
-int main(int argc, char *argv[])
-{
-    try
-    {
-        PmergeMe pmerge;
+// int main(int argc, char *argv[])
+// {
+//     try
+//     {
+//         PmergeMe pmerge;
 
-        pmerge.parseValue(argc, argv);
-        // pmerge.printState("Initial", VECTOR, true);
-        std::cout << " ------------------------------------" << std::endl;
+//         pmerge.parseValue(argc, argv);
+//         // pmerge.printState("Initial", VECTOR, true);
+//         std::cout << " ------------------------------------" << std::endl;
 
-        // 1. Make pairs
-        pmerge.makePairs(VECTOR);
-        pmerge.printDebugging(PAIRS);
-        std::cout << " ------------------------------------" << std::endl;
+//         // 1. Make pairs
+//         pmerge.makePairs(VECTOR);
+//         pmerge.printDebugging(PAIRS);
+//         std::cout << " ------------------------------------" << std::endl;
                 
-        // 2. Compare each pairs, and sort
-        pmerge.sortPairs(VECTOR);
-        pmerge.printDebugging(PAIRS_INDEX);
-        // std::cout << " ------------------------------------" << std::endl;
+//         // 2. Compare each pairs, and sort
+//         pmerge.sortPairs(VECTOR);
+//         pmerge.printDebugging(PAIRS_INDEX);
+//         // std::cout << " ------------------------------------" << std::endl;
 
-        // // 3. Recursively, sort, big elements, Create main chain + pending
-        // pmerge.createChains(VECTOR);
-        // pmerge.printDebugging(CHAINS);
-        // std::cout << " ------------------------------------" << std::endl;
+//         // // 3. Recursively, sort, big elements, Create main chain + pending
+//         // pmerge.createChains(VECTOR);
+//         // pmerge.printDebugging(CHAINS);
+//         // std::cout << " ------------------------------------" << std::endl;
 
-        // // 4. Insert first pending
-        // pmerge.insertFirstPending(VECTOR);
-        // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
-        // std::cout << " ------------------------------------" << std::endl;
+//         // // 4. Insert first pending
+//         // pmerge.insertFirstPending(VECTOR);
+//         // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
+//         // std::cout << " ------------------------------------" << std::endl;
 
         
-        // // 5. Insert remaining pending using Jacobsthal order
-        // pmerge.insertPending(VECTOR);
-        // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
-        // std::cout << " ------------------------------------" << std::endl;
+//         // // 5. Insert remaining pending using Jacobsthal order
+//         // pmerge.insertPending(VECTOR);
+//         // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
+//         // std::cout << " ------------------------------------" << std::endl;
         
-        // pmerge.insertStraggler(VECTOR);
-        // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
-        // pmerge.printState("Sorted", VECTOR, true);
-    }
+//         // pmerge.insertStraggler(VECTOR);
+//         // pmerge.printDebugging(CHAINS_FIRST_INSERTED);
+//         // pmerge.printState("Sorted", VECTOR, true);
+//     }
         
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
+//     catch (const std::exception &e)
+//     {
+//         std::cerr << e.what() << std::endl;
+//         return 1;
+//     }
 
-    return (0);
-}
+//     return (0);
+// }
