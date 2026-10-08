@@ -86,7 +86,7 @@ double PmergeMe::sort(Container type)
 }
 
 /* ************************************************************************** */
-/*  FORD-JOHNSON -- 1. MAKE PAIRS                                             */
+/*  FORD-JOHNSON                                                              */
 /* ************************************************************************** */
 void PmergeMe::makePairs(Container type)
 {
@@ -96,9 +96,6 @@ void PmergeMe::makePairs(Container type)
         makePairsTemp(dequeValues);
 }
 
-/* ************************************************************************** */
-/*  FORD-JOHNSON -- 2. SORT PAIRS into (smaller, larger)                      */
-/* ************************************************************************** */
 void PmergeMe::sortPairs(Container type)
 {
     if (type == VECTOR)
@@ -107,14 +104,6 @@ void PmergeMe::sortPairs(Container type)
         sortPairsTemp(dequeValues);
 }
 
-/* ************************************************************************** */
-/*  FORD-JOHNSON -- 3. RECURSIVELY SORT BIG ELEMENTS                          */
-// /* ************************************************************************** */
-
-
-/* ************************************************************************** */
-/*  FORD-JOHNSON -- 4. Insert the partner of the smallest big element         */
-/* ************************************************************************** */
 void PmergeMe::createChains(Container type)
 {
     if (type == VECTOR)
@@ -141,65 +130,6 @@ void PmergeMe::insertFirstPending(Container type)
             dequePendingChain);
 }
 
-/* ************************************************************************** */
-/*  FORD-JOHNSON -- 5. Insert the remaining small elements                    */
-/* ************************************************************************** */
-/*
-    generateJacobsthal
-    previous = 1
-    current  = 3
-
-    next = 3 + 2×1 = 5
-    next = 5 + 2×3 = 11
-    next = 11 + 2×5 = 21
-
-    3, 5, 11, 21, 43...
-
-    For :   generateJacobsthal(10)  --> [3, 5]
-    11 isn't included because we only have 10 pending elements.
-*/
-VectorSizeT PmergeMe::generateJacobsthal(size_t size)
-{
-    VectorSizeT jacobsthal;
-    size_t previous = 1;
-    size_t current = 3;
-    size_t next = 0;
-
-    while (current <= size)
-    {
-        jacobsthal.push_back(current);
-
-        next = current + (2 * previous);
-        previous = current;
-        current = next;
-    }
-
-    return (jacobsthal);
-}
-
-VectorSizeT PmergeMe::generateInsertionOrder(size_t size)
-{
-    VectorSizeT order;
-    VectorSizeT jacobsthal = generateJacobsthal(size);
-    size_t previous = 1;
-
-    for (size_t i = 0; i < jacobsthal.size(); i++)
-    {
-        size_t current = jacobsthal[i];
-
-        for (size_t j = current; j > previous; j--)
-            order.push_back(j - 1);
-        previous = current;
-    }
-    for (size_t j = size; j > previous; j--)
-        order.push_back(j - 1);
-
-    return (order);
-}
-
-/* ************************************************************************** */
-/*  INSERT PENDING                                                            */
-/* ************************************************************************** */
 void PmergeMe::insertPending(Container type)
 {
     if (type == VECTOR)
@@ -208,9 +138,6 @@ void PmergeMe::insertPending(Container type)
         insertPendingTemplate(dequeMainChain, dequePendingChain);
 }
 
-/* ************************************************************************** */
-/*  INSERT STRAGGLER                                                          */
-/* ************************************************************************** */
 void PmergeMe::insertStraggler(Container type)
 {
     if (type == VECTOR)

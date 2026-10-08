@@ -6,28 +6,13 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 17:30:22 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 23:43:31 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
 
 /*
-    TO-DO
-        .tpp    
-            for
-                makePairs
-                sortPairs
-                fordJohnsonVector
-                CreateChains
-                
-                insertFirstPending
-                insertPending
-
-                generteJacobsthal
-                generateInsertionOrder
-                insertStraggler
-
 
                 fordJohnsonVector()         fordJohnsonDeque()
                     |                         |
@@ -74,6 +59,7 @@
                     |-- 8. Insert straggler
                     +-- 9. Return sorted values
 */
+
 int main(int argc, char *argv[])
 {
     try
@@ -84,11 +70,11 @@ int main(int argc, char *argv[])
         pmerge.printState("Before", VECTOR, false);
 
         double vectorTime = pmerge.sort(VECTOR);
-    //     double dequeTime  = pmerge.sort(DEQUE);
+        double dequeTime  = pmerge.sort(DEQUE);
 
         pmerge.printState("After ", VECTOR, false);
         pmerge.printTime(vectorTime, VECTOR);
-    //     pmerge.printTime(dequeTime, DEQUE);
+        pmerge.printTime(dequeTime, DEQUE);
     }
     catch (const std::exception &e)
     {

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 17:43:25 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 23:35:18 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,25 +85,16 @@ class PmergeMe
         void sortPairsTemp(ContainerType &values);
 
         template <typename ContainerType, typename PairContainerType>
-        void createChainsTemp(
-            ContainerType &values,
-            ContainerType &mainChain,
-            PairContainerType &pendingChain);
+        void createChainsTemp(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
 
         template <typename ContainerType, typename PairContainerType>
-        void insertFirstPendingTemp(
-            ContainerType &mainChain,
-            PairContainerType &pendingChain);
+        void insertFirstPendingTemp(ContainerType &mainChain, PairContainerType &pendingChain);
 
         template <typename ContainerType, typename PairContainerType>
-        void insertPendingTemplate(
-            ContainerType &mainChain,
-            PairContainerType &pendingChain);
+        void insertPendingTemplate(ContainerType &mainChain, PairContainerType &pendingChain);
 
         template <typename ContainerType>
-        void insertStragglerTemplate(
-            ContainerType &values,
-            ContainerType &mainChain);
+        void insertStragglerTemplate(ContainerType &values, ContainerType &mainChain);
 
     public:
         PmergeMe();
@@ -118,38 +109,28 @@ class PmergeMe
         // Ford-Johnson
         void        makePairs(Container type);
         void        sortPairs(Container type);
-
         void        createChains(Container type);
         void        insertFirstPending(Container type);
         void        insertPending(Container type);
         void        insertStraggler(Container type);
 
-        // Recursive sorting
-        // void        fordJohnsonVector(Vector&   values, 
-        //                                 int   depth = 0, 
-        //                                 bool  debug = false);
-        // void        fordJohnsonDeque(Deque& values,
-        //                                 int depth = 0,
-        //                                 bool debug = false);    // to be implemented
-        
         // Jacobsthal
-        VectorSizeT generateJacobsthal(size_t size);
-        VectorSizeT generateInsertionOrder(size_t size);
+        template <typename ContainerType>
+        ContainerType generateJacobsthal(size_t size);
+
+        template <typename ContainerType>
+        ContainerType generateInsertionOrder(size_t size);
 
         // Utilities
         size_t      getSize(Container type) const;
         double      getTime();
-        
 
         // Print
         void        printState(const char* msg, Container type, bool debug);
         void        printTime(double time, Container type) const;
         void        printDebugging(Debug type);
         void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
-        void printRecursiveChains(const Vector& mainChain,
-                          const VectorPair& pendingChain,
-                          int depth,
-                          const std::string& stage);
+        void        printRecursiveChains(const Vector& mainChain, const VectorPair& pendingChain, int depth, const std::string& stage);
 };
 
 
