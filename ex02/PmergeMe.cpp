@@ -81,8 +81,7 @@ double  PmergeMe::sort(Container type)
         sortPairs(vectorValues);
         createChains(vectorValues, vectorMainChain, vectorPendingChain);
         insertFirstPending(vectorMainChain, vectorPendingChain);
-        insertPending(vectorMainChain, vectorPendingChain);
-        insertStraggler(vectorValues, vectorMainChain);
+        insertPending(vectorValues, vectorMainChain, vectorPendingChain);
     }
     else
     {
@@ -90,8 +89,7 @@ double  PmergeMe::sort(Container type)
         sortPairs(dequeValues);
         createChains(dequeValues, dequeMainChain, dequePendingChain);
         insertFirstPending(dequeMainChain, dequePendingChain);
-        insertPending(dequeMainChain, dequePendingChain);
-        insertStraggler(dequeValues, dequeMainChain);
+        insertPending(dequeValues, dequeMainChain, dequePendingChain);
     }
 
     return (getTime() - start); // in s = (end - start) / 1000000.0;

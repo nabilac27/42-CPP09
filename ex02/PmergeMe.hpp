@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 01:19:14 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 01:27:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,7 @@ class PmergeMe
         void    insertFirstPending(ContainerType &mainChain, PairContainerType &pendingChain);
 
         template <typename ContainerType, typename PairContainerType>
-        void    insertPending(ContainerType &mainChain, PairContainerType &pendingChain);
-
-        template <typename ContainerType>
-        void    insertStraggler(ContainerType &values, ContainerType &mainChain);
+        void    insertPending(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
         
         /*  MERGE-INSERTION SORT  ******************************************** */
         template <typename ContainerType>

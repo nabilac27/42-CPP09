@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 01:17:01 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 01:27:25 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void PmergeMe::insertFirstPending(ContainerType &mainChain, PairContainerType &p
 /*		it uses a special insertion order derived from the Jacobsthal sequence	*/ 
 /* **************************************************************************** */
 template <typename ContainerType, typename PairContainerType> 
-void PmergeMe::insertPending(ContainerType &mainChain, PairContainerType &pendingChain)
+void PmergeMe::insertPending(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain)
 {
 	VectorSizeT	order;
 	size_t		index;
@@ -143,17 +143,16 @@ void PmergeMe::insertPending(ContainerType &mainChain, PairContainerType &pendin
         binarySearchInsertion(mainChain, pending, partner, true);
 	}
 	pendingChain.clear();
-}
 
-template <typename ContainerType> 
-void PmergeMe::insertStraggler(ContainerType &values, ContainerType &mainChain)
-{
-	if (hasOdd)
-	{
+	 // Insert straggler if the input has an odd number of elements
+    if (hasOdd)
+    {
         binarySearchInsertion(mainChain, straggler, 0, false);
-		hasOdd = false;
-	}
-	values = mainChain;
+        hasOdd = false;
+    }
+
+    // Copy sorted main chain back into original container
+    values = mainChain;
 }
 
 /* ************************************************************************** */
