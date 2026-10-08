@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 17:38:20 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 17:43:11 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,56 @@ void PmergeMe::insertFirstPendingTemp(
         return;
 
     mainChain.insert(mainChain.begin(), pendingChain[0].first);
+}
+
+template <typename ContainerType, typename PairContainerType>
+void PmergeMe::insertPendingTemplate(
+    ContainerType &mainChain,
+    PairContainerType &pendingChain)
+{
+    typedef typename ContainerType::iterator Iterator;
+
+    if (pendingChain.size() <= 1)
+        return;
+
+    VectorSizeT order = generateInsertionOrder(pendingChain.size());
+
+    for (size_t i = 0; i < order.size(); i++)
+    {
+        size_t index = order[i];
+
+        int pending = pendingChain[index].first;
+        int partner = pendingChain[index].second;
+
+        Iterator partnerPosition =
+            std::find(mainChain.begin(), mainChain.end(), partner);
+
+        Iterator position =
+            std::lower_bound(mainChain.begin(), partnerPosition, pending);
+
+        mainChain.insert(position, pending);
+    }
+
+    pendingChain.clear();
+}
+
+template <typename ContainerType>
+void PmergeMe::insertStragglerTemplate(
+    ContainerType &values,
+    ContainerType &mainChain)
+{
+    typedef typename ContainerType::iterator Iterator;
+
+    if (hasOdd)
+    {
+        Iterator position =
+            std::lower_bound(mainChain.begin(), mainChain.end(), straggler);
+
+        mainChain.insert(position, straggler);
+        hasOdd = false;
+    }
+
+    values = mainChain;
 }
 
 #endif

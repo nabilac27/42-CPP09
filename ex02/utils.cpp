@@ -745,3 +745,103 @@ void PmergeMe::insertFirstPending(Container type)
             dequePendingChain[0].first);
     }
 }
+
+void PmergeMe::insertPending(Container type)
+{
+    size_t insertionCount = 0;
+    if (type == VECTOR)
+    {
+        if (vectorPendingChain.size() <= 1)
+            return;
+
+        VectorSizeT order =
+            generateInsertionOrder(vectorPendingChain.size());
+
+        for (size_t i = 0; i < order.size(); i++)
+        {
+            size_t index = order[i];
+
+            int pending = vectorPendingChain[index].first;
+            int partner = vectorPendingChain[index].second;
+
+            Vector::iterator partnerPosition =
+                std::find(vectorMainChain.begin(),
+                          vectorMainChain.end(),
+                          partner);
+
+            Vector::iterator position =
+                std::lower_bound(vectorMainChain.begin(),
+                                 partnerPosition,
+                                 pending);
+
+            vectorMainChain.insert(position, pending);
+
+            insertionCount++;
+
+            // printInsertionChains(order, insertionCount);
+        }
+        vectorPendingChain.clear();
+    }
+    else
+    {
+        if (dequePendingChain.size() <= 1)
+            return;
+
+        VectorSizeT order =
+            generateInsertionOrder(dequePendingChain.size());
+
+        for (size_t i = 0; i < order.size(); i++)
+        {
+            size_t index = order[i];
+
+            int pending = dequePendingChain[index].first;
+            int partner = dequePendingChain[index].second;
+
+            Deque::iterator partnerPosition =
+                std::find(dequeMainChain.begin(),
+                          dequeMainChain.end(),
+                          partner);
+
+            Deque::iterator position =
+                std::lower_bound(dequeMainChain.begin(),
+                                 partnerPosition,
+                                 pending);
+
+            dequeMainChain.insert(position, pending);
+        }
+
+        dequePendingChain.clear();
+    }
+}
+
+void PmergeMe::insertStraggler(Container type)
+{
+    if (type == VECTOR)
+    {
+        if (hasOdd)
+        {
+            Vector::iterator position;
+
+            position = std::lower_bound(vectorMainChain.begin(), vectorMainChain.end(), straggler);
+            vectorMainChain.insert(position, straggler);
+            hasOdd = false;
+        }
+        vectorValues = vectorMainChain;
+    }
+    else
+    {
+        if (hasOdd)
+        {
+            Deque::iterator position;
+
+            position = std::lower_bound(dequeMainChain.begin(),
+                                        dequeMainChain.end(),
+                                        straggler);
+
+            dequeMainChain.insert(position, straggler);
+            hasOdd = false;
+        }
+
+        dequeValues = dequeMainChain;
+    }
+}

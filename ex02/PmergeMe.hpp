@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 17:38:36 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 17:43:25 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,16 @@ class PmergeMe
         void insertFirstPendingTemp(
             ContainerType &mainChain,
             PairContainerType &pendingChain);
+
+        template <typename ContainerType, typename PairContainerType>
+        void insertPendingTemplate(
+            ContainerType &mainChain,
+            PairContainerType &pendingChain);
+
+        template <typename ContainerType>
+        void insertStragglerTemplate(
+            ContainerType &values,
+            ContainerType &mainChain);
 
     public:
         PmergeMe();
