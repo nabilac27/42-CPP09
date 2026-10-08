@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 23:45:19 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 23:50:41 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,9 @@ void PmergeMe::makePairsTemp(ContainerType &values)
 template <typename ContainerType> 
 void PmergeMe::sortPairsTemp(ContainerType &values)
 {
+	typedef std::pair<int, int> Pair;
+	typedef std::vector<Pair> PairVector;
+
 	PairVector		pairs;
 	size_t			pairCount;
 	size_t			index;
@@ -148,8 +151,6 @@ void PmergeMe::sortPairsTemp(ContainerType &values)
 	ContainerType	larger;
 	PairVector		sortedPairs;
 
-	typedef std::pair<int, int> Pair;
-	typedef std::vector<Pair> PairVector;
 	pairCount = values.size() / 2;
 	// 1. Create pairs
 	for (size_t i = 0; i < pairCount; i++)
@@ -218,6 +219,8 @@ void PmergeMe::insertFirstPendingTemp(ContainerType &mainChain, PairContainerTyp
 template <typename ContainerType, typename PairContainerType> 
 void PmergeMe::insertPendingTemplate(ContainerType &mainChain, PairContainerType &pendingChain)
 {
+	typedef typename ContainerType::iterator Iterator;
+	
 	VectorSizeT	order;
 	size_t		index;
 	int			pending;
@@ -225,7 +228,6 @@ void PmergeMe::insertPendingTemplate(ContainerType &mainChain, PairContainerType
 	Iterator	partnerPosition;
 	Iterator	position;
 
-	typedef typename ContainerType::iterator Iterator;
 	if (pendingChain.size() <= 1)
 		return ;
 	order = generateInsertionOrder<VectorSizeT>(pendingChain.size());
@@ -244,12 +246,11 @@ void PmergeMe::insertPendingTemplate(ContainerType &mainChain, PairContainerType
 }
 
 template <typename ContainerType> 
-void PmergeMe::insertStragglerTemplate(ContainerType &values,
-	ContainerType &mainChain)
+void PmergeMe::insertStragglerTemplate(ContainerType &values, ContainerType &mainChain)
 {
+	typedef typename ContainerType::iterator Iterator;
 	Iterator	position;
 
-	typedef typename ContainerType::iterator Iterator;
 	if (hasOdd)
 	{
 		position = std::lower_bound(mainChain.begin(), mainChain.end(),

@@ -75,75 +75,26 @@ double PmergeMe::sort(Container type)
 {
     double start = getTime();
 
-    makePairs(type);
-    sortPairs(type);
-    createChains(type);
-    insertFirstPending(type);
-    insertPending(type);
-    insertStraggler(type);
+    if (type == VECTOR)
+    {
+        makePairsTemp(vectorValues);
+        sortPairsTemp(vectorValues);
+        createChainsTemp(vectorValues, vectorMainChain, vectorPendingChain);
+        insertFirstPendingTemp(vectorMainChain, vectorPendingChain);
+        insertPendingTemplate(vectorMainChain, vectorPendingChain);
+        insertStragglerTemplate(vectorValues, vectorMainChain);
+    }
+    else
+    {
+        makePairsTemp(dequeValues);
+        sortPairsTemp(dequeValues);
+        createChainsTemp(dequeValues, dequeMainChain, dequePendingChain);
+        insertFirstPendingTemp(dequeMainChain, dequePendingChain);
+        insertPendingTemplate(dequeMainChain, dequePendingChain);
+        insertStragglerTemplate(dequeValues, dequeMainChain);
+    }
 
     return (getTime() - start); // in s = (end - start) / 1000000.0;
-}
-
-/* ************************************************************************** */
-/*  FORD-JOHNSON                                                              */
-/* ************************************************************************** */
-void PmergeMe::makePairs(Container type)
-{
-    if (type == VECTOR)
-        makePairsTemp(vectorValues);
-    else
-        makePairsTemp(dequeValues);
-}
-
-void PmergeMe::sortPairs(Container type)
-{
-    if (type == VECTOR)
-        sortPairsTemp(vectorValues);
-    else
-        sortPairsTemp(dequeValues);
-}
-
-void PmergeMe::createChains(Container type)
-{
-    if (type == VECTOR)
-        createChainsTemp(
-            vectorValues,
-            vectorMainChain,
-            vectorPendingChain);
-    else
-        createChainsTemp(
-            dequeValues,
-            dequeMainChain,
-            dequePendingChain);
-}
-
-void PmergeMe::insertFirstPending(Container type)
-{
-    if (type == VECTOR)
-        insertFirstPendingTemp(
-            vectorMainChain,
-            vectorPendingChain);
-    else
-        insertFirstPendingTemp(
-            dequeMainChain,
-            dequePendingChain);
-}
-
-void PmergeMe::insertPending(Container type)
-{
-    if (type == VECTOR)
-        insertPendingTemplate(vectorMainChain, vectorPendingChain);
-    else
-        insertPendingTemplate(dequeMainChain, dequePendingChain);
-}
-
-void PmergeMe::insertStraggler(Container type)
-{
-    if (type == VECTOR)
-        insertStragglerTemplate(vectorValues, vectorMainChain);
-    else
-        insertStragglerTemplate(dequeValues, dequeMainChain);
 }
 
 /* ************************************************************************** */

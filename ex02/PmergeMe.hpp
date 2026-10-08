@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 23:35:18 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/08 23:52:15 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,18 @@ class PmergeMe
         bool        hasOdd;
         int         straggler;
 
+
+    public:
+        PmergeMe();
+        PmergeMe(const PmergeMe&    other);
+        PmergeMe& operator=(const PmergeMe& other);
+        ~PmergeMe();
+
+        // Parsing
+        void        parseValue(int argc, char*  argv[]);
+        double      sort(Container type);
+
+        // FordJohnson
         template <typename ContainerType>
         void fordJohnson(ContainerType &values, int depth, bool debug);
 
@@ -95,25 +107,7 @@ class PmergeMe
 
         template <typename ContainerType>
         void insertStragglerTemplate(ContainerType &values, ContainerType &mainChain);
-
-    public:
-        PmergeMe();
-        PmergeMe(const PmergeMe&    other);
-        PmergeMe& operator=(const PmergeMe& other);
-        ~PmergeMe();
-
-        // Parsing
-        void        parseValue(int argc, char*  argv[]);
-        double      sort(Container type);
-
-        // Ford-Johnson
-        void        makePairs(Container type);
-        void        sortPairs(Container type);
-        void        createChains(Container type);
-        void        insertFirstPending(Container type);
-        void        insertPending(Container type);
-        void        insertStraggler(Container type);
-
+        
         // Jacobsthal
         template <typename ContainerType>
         ContainerType generateJacobsthal(size_t size);
