@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 21:22:19 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 22:54:14 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,20 +148,17 @@ void PmergeMe::insertPending(ContainerType &values, ContainerType &mainChain, Pa
 	}
 	pendingChain.clear();
 
-	 // Insert straggler if the input has an odd number of elements
     if (hasOdd)
     {
         binarySearchInsertion(mainChain, straggler, 0, false);
         hasOdd = false;
     }
-
-    // Copy sorted main chain back into original container
     values = mainChain;
 }
 
 /* ************************************************************************** */
 /*  MERGE-INSERTION SORT								                      */
-/* ************************************************************************** */
+// /* ************************************************************************** */
 
 template <typename ContainerType>
 void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
@@ -371,13 +368,13 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
     if (debug)
     {
         std::ostringstream prefix;
-        prefix << "[Depth " << depth << "] Insert b1 = ["
+        prefix << "[Depth " << depth << "]"
             << sortedPairs[0].first << "]:  ";
 
         std::string padding(indent.length() + prefix.str().length(), ' ');
 
         std::cout << "\n" << indent << prefix.str()
-                << "Main chain  <- insert first pending\n";
+                << "Main chain  <- Checkpoint 1. Insert b1\n";
 
         for (size_t i = 0; i < mainChain.size(); i++)
             std::cout << padding << "[" << mainChain[i] << "]\n";
@@ -398,7 +395,7 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
         int pending = sortedPairs[index].first;
         int partner = sortedPairs[index].second;
 
-        binarySearchInsertion(mainChain, pending, partner, true);
+        // binarySearchInsertion(mainChain, pending, partner, true);
 
         size_t lastCompleteBoundary = 1;
         size_t previous = 1;
@@ -413,42 +410,50 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
             current = next;
         }
 
+    size_t insertedIndex =
+            binarySearchInsertion(mainChain, pending, partner, true);
     if (debug)
     {
+        size_t checkpoint = 1;
+        size_t previousCheckpoint = 1;
+        size_t nextCheckpoint = 3;
+        while (checkpoint < index + 1)
+        {
+            checkpoint = nextCheckpoint;
+
+            size_t next = nextCheckpoint + 2 * previousCheckpoint;
+            previousCheckpoint = nextCheckpoint;
+            nextCheckpoint = next;
+        }
+    
         std::ostringstream prefix;
-        prefix << "[Depth " << depth << "] Insert b"
-            << index + 1 << " = [" << pending << "]:  ";
+        prefix << "[Depth " << depth << "] Insert b = ["
+            << index + 1 << "]:  ";
 
         std::string padding(indent.length() + prefix.str().length(), ' ');
 
         std::cout << "\n" << indent << prefix.str() << "Main chain";
 
         if (index + 1 <= lastCompleteBoundary)
-            std::cout << "  <- Jacobsthal";
+            std::cout << "  <- Checkpoint " << checkpoint;
         else
-            std::cout << "  <- remaining element";
+            std::cout << "  <- Checkpoint next (remaining)";
 
         std::cout << "\n";
 
         for (size_t j = 0; j < mainChain.size(); j++)
-            std::cout << padding << "[" << mainChain[j] << "]\n";
+        {
+            std::cout << padding << "[" << mainChain[j] << "]";
+
+            if (j == insertedIndex)
+            {
+                std::cout << " <- lower_bound(chain.begin(), partner=" << partner << ", value=" << pending << ")";
+            }
+            std::cout << "\n";
+        }
     }
-        // if (debug)
-        // {
-        //     std::ostringstream prefix;
-        //     prefix << "[Depth " << depth << "] Insert b"
-        //         << index + 1 << " = [" << pending << "]:  ";
-
-        //     std::string padding(indent.length() + prefix.str().length(), ' ');
-
-        //     std::cout << "\n" << indent << prefix.str()
-        //             << "Main chain\n";
-
-        //     for (size_t j = 0; j < mainChain.size(); j++)
-        //         std::cout << padding << "[" << mainChain[j] << "]\n";
-        // }
     }
-
+    
     // 8. Insert straggler
     if (hasOddLocal)
     {
@@ -494,125 +499,9 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
     }
 }
 
-// template <typename ContainerType>
-// void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
-// {
-//     typedef typename ContainerType::iterator Iterator;
-// 	VectorPair pairs;
-// 	VectorPair sortedPairs;
-
-//     // Base case
-//     if (values.size() <= 1)
-//         return ;
-
-//     // Handle odd element
-//     bool hasOddLocal 	= (values.size() % 2 != 0);
-//     int  stragglerLocal = 0;
-
-//     if (hasOddLocal)
-//         stragglerLocal = values.back();
-
-//     // 1. Create pairs (small, large)
-//     for (size_t i = 0; i + 1 < values.size(); i += 2)
-//     {
-//         int small = values[i];
-//         int large = values[i + 1];
-
-//         if (small > large)
-//             std::swap(small, large);
-
-//         pairs.push_back(std::make_pair(small, large));
-//     }
-
-//     // 2. Extract and recursively sort larger values
-//     ContainerType larger;
-
-//     for (size_t i = 0; i < pairs.size(); i++)
-//         larger.push_back(pairs[i].second);
-
-// 	// 3. Sort larger elements recursively
-//     mergeInsertionSort(larger, depth + 1, debug);
-
-//     // 4. Reorder pairs according to sorted larger values
-//     std::vector<bool> used(pairs.size(), false);
-
-//     for (size_t i = 0; i < larger.size(); i++)
-//     {
-//         for (size_t j = 0; j < pairs.size(); j++)
-//         {
-//             if (!used[j] && pairs[j].second == larger[i])
-//             {
-//                 sortedPairs.push_back(pairs[j]);
-//                 used[j] = true;
-//                 break ;
-//             }
-//         }
-//     }
-
-//     // 5. Create main chain
-//     ContainerType mainChain = larger;
-
-//     // 6. Insert first smaller element (b1)
-//     if (!sortedPairs.empty())
-//         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
-
-//     // 7. Insert remaining smaller elements in Jacobsthal order
-//     VectorSizeT order = generateInsertionOrder<VectorSizeT>(sortedPairs.size());
-
-//     for (size_t i = 0; i < order.size(); i++)
-//     {
-//         size_t index = order[i];
-//         int pending = sortedPairs[index].first;
-//         int partner = sortedPairs[index].second;
-
-//         Iterator partnerPosition = std::find(mainChain.begin(),
-//                 mainChain.end(), partner);
-
-//         Iterator position = std::lower_bound(mainChain.begin(),
-//                 partnerPosition, pending);
-
-//         mainChain.insert(position, pending);
-//     }
-
-//     // 8. Insert straggler
-//     if (hasOddLocal)
-//     {
-//         Iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), stragglerLocal);
-//         mainChain.insert(position, stragglerLocal);
-//     }
-
-//     // 9. Return sorted values
-//     values = mainChain;
-
-//     if (debug)
-//     {
-//         std::cout << std::string(depth * 4,
-//             ' ') << "[Depth " << depth << "] Return: ";
-
-//         for (size_t i = 0; i < values.size(); i++)
-//             std::cout << values[i] << " ";
-
-//         std::cout << std::endl;
-//     }
-// }
-
 /* ************************************************************************** */
 /*  JACOBSTHAL SEQUENCE									                      */
 /* ************************************************************************** */
-/*
-    generateJacobsthal
-    previous = 1
-    current  = 3
-
-    next = 3 + 2×1 = 5
-    next = 5 + 2×3 = 11
-    next = 11 + 2×5 = 21
-
-    3, 5, 11, 21, 43...
-
-    For :   generateJacobsthal(10)  --> [3, 5]
-    11 isn't included because we only have 10 pending elements.
-*/
 template <typename ContainerType> 
 ContainerType PmergeMe::generateJacobsthal(size_t size)
 {
@@ -659,21 +548,34 @@ ContainerType PmergeMe::generateInsertionOrder(size_t size)
 
 /* ************************************************************************** */
 /*  BINARY SEARCH INSERTION                                                   */
-/* ************************************************************************** */
+
 template <typename ContainerType>
-void PmergeMe::binarySearchInsertion(ContainerType &mainChain, int value, int partner, bool hasPartner)
+size_t PmergeMe::binarySearchInsertion(
+    ContainerType &mainChain,
+    int value,
+    int partner,
+    bool hasPartner)
 {
     typedef typename ContainerType::iterator Iterator;
 
-    Iterator partnerPosition;
-    Iterator position;
+    Iterator partnerPosition = mainChain.end();
 
-    partnerPosition = mainChain.end();
     if (hasPartner)
-        partnerPosition = std::find(mainChain.begin(), mainChain.end(), partner);
+    {
+        partnerPosition = std::find(
+            mainChain.begin(), mainChain.end(), partner);
+    }
 
-    position = std::lower_bound(mainChain.begin(), partnerPosition, value);
+    Iterator position = std::lower_bound(
+        mainChain.begin(), partnerPosition, value);
+
+    size_t insertedIndex =
+        std::distance(mainChain.begin(), position);
+
     mainChain.insert(position, value);
+
+    return insertedIndex;
 }
+
 
 #endif

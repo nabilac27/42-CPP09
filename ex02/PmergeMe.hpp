@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 02:18:24 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 22:36:18 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ class PmergeMe
 
         /*  BINARY SEARCH INSERTION ****************************************** */
         template <typename ContainerType>
-        void    binarySearchInsertion(ContainerType &mainChain, int value, int partner, bool hasPartner);
+        size_t    binarySearchInsertion(ContainerType &mainChain, int value, int partner, bool hasPartner);
 };
 
 /* ************************************************************************** */

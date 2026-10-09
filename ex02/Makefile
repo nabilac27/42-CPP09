@@ -6,7 +6,7 @@
 #    By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/21 00:05:12 by nchairun          #+#    #+#              #
-#    Updated: 2026/10/09 01:51:04 by nchairun         ###   ########.fr        #
+#    Updated: 2026/10/09 22:48:24 by nchairun         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,12 +47,13 @@ $(NAME): $(OBJS)
 #                                 CLEANING                                     #
 # **************************************************************************** #
 clean:
-	rm -f $(OBJS)
+	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	rm -f $(NAME)
-	rm -rf $(OBJ_DIR)
 
-re: fclean all
+re: 
+	fclean
+	all
 
 .PHONY: all clean fclean re
