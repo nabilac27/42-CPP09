@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 01:27:44 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 02:18:24 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ typedef std::deque<std::pair<int, int> >  DequePair;
 enum Container
 {
     VECTOR,
-    DEQUE
+    DEQUE,
+    DEBUG_MODE
 };
 
 enum Debug
@@ -86,10 +87,11 @@ class PmergeMe
         void        parseValue(int argc, char*  argv[]);
         double      sort(Container type);
         double      getTime();
-
-        /*  PRINT     ******************************************************* */
         void        printState(const char* msg, Container type, bool debug);
         void        printTime(double time, Container type) const;
+
+        /*  DEBUGGING   ******************************************************* */
+        void        sortDebug();
         void        printDebugging(Debug type);
         void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
         void        printRecursiveChains(const Vector& mainChain, const VectorPair& pendingChain, int depth, const std::string& stage);

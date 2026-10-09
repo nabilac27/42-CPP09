@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 01:27:25 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 01:38:57 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define PMERGEME_TPP
 
 /* ************************************************************************** */
-/*  FORD-JOHNSON -- 1. MAKEPAIRS											  */
+/*  FORD-JOHNSON -- 1. MAKE PAIRS											  */
 /* ************************************************************************** */
 template <typename ContainerType> 
 void PmergeMe::makePairs(ContainerType &values)
@@ -120,7 +120,8 @@ void PmergeMe::insertFirstPending(ContainerType &mainChain, PairContainerType &p
 }
 
 /* **************************************************************************** */
-/*  FORD-JOHNSON -- 5. INSERT REMAINING ELEMENTS in Jacobsthal order, using Binary search and insertion */
+/*  FORD-JOHNSON -- 5. INSERT REMAINING ELEMENTS 								*/
+/* 		in Jacobsthal order, using Binary search insertion 						*/
 /* 		Instead of inserting pending elements simply from left to right, 		*/
 /*		it uses a special insertion order derived from the Jacobsthal sequence	*/ 
 /* **************************************************************************** */
@@ -134,13 +135,16 @@ void PmergeMe::insertPending(ContainerType &values, ContainerType &mainChain, Pa
 
 	if (pendingChain.size() <= 1)
 		return ;
-	order = generateInsertionOrder<VectorSizeT>(pendingChain.size());
-	for (size_t i = 0; i < order.size(); i++)
+	if (pendingChain.size() > 1)
 	{
-		index 	= order[i];
-		pending = pendingChain[index].first;
-		partner = pendingChain[index].second;
-        binarySearchInsertion(mainChain, pending, partner, true);
+		order = generateInsertionOrder<VectorSizeT>(pendingChain.size());
+		for (size_t i = 0; i < order.size(); i++)
+		{
+			index = order[i];
+			pending = pendingChain[index].first;
+			partner = pendingChain[index].second;
+			binarySearchInsertion(mainChain, pending, partner, true);
+		}
 	}
 	pendingChain.clear();
 

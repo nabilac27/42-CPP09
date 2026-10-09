@@ -6,7 +6,7 @@
 #    By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/21 00:05:12 by nchairun          #+#    #+#              #
-#    Updated: 2026/08/27 22:02:18 by nchairun         ###   ########.fr        #
+#    Updated: 2026/10/09 01:51:04 by nchairun         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ NAME	= PmergeMe
 #                               FILE STRUCTURE                                 #
 # **************************************************************************** #
 OBJ_DIR	= obj/
-SRCS	= main.cpp PmergeMe.cpp
+SRCS	= main.cpp PmergeMe.cpp utils.cpp
 OBJS	= $(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 
 
