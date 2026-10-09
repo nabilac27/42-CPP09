@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:09:14 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 20:30:46 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 16:29:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,16 @@
 int main(int argc, char **argv)
 {
 	if (argc != 2)
-	{
-		std::cerr << "ERROR: Argument less than 2" << std::endl;
-		return (1);
-	}
+		return (std::cerr << "ERROR: Argument less than 2" << std::endl, 1);
 
 	try
 	{
-		RPN rpn;
+		RPN	rpn;
 		rpn.process(argv[1]);
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
-		return (1);
+		return (std::cerr << e.what() << std::endl, 1);
 	}
 
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 05:01:14 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 17:09:54 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ RPN::RPN()
 
 RPN::RPN(const RPN& other)
 {
-	numbers = other.numbers;
+	listBasedStack = other.listBasedStack;
 }
 
-RPN& RPN::operator=(const RPN& other)
+RPN&	RPN::operator=(const RPN& other)
 {
 	if (this != &other)
-		numbers = other.numbers;
+		listBasedStack = other.listBasedStack;
 	return (*this);
 }
 
@@ -38,85 +38,100 @@ RPN::~RPN()
 /* ************************************************************************** */
 /*  process()                                                  				  */
 /* ************************************************************************** */
-void RPN::process(const std::string& expression)
+void	RPN::process(const std::string& expression)
 {
 	if (!parseExpression(expression))
 		throw (std::runtime_error("ERROR: invalid token in parseExpression()"));
-	if (numbers.size() != 1)
+	if (listBasedStack.size() != 1)
 		throw (std::runtime_error("ERROR: list size() not 1"));
-	std::cout << numbers.back() << std::endl;
+	std::cout << listBasedStack.back() << std::endl;
 }
 
 /* ************************************************************************** */
 /*  parseExpression()                                                  		  */
 /* ************************************************************************** */
-bool RPN::parseExpression(const std::string& expression)
+bool	RPN::parseExpression(const std::string& expression)
 {
 	std::stringstream	ss(expression);
 	std::string			token;
-
+	long 				rightOperand, leftOperand, result;
+	
 	while (ss >> token)
 	{
-		if (token.length() == 1
-			&& std::isdigit(static_cast<unsigned char>(token[0])))
-			numbers.push_back(token[0] - '0');
+		if (token.length() == 1 && std::isdigit(static_cast<unsigned char>(token[0])))
+			listBasedStack.push_back(token[0] - '0');
+	
 		else if (token.length() == 1 && isOperator(token[0]))
 		{
-			if (numbers.size() < 2)
+			if (listBasedStack.size() < 2)
 				return (false);
 
-			long long right = numbers.back();
-			numbers.pop_back();
-			long long left = numbers.back();
-			numbers.pop_back();
-			long long result = calculate(left, right, token[0]);
-
-			numbers.push_back(result);
+			rightOperand	= listBasedStack.back();
+			listBasedStack.pop_back();
+			
+			leftOperand		= listBasedStack.back();
+			listBasedStack.pop_back();
+	
+			result 			= calculate(leftOperand, rightOperand, token[0]);
+			listBasedStack.push_back(result);
 		}
 		else
 			return (false);
 	}
-
 	return (true);
 }
 
 /* ************************************************************************** */
 /*  calculate()   				                                              */
 /* ************************************************************************** */
-long long RPN::calculate(long long left, long long right, char operation)
+long	RPN::calculate(long leftOperand, long rightOperand, char operatorr)
 {
-	switch (operation)
+	if (operatorr == '/' && rightOperand == 0)
+        throw (std::runtime_error("ERROR: division by zero"));
+    if (isOverflow(leftOperand, rightOperand, operatorr))
+        throw (std::runtime_error("ERROR: arithmetic overflow"));
+
+	switch (operatorr)
 	{
 		case '+':
-			return (left + right);
-
+			return (leftOperand + rightOperand);
 		case '-':
-			return (left - right);
-
+			return (leftOperand - rightOperand);
 		case '*':
-			if ((left > 0 && right > 0 && left > LLONG_MAX / right)
-			|| (left < 0 && right < 0 && left < LLONG_MAX / right)
-			|| (left > 0 && right < 0 && right < LLONG_MIN / left)
-			|| (left < 0 && right > 0 && left < LLONG_MIN / right))
-				throw std::runtime_error("ERROR: multiplication overflow in calculate()");
-    		return (left * right);
-
+    		return (leftOperand * rightOperand);
 		case '/':
-			if (right == 0)
-				throw (std::runtime_error("ERROR: division by zero in calculate()"));
-			return (left / right);
+			return (leftOperand / rightOperand);
 	}
-	throw (std::runtime_error("ERROR: calculate()"));
+	throw (std::runtime_error("ERROR: invalid operator"));
 }
+
+
 
 /* ************************************************************************** */
 /*  isOperator()			                                                  */
 /* ************************************************************************** */
-bool RPN::isOperator(char token)
+bool	RPN::isOperator(char token)
 {
-	return (token == '+'
-		|| token == '-'
-		|| token == '*'
-		|| token == '/');
+	return (token == '+' || token == '-' || token == '*' || token == '/');
 }
 
+bool	RPN::isOverflow(long leftOperand, long rightOperand, char operatorr)
+{
+    switch (operatorr)
+    {
+        case '+':
+            return ((rightOperand > 0 && leftOperand > LONG_MAX - rightOperand)
+                || (rightOperand < 0 && leftOperand < LONG_MIN - rightOperand));
+        case '-':
+            return ((rightOperand < 0 && leftOperand > LONG_MAX + rightOperand)
+                || (rightOperand > 0 && leftOperand < LONG_MIN + rightOperand));
+        case '*':
+            return ((leftOperand > 0 && rightOperand > 0 && leftOperand > LONG_MAX / rightOperand)
+                || (leftOperand < 0 && rightOperand < 0 && leftOperand < LONG_MAX / rightOperand)
+                || (leftOperand > 0 && rightOperand < 0 && rightOperand < LONG_MIN / leftOperand)
+                || (leftOperand < 0 && rightOperand > 0 && leftOperand < LONG_MIN / rightOperand));
+        case '/':
+            return (leftOperand == LONG_MIN && rightOperand == -1);
+    }
+    return (false);
+}

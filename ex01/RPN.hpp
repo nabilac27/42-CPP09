@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/08 04:59:44 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 17:03:28 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,20 @@
 class RPN
 {
   private:
-	  std::list<long long>	numbers;
+	  std::list<long long>	listBasedStack;
 
 	public:
 		RPN();
 		RPN(const RPN& other);
-		RPN& operator=(const RPN& other);
+		RPN& 	operator=(const RPN& other);
 		~RPN();
 
-		void		process(const std::string& expression);
-		bool		parseExpression(const std::string& expression);
-		bool  		isOperator(char token);
-		long long  	calculate(long long left, long long right, char operation);
+		void	process(const std::string& expression);
+		bool	parseExpression(const std::string& expression);
+		long  	calculate(long leftOperand, long rightOperand, char operatorr);
+
+		bool  	isOperator(char token);
+		bool	isOverflow(long left, long right, char operatorr)
 };
 
 #endif
