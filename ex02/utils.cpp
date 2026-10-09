@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 01:31:43 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 02:17:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 20:39:35 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,26 @@
 
 void PmergeMe::sortDebug()
 {
-    std::cout << "\n[STEP 1] Make pairs" << std::endl;
+    // std::cout << "\n ----------------- [STEP 1] Make pairs --------------------------------------- " << std::endl;
     makePairs(vectorValues);
-
-    std::cout << "\n[STEP 2] Sort pairs" << std::endl;
+    printDebugging(PAIRS);
+    
+    std::cout << "\n ----------------- [STEP 2] Sort pairs --------------------------------------- " << std::endl;
     sortPairs(vectorValues);
+    // printDebugging(PAIRS);
+    printDebugging(PAIRS_INDEX);
 
-    std::cout << "\n[STEP 3] Create chains" << std::endl;
+    std::cout << "\n ----------------- [STEP 3] Create chains from original sorted pairs --------- " << std::endl;
     createChains(vectorValues, vectorMainChain, vectorPendingChain);
+    printDebugging(CHAINS);
 
-    std::cout << "\n[STEP 4] Insert first pending" << std::endl;
+    std::cout << "\n ----------------- [STEP 4] Insert first pending ----------------------------- " << std::endl;
     insertFirstPending(vectorMainChain, vectorPendingChain);
-
-    std::cout << "\n[STEP 5] Jacobsthal insertion + straggler" << std::endl;
+    printDebugging(CHAINS_FIRST_INSERTED);
+        
+    std::cout << "\n ----------------- [STEP 5] Jacobsthal insertion + straggler ----------------- " << std::endl;
     insertPending(vectorValues, vectorMainChain, vectorPendingChain);
-
-    printState("Sorted", VECTOR, true);
+    printDebugging(CHAINS_FIRST_INSERTED);
 }
 
 void    PmergeMe::printDebugging(Debug type)

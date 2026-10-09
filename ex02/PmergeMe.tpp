@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 01:38:57 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 21:22:19 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void PmergeMe::sortPairs(ContainerType &values)
 	for (size_t i = 0; i < pairs.size(); i++)
 		largerElementsChain.push_back(pairs[i].second);
 	// 3. Sort larger elements recursively
-	mergeInsertionSort(largerElementsChain, 0, false); // --- FOR DEBUGGING: TRUE ---
+	mergeInsertionSort(largerElementsChain, 0, true); // --- FOR DEBUGGING: TRUE ---
 	// 4. Reorder pairs
 	std::vector<bool> used(pairs.size(), false);
 	for (size_t i = 0; i < largerElementsChain.size(); i++)
@@ -162,25 +162,43 @@ void PmergeMe::insertPending(ContainerType &values, ContainerType &mainChain, Pa
 /* ************************************************************************** */
 /*  MERGE-INSERTION SORT								                      */
 /* ************************************************************************** */
+
 template <typename ContainerType>
 void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
 {
     typedef typename ContainerType::iterator Iterator;
-	VectorPair pairs;
-	VectorPair sortedPairs;
+
+    VectorPair pairs;
+    VectorPair sortedPairs;
+    std::string indent(depth * 4, ' ');
+
+    // 0. Enter recursion
+    if (debug)
+    {
+        std::cout << "\n" << indent
+                  << "[Depth " << depth << "] Value: ";
+        for (size_t i = 0; i < values.size(); i++)
+            std::cout << values[i] << " ";
+        std::cout << std::endl;
+        std::cout << std::endl;
+    }
 
     // Base case
     if (values.size() <= 1)
-        return ;
+    {
+        if (debug)
+            std::cout << indent << "[Depth " << depth << "] ----------- Recursion's base case -----------\n";
+        return;
+    }
 
     // Handle odd element
-    bool hasOddLocal 	= (values.size() % 2 != 0);
-    int  stragglerLocal = 0;
+    bool hasOddLocal = (values.size() % 2 != 0);
+    int stragglerLocal = 0;
 
     if (hasOddLocal)
         stragglerLocal = values.back();
 
-    // 1. Create pairs (small, large)
+    // 1. Create pairs
     for (size_t i = 0; i + 1 < values.size(); i += 2)
     {
         int small = values[i];
@@ -192,16 +210,68 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
         pairs.push_back(std::make_pair(small, large));
     }
 
-    // 2. Extract and recursively sort larger values
+
+    if (debug)
+    {
+        const int width = 12;
+
+        std::ostringstream prefix;
+        prefix << "[Depth " << depth << "] ";
+
+        std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        // Print pairs
+        std::cout << indent << prefix.str() << "Pairs: ";
+
+        for (size_t i = 0; i < pairs.size(); i++)
+        {
+            std::ostringstream oss;
+            oss << "(" << pairs[i].first
+                << ", " << pairs[i].second << ")";
+
+            std::cout << std::left << std::setw(width) << oss.str();
+        }
+
+        if (hasOddLocal)
+            std::cout << "Straggler: " << stragglerLocal;
+
+        std::cout << std::endl;
+
+        // Print pair indexes
+        std::cout << padding << "Index: ";
+
+        for (size_t i = 0; i < pairs.size(); i++)
+        {
+            std::ostringstream oss;
+            oss << "(b" << i + 1 << ", a" << i + 1 << ")";
+
+            std::cout << std::left << std::setw(width) << oss.str();
+        }
+        std::cout << std::endl;
+        std::cout << std::endl;
+    }
+
+    // 2. Extract larger elements
     ContainerType larger;
 
     for (size_t i = 0; i < pairs.size(); i++)
         larger.push_back(pairs[i].second);
 
-	// 3. Sort larger elements recursively
+    if (debug)
+    {
+        std::cout << indent
+                  << "[Depth " << depth << "] Return: ";
+
+        for (size_t i = 0; i < larger.size(); i++)
+            std::cout << larger[i] << " ";
+
+        std::cout << std::endl;
+    }
+
+    // 3. Recursive sort
     mergeInsertionSort(larger, depth + 1, debug);
 
-    // 4. Reorder pairs according to sorted larger values
+    // 4. Reorder pairs
     std::vector<bool> used(pairs.size(), false);
 
     for (size_t i = 0; i < larger.size(); i++)
@@ -212,50 +282,210 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
             {
                 sortedPairs.push_back(pairs[j]);
                 used[j] = true;
-                break ;
+                break;
             }
         }
+    }
+
+    // DEBUG: Print sorted pairs and their indexes
+    if (debug)
+    {
+        const int width = 12;
+
+        std::ostringstream prefix;
+        prefix << "[Depth " << depth << "] ";
+
+        std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        std::cout << "\n" << indent << prefix.str() << "Sorted pairs: ";
+
+        for (size_t i = 0; i < sortedPairs.size(); i++)
+        {
+            std::ostringstream oss;
+            oss << "(" << sortedPairs[i].first
+                << ", " << sortedPairs[i].second << ")";
+
+            std::cout << std::left << std::setw(width) << oss.str();
+        }
+        std::cout << std::endl;
+
+        std::cout << padding << "Index:        ";
+
+        for (size_t i = 0; i < sortedPairs.size(); i++)
+        {
+            std::ostringstream oss;
+            oss << "(b" << i + 1 << ", a" << i + 1 << ")";
+
+            std::cout << std::left << std::setw(width) << oss.str();
+        }
+        std::cout << std::endl;
     }
 
     // 5. Create main chain
     ContainerType mainChain = larger;
 
-    // 6. Insert first smaller element (b1)
+    if (debug)
+    {
+        std::ostringstream prefix;
+        prefix << "[Depth " << depth << "] Create chains:  ";
+
+        std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        std::cout << "\n" << indent << prefix.str()
+                << std::left << std::setw(15) << "Main chain"
+                << "Pending chain\n";
+
+        for (size_t i = 0; i < mainChain.size(); i++)
+        {
+            std::ostringstream mainText;
+            std::ostringstream pendingText;
+
+            mainText << "[" << mainChain[i] << "]";
+
+            if (i < sortedPairs.size())
+                pendingText << "[" << sortedPairs[i].first
+                            << "] -> " << sortedPairs[i].second;
+
+            std::cout << padding
+                    << std::left << std::setw(15) << mainText.str()
+                    << pendingText.str() << "\n";
+        }
+    }
+
+    if (debug && !sortedPairs.empty())
+    {
+        size_t count = sortedPairs.size();
+
+        std::cout << "\n" << indent
+                << "[Depth " << depth << "] Chain ends at b"
+                << count << " = ["
+                << sortedPairs[count - 1].first
+                << "]  | means " << count << " pending elements\n";
+    }
+
+    // 6. Insert first pending (b1)
     if (!sortedPairs.empty())
+    {
         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
 
-    // 7. Insert remaining smaller elements in Jacobsthal order
-    VectorSizeT order = generateInsertionOrder<VectorSizeT>(sortedPairs.size());
+    if (debug)
+    {
+        std::ostringstream prefix;
+        prefix << "[Depth " << depth << "] Insert b1 = ["
+            << sortedPairs[0].first << "]:  ";
+
+        std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        std::cout << "\n" << indent << prefix.str()
+                << "Main chain  <- insert first pending\n";
+
+        for (size_t i = 0; i < mainChain.size(); i++)
+            std::cout << padding << "[" << mainChain[i] << "]\n";
+    }
+    }
+
+    // 7. Jacobsthal insertion
+    VectorSizeT order =
+        generateInsertionOrder<VectorSizeT>(sortedPairs.size());
 
     for (size_t i = 0; i < order.size(); i++)
     {
         size_t index = order[i];
+
+        if (index == 0)
+            continue;
+
         int pending = sortedPairs[index].first;
         int partner = sortedPairs[index].second;
 
-        Iterator partnerPosition = std::find(mainChain.begin(),
-                mainChain.end(), partner);
+        binarySearchInsertion(mainChain, pending, partner, true);
 
-        Iterator position = std::lower_bound(mainChain.begin(),
-                partnerPosition, pending);
+        size_t lastCompleteBoundary = 1;
+        size_t previous = 1;
+        size_t current = 3;
 
-        mainChain.insert(position, pending);
+        while (current <= sortedPairs.size())
+        {
+            lastCompleteBoundary = current;
+
+            size_t next = current + 2 * previous;
+            previous = current;
+            current = next;
+        }
+
+    if (debug)
+    {
+        std::ostringstream prefix;
+        prefix << "[Depth " << depth << "] Insert b"
+            << index + 1 << " = [" << pending << "]:  ";
+
+        std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        std::cout << "\n" << indent << prefix.str() << "Main chain";
+
+        if (index + 1 <= lastCompleteBoundary)
+            std::cout << "  <- Jacobsthal";
+        else
+            std::cout << "  <- remaining element";
+
+        std::cout << "\n";
+
+        for (size_t j = 0; j < mainChain.size(); j++)
+            std::cout << padding << "[" << mainChain[j] << "]\n";
+    }
+        // if (debug)
+        // {
+        //     std::ostringstream prefix;
+        //     prefix << "[Depth " << depth << "] Insert b"
+        //         << index + 1 << " = [" << pending << "]:  ";
+
+        //     std::string padding(indent.length() + prefix.str().length(), ' ');
+
+        //     std::cout << "\n" << indent << prefix.str()
+        //             << "Main chain\n";
+
+        //     for (size_t j = 0; j < mainChain.size(); j++)
+        //         std::cout << padding << "[" << mainChain[j] << "]\n";
+        // }
     }
 
     // 8. Insert straggler
     if (hasOddLocal)
     {
-        Iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), stragglerLocal);
-        mainChain.insert(position, stragglerLocal);
-    }
+        Iterator position    = std::lower_bound(mainChain.begin(), mainChain.end(), stragglerLocal);
+        size_t insertedIndex = std::distance(mainChain.begin(), position);
 
-    // 9. Return sorted values
+        mainChain.insert(position, stragglerLocal);
+
+    if (debug)
+    {
+            std::ostringstream prefix;
+            prefix << "[Depth " << depth << "] Insert straggler = [" << stragglerLocal << "]:  ";
+
+            std::string padding(indent.length() + prefix.str().length(), ' ');
+
+            std::cout << "\n" << indent << prefix.str() << "Main chain\n";
+
+            for (size_t i = 0; i < mainChain.size(); i++)
+            {
+                std::cout << padding << "[" << mainChain[i] << "]";
+
+                if (i == insertedIndex)
+                    std::cout << "  <- inserted straggler, using lower_bound()";
+
+                std::cout << "\n";
+            }
+        }
+    }
+    
+
+    // 9. Return
     values = mainChain;
 
     if (debug)
     {
-        std::cout << std::string(depth * 4,
-            ' ') << "[Depth " << depth << "] Return: ";
+        std::cout << indent
+                  << "[Depth " << depth << "] Return: ";
 
         for (size_t i = 0; i < values.size(); i++)
             std::cout << values[i] << " ";
@@ -263,6 +493,108 @@ void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
         std::cout << std::endl;
     }
 }
+
+// template <typename ContainerType>
+// void PmergeMe::mergeInsertionSort(ContainerType &values, int depth, bool debug)
+// {
+//     typedef typename ContainerType::iterator Iterator;
+// 	VectorPair pairs;
+// 	VectorPair sortedPairs;
+
+//     // Base case
+//     if (values.size() <= 1)
+//         return ;
+
+//     // Handle odd element
+//     bool hasOddLocal 	= (values.size() % 2 != 0);
+//     int  stragglerLocal = 0;
+
+//     if (hasOddLocal)
+//         stragglerLocal = values.back();
+
+//     // 1. Create pairs (small, large)
+//     for (size_t i = 0; i + 1 < values.size(); i += 2)
+//     {
+//         int small = values[i];
+//         int large = values[i + 1];
+
+//         if (small > large)
+//             std::swap(small, large);
+
+//         pairs.push_back(std::make_pair(small, large));
+//     }
+
+//     // 2. Extract and recursively sort larger values
+//     ContainerType larger;
+
+//     for (size_t i = 0; i < pairs.size(); i++)
+//         larger.push_back(pairs[i].second);
+
+// 	// 3. Sort larger elements recursively
+//     mergeInsertionSort(larger, depth + 1, debug);
+
+//     // 4. Reorder pairs according to sorted larger values
+//     std::vector<bool> used(pairs.size(), false);
+
+//     for (size_t i = 0; i < larger.size(); i++)
+//     {
+//         for (size_t j = 0; j < pairs.size(); j++)
+//         {
+//             if (!used[j] && pairs[j].second == larger[i])
+//             {
+//                 sortedPairs.push_back(pairs[j]);
+//                 used[j] = true;
+//                 break ;
+//             }
+//         }
+//     }
+
+//     // 5. Create main chain
+//     ContainerType mainChain = larger;
+
+//     // 6. Insert first smaller element (b1)
+//     if (!sortedPairs.empty())
+//         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
+
+//     // 7. Insert remaining smaller elements in Jacobsthal order
+//     VectorSizeT order = generateInsertionOrder<VectorSizeT>(sortedPairs.size());
+
+//     for (size_t i = 0; i < order.size(); i++)
+//     {
+//         size_t index = order[i];
+//         int pending = sortedPairs[index].first;
+//         int partner = sortedPairs[index].second;
+
+//         Iterator partnerPosition = std::find(mainChain.begin(),
+//                 mainChain.end(), partner);
+
+//         Iterator position = std::lower_bound(mainChain.begin(),
+//                 partnerPosition, pending);
+
+//         mainChain.insert(position, pending);
+//     }
+
+//     // 8. Insert straggler
+//     if (hasOddLocal)
+//     {
+//         Iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), stragglerLocal);
+//         mainChain.insert(position, stragglerLocal);
+//     }
+
+//     // 9. Return sorted values
+//     values = mainChain;
+
+//     if (debug)
+//     {
+//         std::cout << std::string(depth * 4,
+//             ' ') << "[Depth " << depth << "] Return: ";
+
+//         for (size_t i = 0; i < values.size(); i++)
+//             std::cout << values[i] << " ";
+
+//         std::cout << std::endl;
+//     }
+// }
 
 /* ************************************************************************** */
 /*  JACOBSTHAL SEQUENCE									                      */
@@ -338,8 +670,7 @@ void PmergeMe::binarySearchInsertion(ContainerType &mainChain, int value, int pa
 
     partnerPosition = mainChain.end();
     if (hasPartner)
-        partnerPosition = std::find(mainChain.begin(), mainChain.end(),
-                partner);
+        partnerPosition = std::find(mainChain.begin(), mainChain.end(), partner);
 
     position = std::lower_bound(mainChain.begin(), partnerPosition, value);
     mainChain.insert(position, value);

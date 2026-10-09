@@ -1,0 +1,13 @@
+PmergeMe:
+Jump to the next Jacobsthal boundary, then insert backward.
+
+Pending:    b1   b2   b3   b4
+            ↓         ↓
+Boundary:   1         3       (next is 5)
+
+Step 1:     b1
+Step 2:               b3
+Step 3:          b2
+Step 4:                    b4  (left over)
+
+Result: b1 → b3 → b2 → b4

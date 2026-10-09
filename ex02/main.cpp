@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 02:13:43 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 20:49:54 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 
 /*
     valgrind --leak-check=full --show-leak-kinds=all ./PmergeMe 9 8 7 6 5 4 3 2 1
+
+    4 7 6 5  3 1  4 2 1 5 4 3 5 6 2 3 4 5
 */
 
 /* ************************************************************************** */
@@ -49,10 +51,10 @@ int main(int argc, char *argv[])
     PmergeMe pmerge;
 
     pmerge.parseValue(argc, argv);
-    pmerge.printState("[Before]", VECTOR, false);
+    pmerge.printState("Before", VECTOR, true);
 
     pmerge.sort(DEBUG_MODE);
-    pmerge.printState("[After ]", VECTOR, false);
+    pmerge.printState("After ", VECTOR, true);
     
     return (0);
 }
