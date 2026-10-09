@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:45:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/09/10 18:53:46 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 16:14:44 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,23 @@
 int main(int argc, char **argv)
 {
 	if (argc != 2)
-	{
-		std::cerr << "Error: could not open file." << std::endl;
-		return (1);
-	}
+		return (std::cerr << "Error: could not open file." << std::endl, 1);
 
 	try
 	{
-		BitcoinExchange btc;
-		btc.loadDataCsvFile("data.csv");
+		BitcoinExchange		btc;
+
+		btc.loadDataCsvFile("files/data.csv");
 		btc.processInputTxtFile(argv[1]);
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
-		return (1);
+		return (std::cerr << e.what() << std::endl, 1);	
 	}
 
 	return (0);
 }
+
+/*
+	valgrind --leak-check=full --show-leak-kinds=all ./btc input.txt
+*/

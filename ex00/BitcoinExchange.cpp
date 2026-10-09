@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 16:46:19 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/07 22:04:36 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 16:09:59 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange& other)
 	database = other.database;
 }
 
-BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
+BitcoinExchange&	BitcoinExchange::operator=(const BitcoinExchange& other)
 {
 	if (this != &other)
 		database = other.database;
@@ -38,7 +38,7 @@ BitcoinExchange::~BitcoinExchange()
 /* ************************************************************************** */
 /*  loadDataCsvFile()                                           	          */
 /* ************************************************************************** */
-void BitcoinExchange::loadDataCsvFile(const String& filename)
+void	BitcoinExchange::loadDataCsvFile(const String& filename)
 {
 	std::ifstream	databaseFile(filename.c_str());
 
@@ -51,9 +51,9 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 	while (std::getline(databaseFile, line))
 	{
 		String::size_type comma = line.find(',');
-
 		if (comma == String::npos)
 			continue;
+
 		String date 		= trim(line.substr(0, comma));
 		String rateString	= trim(line.substr(comma + 1));
 
@@ -62,7 +62,8 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 
 		if (!(ss >> rateDouble) || !ss.eof())
 			continue;
-
+		if (!isValidDate(date, line))
+			continue;
 		database[date] = rateDouble;
 	}
 }
@@ -70,41 +71,19 @@ void BitcoinExchange::loadDataCsvFile(const String& filename)
 /* ************************************************************************** */
 /*  processInputTxtFile()                                                     */
 /* ************************************************************************** */
-void BitcoinExchange::processInputTxtFile(const String& filename)
+void	BitcoinExchange::processInputTxtFile(const String& filename)
 {
 	std::ifstream	inputFile(filename.c_str());
 	String 			line, key, value;
 
 	if (!inputFile.is_open())
 		throw (std::runtime_error("Error: could not open file."));
-
-	if (!std::getline(inputFile, line)
-		|| !parseKeyDate(line, key, value)
-		|| key != "date"
-		|| value != "value")
+	if (!std::getline(inputFile, line) || !parseKeyDate(line, key, value) || key != "date" || value != "value")
 		throw (std::runtime_error("Error: bad input header."));
-	
+
 	while (std::getline(inputFile, line))
 		processInputLine(line);
 }
-
-/* ************************************************************************** */
-/*  parseKeyDate()                                                		      */
-/* ************************************************************************** */
-bool BitcoinExchange::parseKeyDate(const String& line, String& date,String& valueString)
-{
-	String::size_type separator = line.find('|');
-
-	if (separator == String::npos
-		|| line.find('|', separator + 1) != String::npos)
-		return (printError("Error: bad input => " + line));
-
-	date 		= trim(line.substr(0, separator));
-	valueString = trim(line.substr(separator + 1));
-
-	return (true);
-}
-
 
 /* ************************************************************************** */
 /*  processInputLine()                                                		  */
@@ -116,11 +95,28 @@ bool BitcoinExchange::processInputLine(const String& line)
     double valueDouble;
 
     if (!parseKeyDate(line, date, valueString)
-        || !isValidDate(date, line)
+		|| !isValidDate(date, line)
         || !isValidValue(valueString, valueDouble, line)
         || !findExchangeRate(date, valueDouble))
         return (false);
+	
     return (true);
+}
+
+/* ************************************************************************** */
+/*  parseKeyDate()                                                		      */
+/* ************************************************************************** */
+bool BitcoinExchange::parseKeyDate(const String& line, String& date,String& valueString)
+{
+	String::size_type sep = line.find('|');
+
+	if (sep == String::npos || line.find('|', sep + 1) != String::npos)
+		return (printError("Error: bad input => " + line));
+
+	date 		= trim(line.substr(0, sep));
+	valueString = trim(line.substr(sep + 1));
+
+	return (true);
 }
 
 /* ************************************************************************** */
@@ -156,9 +152,7 @@ bool BitcoinExchange::isValidDate(const String& date, const String& line)
 		31, 31, 30, 31, 30, 31
 	};
 
-	bool isLeapYear =
-		(year % 4 == 0 && year % 100 != 0)
-		|| year % 400 == 0;
+	bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 
 	if (isLeapYear)
 		max_days[1] = 29;
@@ -174,19 +168,24 @@ bool BitcoinExchange::isValidDate(const String& date, const String& line)
 /* ************************************************************************** */
 bool BitcoinExchange::isValidValue(const String& valueString, double& valueDouble, const String& line)
 {
+	long double 		valueLongDouble;
+	std::stringstream	ss(valueString);
+
 	if (valueString.empty())
 		return (printError("Error: bad input => " + line));
 
-	std::stringstream ss(valueString);
-
-	ss >> valueDouble;
+	ss >> valueLongDouble;
 
 	if (ss.fail() || !ss.eof())
 		return (printError("Error: bad input => " + line));
-	if (valueDouble < 0)
+	if (valueLongDouble < 0)
 		return (printError("Error: not a positive number."));
-	if (valueDouble > 1000)
+	if (valueLongDouble > 1000)
 		return (printError("Error: too large a number."));
+	if (valueLongDouble != 0 && static_cast<double>(valueLongDouble) == 0)
+		return (printError("Error: bad input => " + line));
+
+    valueDouble = static_cast<double>(valueLongDouble);
 
 	return (true);
 }
@@ -199,8 +198,7 @@ bool BitcoinExchange::findExchangeRate(const String& date, double valueDouble)
 	if (database.empty())
 		return (printError("Error: database is empty."));
 	
-	std::map<String, double>::const_iterator it;
-
+	std::map<String, double>::const_iterator	it;
 	it = database.upper_bound(date);
 
 	if (it == database.begin())
@@ -243,7 +241,6 @@ String BitcoinExchange::trim(const String& str)
 		end--;
 	}
 	String result = str.substr(start, end - start);
-	
 	return (result);
 }
 
