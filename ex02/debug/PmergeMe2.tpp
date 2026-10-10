@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 23:53:06 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 01:39:41 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 04:41:18 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #define PMERGEME2_TPP
 
 template <typename ContainerType>
-void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int depth, bool debug)
+void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values,
+    int depth, bool debug, InsertionMode mode)
 {
     typedef typename ContainerType::iterator Iterator;
 
@@ -48,6 +49,7 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
         int small = values[i];
         int large = values[i + 1];
 
+        addComparison(); 
         if (small > large)
             std::swap(small, large);
 
@@ -74,7 +76,7 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
         printDebugDetails(LARGER_VALUES, info);
     }
 
-    debugRecFordJohnson(sorter, larger, depth + 1, debug); 
+    debugRecFordJohnson(sorter, larger, depth + 1, debug, mode); 
 
    
     std::vector<bool> used(pairs.size(), false);
@@ -112,7 +114,7 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
     if (!sortedPairs.empty())
     {
         mainChain.insert(mainChain.begin(), sortedPairs[0].first);
-
+        addInsertion();
         if (debug)
         {
             Vector snapshot(mainChain.begin(), mainChain.end());
@@ -122,29 +124,37 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
         }
     }
 
-    VectorSizeT order = sorter.generateInsertionOrder<VectorSizeT>(sortedPairs.size());
-
-    for (size_t i = 0; i < order.size(); i++)
+    if (mode == NO_JACOB)
     {
-        size_t index = order[i];
+        noJacobsthal(mainChain, sortedPairs, info, debug);
+    }
+    else if (mode == JACOB)
+    {
+        VectorSizeT order = sorter.generateInsertionOrder<VectorSizeT>(sortedPairs.size());
 
-        if (index == 0)
-            continue;
-
-        int pending = sortedPairs[index].first;
-        int partner = sortedPairs[index].second;
-
-        size_t insertedIndex = sorter.binarySearchInsertion(mainChain, pending, partner, true);
-        if (debug)
+        for (size_t i = 0; i < order.size(); i++)
         {
-            Vector snapshot(mainChain.begin(), mainChain.end());
-            info.values = &snapshot;
-            info.pairs = &sortedPairs;
-            info.index = index;
-            info.pending = pending;
-            info.partner = partner;
-            info.insertedIndex = insertedIndex;
-            printDebugDetails(BINARY_SEARCH_INSERT, info);
+            size_t index = order[i];
+
+            if (index == 0)
+                continue;
+
+            int pending = sortedPairs[index].first;
+            int partner = sortedPairs[index].second;
+
+            size_t insertedIndex = debugBinarySearch(mainChain, pending, partner, true);
+
+            if (debug)
+            {
+                Vector snapshot(mainChain.begin(), mainChain.end());
+                info.values = &snapshot;
+                info.pairs = &sortedPairs;
+                info.index = index;
+                info.pending = pending;
+                info.partner = partner;
+                info.insertedIndex = insertedIndex;
+                printDebugDetails(BINARY_SEARCH_INSERT, info);
+            }
         }
     }
 
@@ -154,7 +164,7 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
         size_t insertedIndex = std::distance(mainChain.begin(), position);
 
         mainChain.insert(position, stragglerLocal);
-
+        addInsertion();
         if (debug)
         {
             Vector snapshot(mainChain.begin(), mainChain.end());
@@ -173,6 +183,69 @@ void PmergeMe2::debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int
         info.values = &snapshot;
         printDebugDetails(RETURN_RECUR_VALUE, info);
     }
+}
+
+template <typename ContainerType>
+void PmergeMe2::noJacobsthal(ContainerType &mainChain, const VectorPair &sortedPairs, DebugInfo &info, bool debug)
+{
+    for (size_t index = 1; index < sortedPairs.size(); index++)
+    {
+        int pending = sortedPairs[index].first;
+        int partner = sortedPairs[index].second;
+
+        size_t insertedIndex = debugBinarySearch(
+            mainChain, pending, partner, true);
+
+        if (debug)
+        {
+            Vector snapshot(mainChain.begin(), mainChain.end());
+            info.values = &snapshot;
+            info.pairs = &sortedPairs;
+            info.index = index;
+            info.pending = pending;
+            info.partner = partner;
+            info.insertedIndex = insertedIndex;
+            printDebugDetails(BINARY_SEARCH_INSERT, info);
+        }
+    }
+}
+
+
+template <typename ContainerType>
+size_t PmergeMe2::debugBinarySearch(
+    ContainerType &mainChain, int value, int partner, bool hasPartner)
+{
+    typedef typename ContainerType::iterator Iterator;
+
+    Iterator partnerPosition = mainChain.end();
+
+    if (hasPartner)
+        partnerPosition = std::find(mainChain.begin(), mainChain.end(), partner);
+
+    size_t left = 0;
+    size_t right = std::distance(mainChain.begin(), partnerPosition);
+
+    while (left < right)
+    {
+        size_t mid = left + (right - left) / 2;
+
+        ++_comparisons;
+
+        if (mainChain[mid] < value)
+            left = mid + 1;
+        else
+            right = mid;
+    }
+
+    Iterator position = mainChain.begin() + left;
+
+    // Count estimated vector element shifts
+    _moves += mainChain.size() - left;
+
+    mainChain.insert(position, value);
+    ++_insertions;
+
+    return (left);
 }
 
 #endif

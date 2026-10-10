@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 01:31:43 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 01:52:30 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 04:54:34 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,86 @@
 /* ************************************************************************** */
 /* SORT                                                                       */
 /* ************************************************************************** */
+// void PmergeMe2::sortDebug(PmergeMe &sorter)
+// {
+//     PmergeMe2 debugger;
+//     Vector values = sorter.vectorValues;
+
+//     debugger.resetStats();
+//     debugger.debugRecFordJohnson(sorter, values, 0, false);
+//     debugger.printStats("Stats");
+//     std::cout << "\n ----------------- [STEP 1] Make pairs --------------------------------------- " << std::endl;
+//     sorter.makePairs(sorter.vectorValues);
+//     printDebugSimple(sorter, PAIRS);
+
+//     std::cout << "\n ----------------- [STEP 2] Sort pairs --------------------------------------- " << std::endl;
+//     sorter.sortPairs(sorter.vectorValues, 0, true);
+//     // printDebugSimple(sorter, PAIRS);
+//     printDebugSimple(sorter, PAIRS_INDEX);
+
+//     std::cout << "\n ----------------- [STEP 3] Create chains from original sorted pairs --------- " << std::endl;
+//     sorter.createChains(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
+//     printDebugSimple(sorter, CHAINS);
+
+//     std::cout << "\n ----------------- [STEP 4] Insert first pending ----------------------------- " << std::endl;
+//     sorter.insertFirstPending(sorter.vectorMainChain, sorter.vectorPendingChain);
+//     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
+
+//     std::cout << "\n ----------------- [STEP 5] Jacobsthal insertion + straggler ----------------- " << std::endl;
+//     sorter.insertPending(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
+//     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
+// }
 void PmergeMe2::sortDebug(PmergeMe &sorter)
 {
+    PmergeMe2 debugger;
+
+    Vector jacobValues = sorter.vectorValues;
+    Vector noJacobValues = sorter.vectorValues;
+
+    // STEP 1
     std::cout << "\n ----------------- [STEP 1] Make pairs --------------------------------------- " << std::endl;
     sorter.makePairs(sorter.vectorValues);
     printDebugSimple(sorter, PAIRS);
 
+    // STEP 2
     std::cout << "\n ----------------- [STEP 2] Sort pairs --------------------------------------- " << std::endl;
     sorter.sortPairs(sorter.vectorValues, 0, true);
     // printDebugSimple(sorter, PAIRS);
     printDebugSimple(sorter, PAIRS_INDEX);
 
+    // STEP 3
     std::cout << "\n ----------------- [STEP 3] Create chains from original sorted pairs --------- " << std::endl;
     sorter.createChains(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
     printDebugSimple(sorter, CHAINS);
 
+    // STEP 4
     std::cout << "\n ----------------- [STEP 4] Insert first pending ----------------------------- " << std::endl;
     sorter.insertFirstPending(sorter.vectorMainChain, sorter.vectorPendingChain);
     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
 
+    // STEP 5
     std::cout << "\n ----------------- [STEP 5] Jacobsthal insertion + straggler ----------------- " << std::endl;
     sorter.insertPending(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
+
+    // Compare Jacobsthal vs No Jacobsthal
+    // std::cout << "\n ----------------- [COMPARISON] ---------------------------------------------- " << std::endl;
+
+    // debugger.resetStats();
+    // debugger.debugRecFordJohnson(sorter, jacobValues, 0, false, JACOB);
+    // debugger.printStats("FordJohnson with Jacobsthal");
+
+    // std::cout << std::endl;
+
+    // debugger.resetStats();
+    // debugger.debugRecFordJohnson(sorter, noJacobValues, 0, false, NO_JACOB);
+    // debugger.printStats("FordJohnson No Jacobsthal");
+
+    // std::cout << "\n[Explanation]\n"
+    //         << "Comparisons : Number of element comparisons during pair ordering and binary search\n"
+    //         << "Insertions  : Number of elements inserted into the main chain\n"
+    //         << "Moves       : Estimated number of element shifts caused by insertions\n"
+    //         << std::endl;
 }
 
 /* ************************************************************************** */
@@ -220,7 +278,7 @@ void PmergeMe2::printDebugDetails(DebugCase type, const DebugInfo &info) const
         if (type == PAIR_INDEX && info.hasOdd)
             std::cout << "Straggler: " << info.straggler;
         std::cout << "\n"
-                  << padding << std::string(title.size(), ' ') << "Index: ";
+                  << padding << std::left << std::setw(title.size()) << "Index: ";
         for (size_t i = 0; i < pairs.size(); ++i)
         {
             std::ostringstream item;
@@ -304,7 +362,7 @@ void PmergeMe2::printDebugDetails(DebugCase type, const DebugInfo &info) const
         std::cout << "\n"
                   << indent << header.str() << "Main chain";
         if (type == INSERT_B1)
-            std::cout << " <- Checkpoint 1";
+            std::cout << "      ✋ checkpoint 1";
         if (type == BINARY_SEARCH_INSERT)
         {
             size_t checkpoint = 1, previous = 1, current = 3;
@@ -315,7 +373,7 @@ void PmergeMe2::printDebugDetails(DebugCase type, const DebugInfo &info) const
                 previous = current;
                 current = next;
             }
-            std::cout << " <- Checkpoint " << checkpoint;
+            std::cout << "      ✋ checkpoint " << checkpoint;
             if (checkpoint > info.pairs->size())
                 std::cout << " (remaining)";
         }
@@ -335,4 +393,38 @@ void PmergeMe2::printDebugDetails(DebugCase type, const DebugInfo &info) const
         break;
     }
     }
+}
+
+PmergeMe2::PmergeMe2()
+    : _comparisons(0), _insertions(0), _moves(0)
+{}
+
+void PmergeMe2::resetStats()
+{
+    _comparisons = 0;
+    _insertions = 0;
+    _moves = 0;
+}
+
+void PmergeMe2::addComparison()
+{
+    ++_comparisons;
+}
+
+void PmergeMe2::addInsertion()
+{
+    ++_insertions;
+}
+
+void PmergeMe2::addMoves(size_t count)
+{
+    _moves += count;
+}
+
+void PmergeMe2::printStats(const std::string &name) const
+{
+    std::cout << "\n=== " << name << " ===" << std::endl;
+    std::cout << "Comparisons: " << _comparisons << std::endl;
+    std::cout << "Insertions:  " << _insertions << std::endl;
+    std::cout << "Moves:       " << _moves << std::endl;
 }

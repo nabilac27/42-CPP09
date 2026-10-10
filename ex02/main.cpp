@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 15:33:22 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 02:00:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 04:55:25 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,12 @@ int main(int argc, char *argv[])
 /*
     valgrind --leak-check=full --show-leak-kinds=all ./PmergeMe 9 8 7 6 5 4 3 2 1
 
-    4 7 6 5  3 1  4 2 1 5 4 3 5 6 2 3 4 5
+    ./PmergeMe $(shuf -i 1-16 -n 25)
+    ./PmergeMe $(shuf -i 1-30 -n 12)
+    ./PmergeMe $(shuf -i 1-100 -n 25)
+    ./PmergeMe $(shuf -i 1-1000 -n 100)
+  
+    `shuf -i 1-1000 -n 3000 | tr "\n" " " `
 */
 
 // /* ************************************************************************** */

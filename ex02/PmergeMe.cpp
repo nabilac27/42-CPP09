@@ -106,10 +106,10 @@ double  PmergeMe::getTime()
 /* ************************************************************************** */
 void    PmergeMe::printState(const char *msg)
 {
-    std::cout << std::left << std::setw(8) << msg << ": ";
+    std::cout << std::left << std::setw(6) << msg << ": ";
 
     for (size_t i = 0; i < vectorValues.size(); i++)
-        std::cout << vectorValues[i] << " ";
+        std::cout << std::right << std::setw(7) << vectorValues[i];
     std::cout << std::endl;
 }
 
@@ -125,14 +125,14 @@ void    PmergeMe::printTime(double time, Container type) const
     }
     else
     {
-        container = "std::deque";
+        container = "std::deque ";
         container_size = dequeValues.size();
     }
 
     std::cout << "Time to process a range of "
               << container_size
               << " elements with " << container << " : "
-              << std::fixed << std::setprecision(5)
+              << std::fixed << std::setprecision(6)
               << time << " us"
               << std::endl;
 }

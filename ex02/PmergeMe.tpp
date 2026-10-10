@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 17:22:20 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 01:58:01 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 04:43:14 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ void PmergeMe::makePairs(ContainerType &values)
 	}
 }
 
-/* ******************************************************************************** */
-/*  FORD-JOHNSON -- 2. SORT LARGER ELEMENTS recursively, use recursiveFordJohnson() */
-/* ******************************************************************************-- */
+/* ************************************************************************************************* */
+/*  FORD-JOHNSON -- 2-3. COMPARE PAIRS, SORT LARGER ELEMENTS recursively, use recursiveFordJohnson() */
+/* ***********************************************************************************************-- */
 template <typename ContainerType>
 void PmergeMe::sortPairs(ContainerType &values, int depth, bool debug)
 {
@@ -62,7 +62,7 @@ void PmergeMe::sortPairs(ContainerType &values, int depth, bool debug)
 	if (debug)
 	{
 		PmergeMe2 debugger;
-		debugger.debugRecFordJohnson(*this, larger, depth + 1, false); // 'true' for details
+		debugger.debugRecFordJohnson(*this, larger, depth + 1, false, JACOB);// 'true' for details
 	}
 	else
 		recursiveFordJohnson(larger, depth + 1);
@@ -198,7 +198,7 @@ void PmergeMe::recursiveFordJohnson(ContainerType &values, int depth)
 	// 3. Sort larger elements recursively
 	recursiveFordJohnson(larger, depth + 1);
 
-	// 4. Reorder pairs
+	// Reorder pairs
 	std::vector<bool> used(pairs.size(), false);
 
 	for (size_t i = 0; i < larger.size(); i++)
@@ -214,14 +214,14 @@ void PmergeMe::recursiveFordJohnson(ContainerType &values, int depth)
 		}
 	}
 
-	// 5. Create main chain
+	// Create main chain
 	ContainerType mainChain = larger;
 
-	// 6. Insert first pending (b1)
+	// 4. Insert first pending (b1)
 	if (!sortedPairs.empty())
 		mainChain.insert(mainChain.begin(), sortedPairs[0].first);
 
-	// 7. Jacobsthal insertion
+	// 5. Jacobsthal insertion
 	VectorSizeT order = generateInsertionOrder<VectorSizeT>(sortedPairs.size());
 
 	for (size_t i = 0; i < order.size(); i++)
@@ -237,14 +237,14 @@ void PmergeMe::recursiveFordJohnson(ContainerType &values, int depth)
 		binarySearchInsertion(mainChain, pending, partner, true);
 	}
 
-	// 8. Insert straggler
+	// Insert straggler
 	if (hasOddLocal)
 	{
 		Iterator position = std::lower_bound(mainChain.begin(), mainChain.end(), stragglerLocal);
 		mainChain.insert(position, stragglerLocal);
 	}
 
-	// 9. Return
+	// Return
 	values = mainChain;
 }
 

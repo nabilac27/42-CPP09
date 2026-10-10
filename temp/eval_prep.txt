@@ -1,0 +1,260 @@
+
+>> extracts and converts data from a stream.
+
+.eof() checks whether the stream has reached the end of its input.
+
+The >> operator reads characters from ss, converts them to a double, and stores the result in value.
+
+"123.45"         ->    123.45
+stringstream     ->    double
+
+Text is parsed and converted into a numeric value.
+
+There are two important concepts here:
+    1. >> extracts and converts data from a stream.
+    2. .eof() checks whether the stream has reached the end of its input.
+
+
+
+std::stringstream ss("123abc");
+double value;
+
+ss >> value;
+
+
+Here, >> successfully extracts 123 and stops at a.
+So:
+- value becomes 123.
+- "abc" remains unread.
+- The extraction is considered successful.
+This is why checking >> alone isn't enough.
+
+.eof() means end of file, but it also works with stringstream.
+It returns true when the stream's end-of-file state has been set, usually because a read reached the end of the available input.
+
+std::stringstream ss("123abc");
+double value;
+
+ss >> value;
+
+std::cout << value << std::endl;    // 123
+std::cout << ss.eof() << std::endl; // 0 (false)
+
+
+
+---
+
+- Why did you use std::map?
+
+    I use std::map because the database naturally consists of key-value pairs, where the date is the key and the exchange rate is the value. A map also keeps dates ordered, which allows me to efficiently find the exact date or the nearest previous date.
+
+  - upper_bound(date)
+          ↓
+  first date > requested date
+          ↓
+  --it
+          ↓
+  exact date OR closest earlier date
+
+
+- upper_bound()
+
+that was SQL, and MariaDB was the software executing that SQL. 
+
+- 🔌the exact date if it exists, otherwise the closest earlier date.
+
+- upper_bound() + --it gives you exactly that with one simple rule.
+
+
+----
+
+An invalid line produces an error, 
+but the program continues processing the remaining lines. ✅
+
+
+---
+
+Read token
+   │
+   ├── NUMBER
+   │      ↓
+   │   push_back()
+   │
+   └── OPERATOR
+          ↓
+      need 2 numbers
+          ↓
+      right = back(); pop_back()
+      left  = back(); pop_back()
+          ↓
+      left OP right
+          ↓
+      push_back(result)
+
+END
+ ↓
+exactly 1 number?
+ ↓
+print it
+
+
+why std::list
+- RPN needs LIFO-style operations. 
+- I use the back of std::list like the top of a stack. 
+- push_back() adds an operand
+- back() accesses the last operand
+- and pop_back() removes it
+- I also use a different container from Ex00 as required.
+
+push_back() → add operand
+back()      → access last operand
+pop_back()  → remove last operand
+
+std::list is an STL container that stores elements in a doubly linked list.
+Unlike std::vector, its elements are not stored next to each other in memory.
+
+std::list is a doubly linked list. 
+Each element is stored in a separate node containing the value and pointers to the previous and next nodes. 
+Unlike vector, its elements are not contiguous in memory. I use it in RPN as a LIFO stack with push_back(), back(), and pop_back().
+
+
+---
+
+Ford-Johnson uses pairs where:
+\[
+b_i \leq a_i
+\]
+
+When inserting b_i, we only need to search before its partner a_i.
+For example:
+Main chain:  2  5  8  12  20
+Pending:     7
+Partner:     12
+
+Search:      2  5  8
+Do not search: 12  20
+
+----
+
+Create pairs (small, large)
+
+
+Recursively sort the larger elements, preserving their partners
+
+
+Build the main chain and pending chain
+
+
+Insert first pending element
+
+
+Insert remaining pending elements in Jacobsthal order, bounded by their partners
+
+
+Insert odd leftover and return
+
+
+---
+
+Your program must take an inverted Polish mathematical expression as an argu-
+ment.
+
+The numbers used in this operation and passed as arguments will always be less
+than 10. The calculation itself but also the result do not take into account this rule.
+
+Your program must process this expression and output the correct result on the
+standard output.
+
+If an error occurs during the execution of the program an error message should be
+displayed on the standard error.
+
+Your program must be able to handle operations with these tokens: "+ - / *"
+
+---
+
+expression is a mathematical calculation written as a string.
+
+Here, "3 4 + 2 *" is the expression.
+
+Then your parseExpression() reads the expression token by token:
+
+std::stringstream ss(expression);
+std::string token;
+
+while (ss >> token)
+
+Term	    Meaning	Example
+Expression	The entire mathematical calculation	"3 4 + 2 *"
+Token	    One individual element	"3", "4", "+", "2", "*"
+Operand	    A number used in the calculation	3, 4, 2
+Operator	A mathematical operation	+, -, *, /
+Result	    Final calculated value	14
+
+expression = "3 4 + 2 *"
+                |
+                v
+         stringstream
+                |
+                v
+      "3" "4" "+" "2" "*"
+                |
+                v
+       Parse each token
+                |
+                v
+       Calculate using stack
+                |
+                v
+             14
+
+expression = the complete RPN calculation.
+token = one piece of that expression.
+numbers = your container holding operands and intermediate results.
+
+
+Operand = a number (3, 4, 2)
+Operator = a mathematical symbol (+, -, *, /)
+
+long left = numbers.top();   // Operand
+char operation = '+';        // Operator
+long right = numbers.top();  // Operand
+
+
+Expression = the entire calculation.
+Token = one element of the expression.
+Operand = the number being operated on.
+Operator = the symbol that performs the operation.
+Result = the outcome of the operation.
+
+
+std::stringstream ss(expression);
+
+This creates a string stream named ss and initializes it with the contents of expression.
+
+Think of stringstream as a way to read a string piece by piece, just like reading input using std::cin.
+
+std::string expression = "3 4 + 2 *";
+std::stringstream ss(expression);
+
+Now ss contains:
+3 4 + 2 *
+
+
+You can extract individual tokens using >>.
+std::string token;
+
+while (ss >> token)
+{
+    std::cout << token << std::endl;
+}
+
+
+Output:
+3
+4
++
+2
+*
+
+---
+

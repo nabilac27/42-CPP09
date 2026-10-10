@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:06:45 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 17:09:54 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 17:15:15 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ RPN::~RPN()
 void	RPN::process(const std::string& expression)
 {
 	if (!parseExpression(expression))
-		throw (std::runtime_error("ERROR: invalid token in parseExpression()"));
+		throw (std::runtime_error("ERROR: invalid expression"));
 	if (listBasedStack.size() != 1)
 		throw (std::runtime_error("ERROR: list size() not 1"));
 	std::cout << listBasedStack.back() << std::endl;
@@ -84,27 +84,30 @@ bool	RPN::parseExpression(const std::string& expression)
 /* ************************************************************************** */
 /*  calculate()   				                                              */
 /* ************************************************************************** */
-long	RPN::calculate(long leftOperand, long rightOperand, char operatorr)
+long RPN::calculate(long leftOperand, long rightOperand, char operatorr)
 {
-	if (operatorr == '/' && rightOperand == 0)
-        throw (std::runtime_error("ERROR: division by zero"));
+    if (operatorr == '/' && rightOperand == 0)
+        throw std::runtime_error("ERROR: division by zero");
+
     if (isOverflow(leftOperand, rightOperand, operatorr))
-        throw (std::runtime_error("ERROR: arithmetic overflow"));
+        throw std::runtime_error("ERROR: arithmetic overflow");
 
-	switch (operatorr)
-	{
-		case '+':
-			return (leftOperand + rightOperand);
-		case '-':
-			return (leftOperand - rightOperand);
-		case '*':
-    		return (leftOperand * rightOperand);
-		case '/':
-			return (leftOperand / rightOperand);
-	}
-	throw (std::runtime_error("ERROR: invalid operator"));
+    switch (operatorr)
+    {
+        case '+':
+            return (leftOperand + rightOperand);
+
+        case '-':
+            return (leftOperand - rightOperand);
+
+        case '*':
+            return (leftOperand * rightOperand);
+
+        case '/':
+            return (leftOperand / rightOperand);
+    }
+    throw std::runtime_error("ERROR: invalid operator");
 }
-
 
 
 /* ************************************************************************** */

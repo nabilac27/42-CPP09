@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 00:01:27 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 01:47:48 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 04:38:03 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,25 @@ enum DebugCase
     CHAINS_FIRST_INSERTED
 };
 
+enum InsertionMode
+{
+    JACOB,
+    NO_JACOB
+};
+
 struct DebugInfo
 {
-    const Vector     *values;
+    const Vector *values;
     const VectorPair *pairs;
 
-    int     depth;
-    bool    hasOdd;
-    int     straggler;
+    int depth;
+    bool hasOdd;
+    int straggler;
 
-    size_t  index;
-    int     pending;
-    int     partner;
-    size_t  insertedIndex;
+    size_t index;
+    int pending;
+    int partner;
+    size_t insertedIndex;
 
     DebugInfo()
         : values(NULL),
@@ -62,17 +68,40 @@ struct DebugInfo
     {
     }
 };
-        
+
 class PmergeMe2
 {
-    public:
-        void    sortDebug(PmergeMe &sorter);
-        void    printDebugState(const PmergeMe &sorter, const char *msg, Container type, bool debug);
-        void    printDebugSimple(const PmergeMe &sorter, DebugCase type);
-        void    printDebugDetails(DebugCase type, const DebugInfo &info) const;
+private:
+    size_t _comparisons;
+    size_t _insertions;
+    size_t _moves;
 
-        template <typename ContainerType>
-        void    debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int depth, bool debug);
+public:
+    PmergeMe2();
+    void sortDebug(PmergeMe &sorter);
+    void printDebugState(const PmergeMe &sorter, const char *msg, Container type, bool debug);
+    void printDebugSimple(const PmergeMe &sorter, DebugCase type);
+    void printDebugDetails(DebugCase type, const DebugInfo &info) const;
+
+    template <typename ContainerType>
+    void debugRecFordJohnson(PmergeMe &sorter, ContainerType &values, int depth, bool debug);
+
+    template <typename ContainerType>
+    void noJacobsthal(ContainerType &mainChain,
+                      const VectorPair &sortedPairs, DebugInfo &info, bool debug);
+
+    template <typename ContainerType>
+    size_t debugBinarySearch(ContainerType &mainChain,
+                             int value, int partner, bool hasPartner);
+
+    template <typename ContainerType>
+    void debugRecFordJohnson(PmergeMe &sorter, ContainerType &values,
+                             int depth, bool debug, InsertionMode mode);
+    void resetStats();
+    void addComparison();
+    void addInsertion();
+    void addMoves(size_t count);
+    void printStats(const std::string &name) const;
 };
 
 #include "../PmergeMe.tpp"

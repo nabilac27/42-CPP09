@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/21 00:05:54 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 17:03:28 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/09 17:10:52 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class RPN
 		long  	calculate(long leftOperand, long rightOperand, char operatorr);
 
 		bool  	isOperator(char token);
-		bool	isOverflow(long left, long right, char operatorr)
+		bool	isOverflow(long left, long right, char operatorr);
 };
 
 #endif
