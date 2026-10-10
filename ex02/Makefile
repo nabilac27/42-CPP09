@@ -6,25 +6,23 @@
 #    By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/21 00:05:12 by nchairun          #+#    #+#              #
-#    Updated: 2026/10/09 22:48:24 by nchairun         ###   ########.fr        #
+#    Updated: 2026/10/10 00:36:18 by nchairun         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # **************************************************************************** #
 #                                 COMPILER                                     #
 # **************************************************************************** #
-CC		= c++
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
-NAME	= PmergeMe
-
+CC       = c++
+CFLAGS   = -Wall -Wextra -Werror -std=c++98
+NAME     = PmergeMe
 
 # **************************************************************************** #
 #                               FILE STRUCTURE                                 #
 # **************************************************************************** #
-OBJ_DIR	= obj/
-SRCS	= main.cpp PmergeMe.cpp utils.cpp
-OBJS	= $(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
-
+OBJ_DIR  = obj/
+SRCS     = main.cpp PmergeMe.cpp debug/PmergeMe2.cpp
+OBJS     = $(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 
 # **************************************************************************** #
 #                                   RULES                                      #
@@ -33,15 +31,12 @@ OBJS	= $(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 
 all: $(NAME)
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
-
-$(OBJ_DIR)%.o: %.cpp | $(OBJ_DIR)
+$(OBJ_DIR)%.o: %.cpp
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
-
 
 # **************************************************************************** #
 #                                 CLEANING                                     #
@@ -52,8 +47,6 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: 
-	fclean
-	all
+re: fclean all
 
 .PHONY: all clean fclean re

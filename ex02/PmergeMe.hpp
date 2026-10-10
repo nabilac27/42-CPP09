@@ -6,16 +6,13 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/27 22:02:57 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/09 22:36:18 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/10 01:43:19 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PMERGEME_HPP
 #define PMERGEME_HPP
 
-/* ************************************************************************** */
-/*  INCLUDES                                                                  */
-/* ************************************************************************** */
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -30,79 +27,57 @@
 #include <utility>
 #include <vector>
 
-/* ************************************************************************** */
-/*  TYPEDEFS                                                                  */
-/* ************************************************************************** */
-typedef std::vector<int>                  Vector;
-typedef std::vector<size_t>               VectorSizeT;
+typedef std::vector<int>    Vector;
+typedef std::vector<size_t> VectorSizeT;
 typedef std::vector<std::pair<int, int> > VectorPair;
 
-typedef std::deque<int>                   Deque;
-typedef std::deque<std::pair<int, int> >  DequePair;
+typedef std::deque<int>     Deque;
+typedef std::deque<std::pair<int, int> > DequePair;
 
-/* ************************************************************************** */
-/*  ENUMS                                                                     */
-/* ************************************************************************** */
 enum Container
 {
     VECTOR,
     DEQUE,
-    DEBUG_MODE
 };
 
-enum Debug
-{
-    PAIRS,
-    PAIRS_INDEX,
-    CHAINS,
-    CHAINS_FIRST_INSERTED
-};
+class PmergeMe2;
 
-/* ************************************************************************** */
-/*  CLASS                                                                     */
-/* ************************************************************************** */
 class PmergeMe
 {
     private:
-        /*  CONTAINERS   **************************************************** */
+        friend class PmergeMe2;
+
         Vector      vectorValues;
         Vector      vectorMainChain;
         VectorPair  vectorPendingChain;
-        
+
         Deque       dequeValues;
         Deque       dequeMainChain;
         DequePair   dequePendingChain;
 
-        bool        hasOdd;
-        int         straggler;
+        bool    hasOdd;
+        int     straggler;
 
     public:
         /*  OCF   ************************************************************ */
         PmergeMe();
-        PmergeMe(const PmergeMe&    other);
-        PmergeMe& operator=(const PmergeMe& other);
+        PmergeMe(const PmergeMe &other);
+        PmergeMe&   operator=(const PmergeMe &other);
         ~PmergeMe();
 
-        /*  PUBLIC INTERFACE   ********************************************** */
-        void        parseValue(int argc, char*  argv[]);
-        double      sort(Container type);
-        double      getTime();
-        void        printState(const char* msg, Container type, bool debug);
-        void        printTime(double time, Container type) const;
+         /*  PUBLIC INTERFACE   ********************************************** */
+        void    parseValue(int argc, char *argv[]);
+        double  sort(Container type);
+        double  getTime();
+        void    printState(const char *msg);
+        void    printTime(double time, Container type) const;
 
-        /*  DEBUGGING   ******************************************************* */
-        void        sortDebug();
-        void        printDebugging(Debug type);
-        void        printInsertionChains(const VectorSizeT& order, size_t insertionCount);
-        void        printRecursiveChains(const Vector& mainChain, const VectorPair& pendingChain, int depth, const std::string& stage);
-
-    private:
-        /*  FORD-JOHNSON    ************************************************* */
+        /*  FORD-JOHNSON STEPS *********************************************** */
         template <typename ContainerType>
         void    makePairs(ContainerType &values);
 
         template <typename ContainerType>
-        void    sortPairs(ContainerType &values);
+        void    sortPairs(ContainerType &values, int depth, bool debug);
 
         template <typename ContainerType, typename PairContainerType>
         void    createChains(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
@@ -112,10 +87,10 @@ class PmergeMe
 
         template <typename ContainerType, typename PairContainerType>
         void    insertPending(ContainerType &values, ContainerType &mainChain, PairContainerType &pendingChain);
-        
-        /*  MERGE-INSERTION SORT  ******************************************** */
+
+         /*  RECURSIVE FORD JOHNSON  ****************************************** */
         template <typename ContainerType>
-        void    mergeInsertionSort(ContainerType &values, int depth, bool debug);
+        void    recursiveFordJohnson(ContainerType &values, int depth);
 
         /*  JACOBSTHAL SEQUENCE  ********************************************* */
         template <typename ContainerType>
@@ -126,12 +101,10 @@ class PmergeMe
 
         /*  BINARY SEARCH INSERTION ****************************************** */
         template <typename ContainerType>
-        size_t    binarySearchInsertion(ContainerType &mainChain, int value, int partner, bool hasPartner);
+        size_t  binarySearchInsertion(ContainerType &mainChain, int value, int partner, bool hasPartner);
+
 };
 
-/* ************************************************************************** */
-/*  TEMPLATE IMPLEMENTATIONS                                                  */
-/* ************************************************************************** */
-#include "PmergeMe.tpp"
+// #include "PmergeMe.tpp"
 
 #endif

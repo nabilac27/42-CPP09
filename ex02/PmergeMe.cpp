@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+#include "debug/PmergeMe2.hpp"
 
 /* ************************************************************************** */
 /*  ORTHODOX CANONICAL FORM                                                   */
@@ -31,11 +32,9 @@ PmergeMe&   PmergeMe::operator=(const PmergeMe &other)
         vectorValues        = other.vectorValues;
         vectorMainChain     = other.vectorMainChain;
         vectorPendingChain  = other.vectorPendingChain;
-
         dequeValues         = other.dequeValues;
         dequeMainChain      = other.dequeMainChain;
         dequePendingChain   = other.dequePendingChain;
-
         hasOdd              = other.hasOdd;
         straggler           = other.straggler;
     }
@@ -71,14 +70,14 @@ void    PmergeMe::parseValue(int argc, char *argv[])
     }
 }
 
-double PmergeMe::sort(Container type)
+double  PmergeMe::sort(Container type)
 {
     double start = getTime();
 
     if (type == VECTOR)
     {
         makePairs(vectorValues);
-        sortPairs(vectorValues);
+        sortPairs(vectorValues, 0, false);
         createChains(vectorValues, vectorMainChain, vectorPendingChain);
         insertFirstPending(vectorMainChain, vectorPendingChain);
         insertPending(vectorValues, vectorMainChain, vectorPendingChain);
@@ -86,14 +85,11 @@ double PmergeMe::sort(Container type)
     else if (type == DEQUE)
     {
         makePairs(dequeValues);
-        sortPairs(dequeValues);
+        sortPairs(dequeValues, 0, false);
         createChains(dequeValues, dequeMainChain, dequePendingChain);
-
+        insertFirstPending(dequeMainChain, dequePendingChain);
         insertPending(dequeValues, dequeMainChain, dequePendingChain);
     }
-    else if (type == DEBUG_MODE)
-        sortDebug();
-
     return (getTime() - start);
 }
 
@@ -108,42 +104,35 @@ double  PmergeMe::getTime()
 /* ************************************************************************** */
 /*  PRINT																	  */
 /* ************************************************************************** */
-void    PmergeMe::printState(const char *msg, Container type, bool debug)
+void    PmergeMe::printState(const char *msg)
 {
-    if (type == VECTOR)
-    {
-        if (debug)
-            std::cout << "\n[" << msg << "]   Vector: ";
-        else
-            std::cout << msg << ": ";
+    std::cout << std::left << std::setw(8) << msg << ": ";
 
-        for (size_t i = 0; i < vectorValues.size(); i++)
-            std::cout << vectorValues[i] << " ";
-        std::cout << std::endl;
-    }
+    for (size_t i = 0; i < vectorValues.size(); i++)
+        std::cout << vectorValues[i] << " ";
+    std::cout << std::endl;
 }
 
 void    PmergeMe::printTime(double time, Container type) const
 {
     std::string container;
-    size_t      container_size;
+    size_t container_size;
 
     if (type == VECTOR)
     {
-        container      = "std::vector";
+        container = "std::vector";
         container_size = vectorValues.size();
     }
     else
     {
-        container      = "std::deque";
+        container = "std::deque";
         container_size = dequeValues.size();
     }
 
     std::cout << "Time to process a range of "
               << container_size
               << " elements with " << container << " : "
-              << std::fixed        << std::setprecision(5)
-              << time              << " us"
+              << std::fixed << std::setprecision(5)
+              << time << " us"
               << std::endl;
 }
-
