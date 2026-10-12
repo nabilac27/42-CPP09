@@ -96,7 +96,7 @@ The algorithm follows these main steps:
     Insert b1 = 2
 
     Main chain:
-      2 
+      2   [b1, inserted 1st]
       3 
       6 
       9 
@@ -112,13 +112,16 @@ The algorithm follows these main steps:
     Insertion order:
         b3 → b2 → b4
 
+    ❗ NOT:
+        b2 → b3 → b4
+
     Main chain:
-      1 
+      1   [b2, inserted 3rd]
       2 
       3 
-      5 
+      5   [b3, inserted 2nd]
       6 
-      7 
+      7   [b4, inserted 4th]
       9 
       11
   ```
