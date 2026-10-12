@@ -6,7 +6,7 @@
 /*   By: nchairun <nchairun@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/09 01:31:43 by nchairun          #+#    #+#             */
-/*   Updated: 2026/10/10 04:54:34 by nchairun         ###   ########.fr       */
+/*   Updated: 2026/10/12 16:20:47 by nchairun         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,35 +16,6 @@
 /* ************************************************************************** */
 /* SORT                                                                       */
 /* ************************************************************************** */
-// void PmergeMe2::sortDebug(PmergeMe &sorter)
-// {
-//     PmergeMe2 debugger;
-//     Vector values = sorter.vectorValues;
-
-//     debugger.resetStats();
-//     debugger.debugRecFordJohnson(sorter, values, 0, false);
-//     debugger.printStats("Stats");
-//     std::cout << "\n ----------------- [STEP 1] Make pairs --------------------------------------- " << std::endl;
-//     sorter.makePairs(sorter.vectorValues);
-//     printDebugSimple(sorter, PAIRS);
-
-//     std::cout << "\n ----------------- [STEP 2] Sort pairs --------------------------------------- " << std::endl;
-//     sorter.sortPairs(sorter.vectorValues, 0, true);
-//     // printDebugSimple(sorter, PAIRS);
-//     printDebugSimple(sorter, PAIRS_INDEX);
-
-//     std::cout << "\n ----------------- [STEP 3] Create chains from original sorted pairs --------- " << std::endl;
-//     sorter.createChains(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
-//     printDebugSimple(sorter, CHAINS);
-
-//     std::cout << "\n ----------------- [STEP 4] Insert first pending ----------------------------- " << std::endl;
-//     sorter.insertFirstPending(sorter.vectorMainChain, sorter.vectorPendingChain);
-//     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
-
-//     std::cout << "\n ----------------- [STEP 5] Jacobsthal insertion + straggler ----------------- " << std::endl;
-//     sorter.insertPending(sorter.vectorValues, sorter.vectorMainChain, sorter.vectorPendingChain);
-//     printDebugSimple(sorter, CHAINS_FIRST_INSERTED);
-// }
 void PmergeMe2::sortDebug(PmergeMe &sorter)
 {
     PmergeMe2 debugger;

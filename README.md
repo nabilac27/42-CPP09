@@ -345,7 +345,6 @@ An iterator is an object that behaves similarly to a pointer and allows you to t
         ```cpp
             Block 1       Block 2
             [3][5]        [9][7]
-
         ```
     <details><summary><b>Contiguous vs Segmented Memory</b></summary>
     
@@ -435,8 +434,6 @@ An iterator is an object that behaves similarly to a pointer and allows you to t
 
 - The exchange rates are stored in a `std::map`.
 
-- If an exact date does not exist, the closest earlier date is used.
-
 - Each value must be between `0` and `1000`.
 
 - **Example**
@@ -471,18 +468,22 @@ An iterator is an object that behaves similarly to a pointer and allows you to t
 
       ```cpp
           2011-01-03 => 3 = 0.9
-    ```
+      ```
 
 - **Exchange Rate Lookup**
 
-    ```cpp
+    - If an exact date does not exist, the closest earlier date is used.
+
+        ```cpp
             it = database.upper_bound(date);
 
             if (it == database.begin())
                 return (printError("Error: no earlier date available."));
 
             --it;
-    ```
+        ```
+
+
     - `upper_bound()` returns an iterator to the first key strictly greater than the requested date.
     - Decrementing the iterator selects the latest date less than or equal to the requested date.
 
@@ -634,11 +635,11 @@ An iterator is an object that behaves similarly to a pointer and allows you to t
 <details>
 <summary><b>ex02 | <a href="ex02/README.md">PmergeMe</a></b></summary>
 
-## ex02 | PmergeMe
+## ex02 | <a href="ex02/README.md">PmergeMe</a>
 
 - `PmergeMe` sorts a sequence of positive integers using the **Ford-Johnson algorithm**, also known as **merge-insertion sort**.
 
-- The algorithm is designed to sort elements using a small number of comparisons.
+- The algorithm is designed to sort elements using a **small number of comparisons**.
 
 - Reference: [Merge-insertion sort - Wikipedia](https://en.wikipedia.org/wiki/Merge-insertion_sort)
 
@@ -658,7 +659,7 @@ The algorithm follows these main steps:
    
     - Group the elements into pairs. 
     
-    - If the number of elements is odd, keep one element unpaired as a straggler.
+    - If the number of elements is odd, keep one element unpaired as a `straggler`.
 
 2. **Compare each pair**
     - Compare the two elements and arrange them as: (small, big)
@@ -670,77 +671,22 @@ The algorithm follows these main steps:
     - Insert the element paired with the smallest element of the sorted main chain at the beginning.
 
 5. **Insert the remaining smaller elements**
-    - Insert them in a specially chosen order and use binary search to find their positions.
-
-
-### Example
-
-- Input:
-    ```cpp
-    3 2 1 6 5 9 7 11
-    ```
-            ↓ make pairs
-    ```cpp
-    (3,2) (1,6) (5,9) (7,11)
-    ```
-        ↓ order each pair
-    ```cpp
-    (2,3) (1,6) (5,9) (7,11)
-     ↑ ↑
-     │ └── big
-     └──── small
-    ```
-        ↓ recursively sort by BIG values
-
-    ```cpp
-    3 6 9 11
-    ```
-    ↓ create chains
-
-    ```cp
-    Main:       3 6 9 11
-
-    Pending:
-                2 → partner 3
-                1 → partner 6
-                5 → partner 9
-                7 → partner 11
-    ```
-        ↓ insert first pending
-
-    ```cpp
-    2 3 6 9 11
-    ```
-        ↓ insert remaining pending
-
-    ```cpp
-    Jacobsthal    → WHICH element comes next
-    Binary Search → WHERE it should be inserted
-    ```
-        ↓
-    ```cpp
-    1 2 3 5 6 7 9 11
-    ```
+    - Insert them in a specially chosen order (`Jacobsthal insertion order`) and use `binary search` to find their positions.
 
 
 ### Key Idea
 - `Ford-Johnson` pairs the elements, recursively sorts the larger elements, then inserts the smaller elements in a specially chosen `Jacobsthal`-based order using `binary search`.
 
-    ```cpp
-        PAIR        → create (small, big)
-
-        RECURSION   → sort the big values
-
-        MAIN CHAIN  → sorted big values
-
-        PENDING     → small values waiting to be inserted
-
-        JACOBSTHAL  → WHICH pending element to insert next
-
-        BINARY      → WHERE to insert that element
-
-        STRAGGLER   → leftover element when input size is odd
-    ```
+    | Concept | Purpose |
+    | ------- | ------- |
+    | **Ford–Johnson** | Complete merge-insertion sorting algorithm |
+    | **Pairing** | Organizes elements into `(small, big)` pairs |
+    | **Recursion** | Sorts the larger elements |
+    | **Main chain** | Maintains sorted elements |
+    | **Pending chain** | Stores smaller elements waiting for insertion |
+    | **Jacobsthal** | Determines WHICH pending element to insert next |
+    | **Binary search** | Determines WHERE the element belongs |
+    | **Straggler** | Leftover element when the input size is odd |
 
 
 </details>
